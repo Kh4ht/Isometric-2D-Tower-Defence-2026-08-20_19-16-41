@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: b822486778cfee14382c5e33776175de
+AssetOrigin:
+  serializedVersion: 1
+  productId: 313115
+  packageName: Configurable Autosave
+  packageVersion: 1.0.0
+  assetPath: Assets/Elasticated/AutoSave/Editor/AutoSaveNotificationWindow.cs
+  uploadId: 957134

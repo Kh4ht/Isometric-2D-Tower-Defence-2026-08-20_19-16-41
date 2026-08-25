@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: d3fa0ca4c0322cd46a3562d72b64c029
+AssetOrigin:
+  serializedVersion: 1
+  productId: 313115
+  packageName: Configurable Autosave
+  packageVersion: 1.0.0
+  assetPath: Assets/Elasticated/AutoSave/Editor/AutoSave.cs
+  uploadId: 957134

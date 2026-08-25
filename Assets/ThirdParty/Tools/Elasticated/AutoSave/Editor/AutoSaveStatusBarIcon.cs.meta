@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: 65c3986da74243349b8c635aab0fe7da
+AssetOrigin:
+  serializedVersion: 1
+  productId: 313115
+  packageName: Configurable Autosave
+  packageVersion: 1.0.0
+  assetPath: Assets/Elasticated/AutoSave/Editor/AutoSaveStatusBarIcon.cs
+  uploadId: 957134
