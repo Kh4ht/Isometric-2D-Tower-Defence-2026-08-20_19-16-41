@@ -15,6 +15,7 @@ MonoBehaviour:
   sceneDatas_byGuid:
     keys:
     - 8c9cfa26abfee488c85f1582747f6a02
+    - 7ec377844faff47cbbbbe265429489f1
     values:
     - goDatas_byGlobalId:
         keys:
@@ -24,6 +25,7 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-8c9cfa26abfee488c85f1582747f6a02-619394800-0
         - globalObjectIdString: GlobalObjectId_V1-2-8c9cfa26abfee488c85f1582747f6a02-2021678391-0
         - globalObjectIdString: GlobalObjectId_V1-2-8c9cfa26abfee488c85f1582747f6a02-1977221179-0
+        - globalObjectIdString: GlobalObjectId_V1-2-8c9cfa26abfee488c85f1582747f6a02-1941582034-0
         values:
         - colorIndex: 0
           iconNameOrGuid: Camera Icon
@@ -49,9 +51,33 @@ MonoBehaviour:
           iconNameOrGuid: Canvas Icon
           isIconRecursive: 0
           isColorRecursive: 0
+        - colorIndex: 0
+          iconNameOrGuid: EventSystem Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+    - goDatas_byGlobalId:
+        keys:
+        - globalObjectIdString: GlobalObjectId_V1-2-7ec377844faff47cbbbbe265429489f1-632658442-0
+        - globalObjectIdString: GlobalObjectId_V1-2-7ec377844faff47cbbbbe265429489f1-1492995465-0
+        - globalObjectIdString: GlobalObjectId_V1-2-7ec377844faff47cbbbbe265429489f1-35945872-0
+        values:
+        - colorIndex: 0
+          iconNameOrGuid: Camera Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 0
+          iconNameOrGuid: Canvas Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 0
+          iconNameOrGuid: EventSystem Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
   bookmarks:
   - _go: {fileID: 0}
     globalId:
       globalObjectIdString: GlobalObjectId_V1-2-8c9cfa26abfee488c85f1582747f6a02-2021678391-0
   bookmarkedScenePaths:
-  - Assets/Scenes/SampleScene.unity
+  - Assets/Scenes/Start Screen.unity
+  - Assets/Scenes/Main Menu.unity
+  - Assets/Scenes/Level 1.unity

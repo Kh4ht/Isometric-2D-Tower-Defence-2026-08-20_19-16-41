@@ -6,23 +6,34 @@ using KH;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VInspector;
+using Unity.Mathematics;
 
-public class TowerPlacementSys : ManagedBehaviour, IManagedUpdate
+public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 {
     #region FIELDS
+
+    public static TowerPlacementSys Ins { get; private set; }
 
     private readonly SelectedCells selectedCells = new();
 
     // INSPECTOR
 
     [Foldout("UI Controller")]
-    [SerializeField] private UIController horizontalTowersContainer;
+    [SerializeField] private KHUIController horizontalTowersContainer;
     [EndFoldout]
 
     [SerializeField] private List<MouseHoverShadow> mouseHoverShadow = new();
 
     #endregion
     #region UNITY EVENTS
+
+    private void Awake()
+    {
+        if (Ins == null)
+            Ins = this;
+        else
+            Destroy(gameObject);
+    }
 
     public void ManagedUpdate()
     {
@@ -84,16 +95,21 @@ public class TowerPlacementSys : ManagedBehaviour, IManagedUpdate
     #endregion
     #region PUBLIC
 
-    public void PlaceTower()
+    public void PlaceTowerOnSelectedPos(TowerData towerData)
     {
         if (!selectedCells.selected)
+        {
+            selectedCells.Deselect(horizontalTowersContainer);
             return;
+        }
 
         PathSys.Ins.BlockCells(selectedCells.cells);
 
         selectedCells.Deselect(horizontalTowersContainer);
 
-        // TODO: Instantiate The Tower.
+        Instantiate(towerData.prefab,
+                    selectedCells.GetCenterWorld(LevelManager.Ins.walkableTilemap),
+                    quaternion.identity);
     }
 
     #endregion

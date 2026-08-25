@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using KH;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using VInspector;
 
-public class LevelManager : ManagedBehaviour
+public class LevelManager : KHManagedBehaviour
 {
     #region FIELDS
 
@@ -59,8 +60,7 @@ public class LevelManager : ManagedBehaviour
     /// </summary>
     public bool ValidateTowerPlacementCell(Vector2Int hoveredCell)
     {
-        if (walkableTilemap.HasTile((Vector3Int)hoveredCell)
-            || towerPlacableTilemap.HasTile((Vector3Int)hoveredCell))
+        if (PathSys.Ins.GetNode(hoveredCell).IsWalkable)
             return true;
 
         return false;

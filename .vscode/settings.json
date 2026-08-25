@@ -70,7 +70,9 @@
     "dotnet.defaultSolution": "Isometric-2D-Tower-Defence.slnx",
     "cSpell.words": [
         "Behaviour",
+        "Datas",
         "Interactable",
+        "KHUI",
         "Mathf",
         "Prefs",
         "Scriptable",

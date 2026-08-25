@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3670d5c76375d416a887ad16840cacff, type: 3}
+  m_Name: GameDataBase
+  m_EditorClassIdentifier: Assembly-CSharp::GameDataBase
+  towerDatas:
+  - {fileID: 11400000, guid: 3ade3ea341e424cc48136a9c9a3cf29c, type: 2}
+  levelDatas:
+  - {fileID: 11400000, guid: 195664f73bf2948c09767002951a1504, type: 2}

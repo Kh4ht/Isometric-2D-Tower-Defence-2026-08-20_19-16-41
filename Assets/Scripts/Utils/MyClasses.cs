@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace MyClasses
 {
@@ -24,7 +25,7 @@ namespace MyClasses
 
         public bool selected;
 
-        public void Select(List<Vector2Int> hoveredCells, UIController uIController)
+        public void Select(List<Vector2Int> hoveredCells, KHUIController uIController)
         {
             cells.Clear();
             cells.AddRange(hoveredCells);
@@ -34,14 +35,14 @@ namespace MyClasses
             uIController.KH_UpShow();
         }
 
-        public void Deselect(UIController uIController)
+        public void Deselect(KHUIController uIController)
         {
             selected = false;
 
             uIController.KH_UpHide();
         }
 
-        public void ToggleSelect(List<Vector2Int> hoveredCells, UIController uIController)
+        public void ToggleSelect(List<Vector2Int> hoveredCells, KHUIController uIController)
         {
             selected = !selected;
 
@@ -49,6 +50,23 @@ namespace MyClasses
                 Select(hoveredCells, uIController);
             else
                 Deselect(uIController);
+        }
+
+        public Vector3 GetCenterWorld(Tilemap tilemap)
+        {
+            if (cells == null || cells.Count == 0)
+                return Vector3.zero;
+
+            Vector3 center = Vector3.zero;
+
+            foreach (Vector2Int cell in cells)
+            {
+                center += tilemap.GetCellCenterWorld(
+                    new Vector3Int(cell.x, cell.y, 0)
+                );
+            }
+
+            return center / cells.Count;
         }
     }
 

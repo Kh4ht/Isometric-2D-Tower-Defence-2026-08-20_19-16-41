@@ -1,18 +1,15 @@
 ﻿<Solution>
-  <Project Path="NaughtyAttributes.Core.csproj" />
   <Project Path="Brain.Editor.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
   <Project Path="HelperKH.csproj" />
   <Project Path="ImpossibleRobert.Common.Editor.csproj" />
   <Project Path="AssetInventory.Editor.csproj" />
   <Project Path="VHierarchy.csproj" />
-  <Project Path="NaughtyAttributes.Editor.csproj" />
   <Project Path="AudioTool.Editor.csproj" />
   <Project Path="Database.Editor.csproj" />
   <Project Path="Automator.Editor.csproj" />
   <Project Path="VFolders.csproj" />
   <Project Path="AudioTool.JD.EditorAudioUtils.Editor.csproj" />
-  <Project Path="NaughtyAttributes.Test.csproj" />
   <Project Path="Database.SQLite.csproj" />
   <Project Path="VInspector.csproj" />
   <Project Path="Assembly-CSharp.csproj" />

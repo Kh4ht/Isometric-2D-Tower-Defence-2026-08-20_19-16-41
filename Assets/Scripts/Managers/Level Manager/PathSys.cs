@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using MyClasses;
 using MyHelper;
 using UnityEngine;
+using KH;
+using System.Data.Common;
 
-public class PathSys : ManagedBehaviour
+public class PathSys : KHManagedBehaviour
 {
     #region FIELDS
 
