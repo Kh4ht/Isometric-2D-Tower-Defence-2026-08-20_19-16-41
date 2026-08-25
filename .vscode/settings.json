@@ -67,5 +67,14 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Isometric-2D-Tower-Defence.slnx"
+    "dotnet.defaultSolution": "Isometric-2D-Tower-Defence.slnx",
+    "cSpell.words": [
+        "Behaviour",
+        "Interactable",
+        "Mathf",
+        "Prefs",
+        "Scriptable",
+        "Tilemap",
+        "Tilemaps"
+    ]
 }

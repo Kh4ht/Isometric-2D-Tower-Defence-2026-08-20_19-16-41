@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.kh4ht.helperkh": {
+      "version": "file:/Users/kh4ledht/Documents/Programming/Unity/CUSTOM PACKAGES/HelperKH",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.inputsystem": "1.7.0"
+      }
+    },
     "com.kyrylokuzyk.primetween": {
       "version": "file:../Packages/com.kyrylokuzyk.primetween.tgz",
       "depth": 0,

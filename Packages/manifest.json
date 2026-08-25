@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.kh4ht.helperkh": "file:/Users/kh4ledht/Documents/Programming/Unity/CUSTOM PACKAGES/HelperKH",
     "com.kyrylokuzyk.primetween": "file:../Packages/com.kyrylokuzyk.primetween.tgz",
     "com.unity.2d.animation": "15.1.0",
     "com.unity.2d.aseprite": "5.0.3",
