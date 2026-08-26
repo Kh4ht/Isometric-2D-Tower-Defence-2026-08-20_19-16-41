@@ -4,7 +4,8 @@ using MyClasses;
 using MyHelper;
 using UnityEngine;
 using KH;
-using System.Data.Common;
+using VInspector;
+using UnityEngine.Tilemaps;
 
 public class PathSys : KHManagedBehaviour
 {
@@ -17,7 +18,8 @@ public class PathSys : KHManagedBehaviour
 
     private Vector2Int gridOrigin;
 
-    private List<List<Vector2Int>> currentPaths = new();
+    private readonly List<List<Vector2Int>> currentPaths = new();
+    private List<List<Vector2Int>> oldPaths = new();
 
     private static readonly Vector2Int[] Directions =
     {
@@ -26,6 +28,22 @@ public class PathSys : KHManagedBehaviour
         Vector2Int.left,
         Vector2Int.right
     };
+
+    // INSPECTOR
+
+    [Foldout("TILE MAPs")]
+    public Tilemap groundTilemap;
+    public Tilemap towerPlacableTilemap;
+    public Tilemap walkableTilemap;
+    public Tilemap decorationTilemap;
+
+    [Foldout("TILEs")]
+    public TileBase groundRuleTile;
+    public TileBase groundNormalTile;
+    public TileBase decorationTile;
+
+    [Foldout("DATA")]
+    public LevelData data;
 
     #endregion
     #region UNITY EVENTS
@@ -49,7 +67,7 @@ public class PathSys : KHManagedBehaviour
 
     private void OnDrawGizmos()
     {
-        if (LevelManager.Ins == null || LevelManager.Ins.levelData == null)
+        if (data == null)
             return;
 
 
@@ -60,11 +78,11 @@ public class PathSys : KHManagedBehaviour
         void DrawStartAndTargetGizmos()
         {
             Gizmos.color = Color.yellow;
-            foreach (Vector2Int pos in LevelManager.Ins.levelData.pathStartCells)
-                Gizmos.DrawCube(LevelManager.Ins.walkableTilemap.GetCellCenterWorld((Vector3Int)pos), new Vector2(0.2f, 0.2f));
+            foreach (Vector2Int pos in data.pathStartCells)
+                Gizmos.DrawCube(GetCellCenterWorld(pos), new Vector2(0.2f, 0.2f));
 
             Gizmos.color = Color.green;
-            Gizmos.DrawCube(LevelManager.Ins.walkableTilemap.GetCellCenterWorld((Vector3Int)LevelManager.Ins.levelData.pathTargetCell), new Vector2(0.2f, 0.2f));
+            Gizmos.DrawCube(GetCellCenterWorld(data.pathTargetCell), new Vector2(0.2f, 0.2f));
         }
 
         void DrawWalkableGridGizmos()
@@ -90,7 +108,56 @@ public class PathSys : KHManagedBehaviour
     }
 
     #endregion
-    #region PUBLIC 
+    #region PUBLIC
+
+    public bool CanPlaceTower(List<Vector2Int> cells)
+    {
+        if (!ValidateTowerPlacementCells(cells))
+            return false;
+
+        if (!Ins.CanBlockCells(cells))
+            return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Check if a tower can be placed on this cell.
+    /// </summary>
+    /// 
+    public bool ValidateTowerPlacementCell(Vector2Int hoveredCell)
+    {
+        GridNode node = Ins.GetNode(hoveredCell);
+
+        if (node == null)
+            return false;
+
+        return node.IsWalkable;
+    }
+
+    public bool ValidateTowerPlacementCells(List<Vector2Int> hoveredCells)
+    {
+        foreach (var hoveredCell in hoveredCells)
+        {
+            if (ValidateTowerPlacementCell(hoveredCell))
+                continue;
+            else
+                return false;
+        }
+
+        return true;
+    }
+
+    public Vector2 GetCellCenterWorld(Vector2Int cell)
+    {
+        return walkableTilemap.GetCellCenterWorld((Vector3Int)cell);
+    }
+
+    public Vector3Int WorldToCell(Vector2 cell)
+    {
+        return walkableTilemap.WorldToCell(cell);
+    }
+
 
     public GridNode GetNode(Vector2Int cell)
     {
@@ -128,9 +195,9 @@ public class PathSys : KHManagedBehaviour
 
         bool canReachTarget = true;
 
-        foreach (Vector2Int startCell in LevelManager.Ins.levelData.pathStartCells)
+        foreach (Vector2Int startCell in data.pathStartCells)
         {
-            if (Ins.FindPathAlgorithm(startCell, LevelManager.Ins.levelData.pathTargetCell) == null)
+            if (Ins.FindPathAlgorithm(startCell, data.pathTargetCell) == null)
             {
                 canReachTarget = false;
                 break;
@@ -234,14 +301,44 @@ public class PathSys : KHManagedBehaviour
     #endregion
     #region PRIVATE
 
+#if UNITY_EDITOR
+    [Button, Foldout("EDITOR TOOLS")]
+    private void AutoDrawTiles()
+    {
+        BuildGrid();
+
+        for (int i = 0; i < mapGrid.GetLength(0); i++)
+        {
+            for (int j = 0; j < mapGrid.GetLength(1); j++)
+            {
+                GridNode gridNode = mapGrid[i, j];
+
+                if (!groundTilemap.HasTile((Vector3Int)gridNode.CellPosition))
+                    continue;
+
+                // TODO: Add !gridNode.IsTowerPlacable check also
+
+                if (!gridNode.IsWalkable)
+                {
+                    decorationTilemap.SetTile((Vector3Int)gridNode.CellPosition, decorationTile);
+                }
+            }
+        }
+    }
+    [EndFoldout]
+#endif
+
     private void UpdatePaths()
     {
+        // Store the old path
+        oldPaths = new(currentPaths);
+
         currentPaths.Clear();
 
-        foreach (Vector2Int pos in LevelManager.Ins.levelData.pathStartCells)
+        foreach (Vector2Int pos in data.pathStartCells)
         {
             List<Vector2Int> currentPath = FindPathAlgorithm(pos,
-                                                             LevelManager.Ins.levelData.pathTargetCell);
+                                                             data.pathTargetCell);
 
             if (currentPath != null)
                 currentPaths.Add(currentPath);
@@ -251,18 +348,20 @@ public class PathSys : KHManagedBehaviour
     }
 
     // PATH VISUALIZER
+    // Clear the previous route visuals before repainting the current valid paths.
     private void DrawPaths()
     {
-        // Restore every cell to the Rule Tile
-        foreach (GridNode node in mapGrid)
+        // Restore any previously drawn path tiles to their default floor appearance.
+        foreach (List<Vector2Int> path in oldPaths)
         {
-            if (node == null)
-                continue;
-
-            LevelManager.Ins.groundTilemap.SetTile((Vector3Int)node.CellPosition,
-                                                   LevelManager.Ins.groundNormalTile);
+            foreach (Vector2Int cell in path)
+            {
+                groundTilemap.SetTile((Vector3Int)GetNode(cell).CellPosition,
+                                                       groundNormalTile);
+            }
         }
 
+        // Draw each newly computed route using the path indicator tile.
         foreach (List<Vector2Int> path in currentPaths)
         {
             if (path == null)
@@ -270,11 +369,12 @@ public class PathSys : KHManagedBehaviour
 
             foreach (Vector2Int cell in path)
             {
-                LevelManager.Ins.groundTilemap.SetTile((Vector3Int)cell, LevelManager.Ins.groundRuleTile);
+                groundTilemap.SetTile((Vector3Int)cell, groundRuleTile);
             }
         }
     }
 
+    // Reset pathFinding metadata before running a fresh A* search.
     private void ResetNodes()
     {
         foreach (GridNode node in mapGrid)
@@ -288,6 +388,7 @@ public class PathSys : KHManagedBehaviour
         }
     }
 
+    // Return only valid walkable neighbors for the current node during pathFinding.
     private IEnumerable<GridNode> GetNeighbors(GridNode node)
     {
         foreach (Vector2Int direction in Directions)
@@ -307,7 +408,7 @@ public class PathSys : KHManagedBehaviour
 
     private void BuildGrid()
     {
-        BoundsInt bounds = LevelManager.Ins.walkableTilemap.cellBounds;
+        BoundsInt bounds = groundTilemap.cellBounds;
 
         gridOrigin = (Vector2Int)bounds.min;
 
@@ -319,13 +420,13 @@ public class PathSys : KHManagedBehaviour
             {
                 Vector2Int cell = new(x, y);
 
-                bool walkable = LevelManager.Ins.walkableTilemap.HasTile((Vector3Int)cell);
+                bool walkable = walkableTilemap.HasTile((Vector3Int)cell);
 
                 int gridX = x - bounds.xMin;
                 int gridY = y - bounds.yMin;
 
                 mapGrid[gridX, gridY] = new GridNode(cellPosition: cell,
-                                                     cellWorldPosition: LevelManager.Ins.walkableTilemap.GetCellCenterWorld((Vector3Int)cell),
+                                                     cellWorldPosition: GetCellCenterWorld(cell),
                                                      isWalkable: walkable);
             }
         }

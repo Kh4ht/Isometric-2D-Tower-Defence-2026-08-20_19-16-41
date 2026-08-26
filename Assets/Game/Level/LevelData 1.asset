@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: LevelData 1
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
   pathStartCells:
-  - {x: -5, y: -10, z: 0}
-  - {x: -1, y: -14, z: 0}
-  pathTargetCell: {x: 0, y: 14, z: 0}
+  - {x: 0, y: -9}
+  - {x: 0, y: -12}
+  pathTargetCell: {x: 1, y: 14}

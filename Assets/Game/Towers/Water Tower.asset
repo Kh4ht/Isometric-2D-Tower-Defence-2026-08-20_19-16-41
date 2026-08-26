@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eed964302a4a748579f0c219f73507da, type: 3}
   m_Name: Water Tower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
+  id: Water_Tower__zvCThDH5
   prefab: {fileID: 3624856084399517176, guid: 1ef7ac6a3c021485eb0740fe290fb54d, type: 3}
   icon: {fileID: 21300000, guid: 5fc2fd8d4b115430eb163502233f85da, type: 3}

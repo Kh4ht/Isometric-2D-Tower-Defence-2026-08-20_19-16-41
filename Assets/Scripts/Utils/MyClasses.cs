@@ -79,6 +79,7 @@ namespace MyClasses
         public Vector2 CellWorldPosition { get; }
 
         public bool IsWalkable { get; set; }
+        public bool IsTowerPlacable { get; set; }
 
         public int GCost { get; set; }
         public int HCost { get; set; }

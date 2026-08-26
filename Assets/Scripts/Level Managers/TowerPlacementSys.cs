@@ -50,8 +50,8 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 
         // TODO: exit if mouse is pointing at a Tower or a UI element.
 
-        List<Vector2Int> hoveredCells = Helper.GetHoveredCells(LevelManager.Ins.walkableTilemap,
-                                                              (Vector2Int)LevelManager.Ins.walkableTilemap.WorldToCell(Kh.GetMouseWorldPos())).ToList();
+        List<Vector2Int> hoveredCells = Helper.GetHoveredCells(PathSys.Ins.walkableTilemap,
+                                                              (Vector2Int)PathSys.Ins.WorldToCell(Kh.GetMouseWorldPos())).ToList();
 
         if (!selectedCells.selected)
             DrawMouseHoverShadow(hoveredCells);
@@ -67,7 +67,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         if (!Mouse.current.leftButton.wasPressedThisFrame)
             return;
 
-        if (!LevelManager.Ins.ValidateTowerPlacementCells(hoveredCells)
+        if (!PathSys.Ins.ValidateTowerPlacementCells(hoveredCells)
             || !PathSys.Ins.CanBlockCells(hoveredCells))
         {
             // TODO: little feedback or rejection sound effect.
@@ -84,11 +84,11 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         for (int i = 0; i < Mathf.Min(hoveredCells.Count, mouseHoverShadow.Count); i++)
         {
             mouseHoverShadow[i].shadow.SetActive(true);
-            mouseHoverShadow[i].shadow.transform.position = LevelManager.Ins.CellToWorld(hoveredCells[i]);
+            mouseHoverShadow[i].shadow.transform.position = PathSys.Ins.GetCellCenterWorld(hoveredCells[i]);
 
-            mouseHoverShadow[i].spriteRenderer.color = LevelManager.Ins.ValidateTowerPlacementCell(hoveredCells[i])
-                ? new Color(0f, 1f, 0f, 0.25f)
-                : new Color(1f, 0f, 0f, 0.25f);
+            mouseHoverShadow[i].spriteRenderer.color = PathSys.Ins.ValidateTowerPlacementCell(hoveredCells[i])
+                ? new Color(0f, 1f, 0f, 0.2f)
+                : new Color(1f, 0f, 0f, 0.2f);
         }
     }
 
@@ -108,7 +108,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         selectedCells.Deselect(horizontalTowersContainer);
 
         Instantiate(towerData.prefab,
-                    selectedCells.GetCenterWorld(LevelManager.Ins.walkableTilemap),
+                    selectedCells.GetCenterWorld(PathSys.Ins.walkableTilemap),
                     quaternion.identity);
     }
 

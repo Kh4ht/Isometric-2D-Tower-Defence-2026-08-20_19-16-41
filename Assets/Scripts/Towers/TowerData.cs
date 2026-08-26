@@ -5,9 +5,9 @@ using VInspector;
 [CreateAssetMenu(fileName = "TowerData", menuName = "Scriptable Objects/TowerData")]
 public class TowerData : ScriptableObject
 {
-    [field: Foldout("ID")]
-    [field: ReadOnly, ShowInInspector]
-    public string ID { get; private set; }
+    [SerializeField, ReadOnly, Foldout("ID")]
+    private string id;
+    public string ID => id;
     [EndFoldout]
 
     public GameObject prefab;
@@ -21,7 +21,7 @@ public class TowerData : ScriptableObject
         if (!string.IsNullOrEmpty(ID))
             return;
 
-        ID = Kh.GenerateId(name, 8);
+        id = Kh.GenerateId(name, 8);
     }
 
     private void OnValidate()
