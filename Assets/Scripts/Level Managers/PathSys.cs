@@ -6,10 +6,26 @@ using UnityEngine;
 using KH;
 using VInspector;
 using UnityEngine.Tilemaps;
+using Unity.VisualScripting;
 
+[DisallowMultipleComponent]
 public class PathSys : KHManagedBehaviour
 {
     #region FIELDS
+
+#if UNITY_EDITOR
+    private static PathSys insEditor;
+    public static PathSys InsEditor
+    {
+        get
+        {
+            if (insEditor != null)
+                return insEditor;
+
+            return insEditor = FindAnyObjectByType<PathSys>();
+        }
+    }
+#endif
 
     public static PathSys Ins { get; private set; }
     private const int MOVE_COST = 10;
@@ -18,7 +34,7 @@ public class PathSys : KHManagedBehaviour
 
     private Vector2Int gridOrigin;
 
-    private readonly List<List<Vector2Int>> currentPaths = new();
+    public readonly List<List<Vector2Int>> currentPaths = new();
     private List<List<Vector2Int>> oldPaths = new();
 
     private static readonly Vector2Int[] Directions =
@@ -43,7 +59,7 @@ public class PathSys : KHManagedBehaviour
     public TileBase decorationTile;
 
     [Foldout("DATA")]
-    public LevelData data;
+    public PathSysData data;
 
     #endregion
     #region UNITY EVENTS
@@ -53,7 +69,7 @@ public class PathSys : KHManagedBehaviour
         if (Ins == null)
             Ins = this;
         else
-            Destroy(gameObject);
+            Debug.LogWarning("More Than One Instance");
     }
 
     protected override void Start()
@@ -153,6 +169,18 @@ public class PathSys : KHManagedBehaviour
         return walkableTilemap.GetCellCenterWorld((Vector3Int)cell);
     }
 
+    public List<Vector2> GetCellCenterWorld(List<Vector2Int> cells)
+    {
+        List<Vector2> result = new();
+
+        foreach (Vector2Int cell in cells)
+        {
+            result.Add(GetCellCenterWorld(cell));
+        }
+
+        return result;
+    }
+
     public Vector3Int WorldToCell(Vector2 cell)
     {
         return walkableTilemap.WorldToCell(cell);
@@ -180,9 +208,6 @@ public class PathSys : KHManagedBehaviour
         foreach (Vector2Int cell in cells)
         {
             GridNode node = Ins.GetNode(cell);
-
-            if (node == null)
-                return false;
 
             if (!node.IsWalkable)
                 return false;
@@ -220,10 +245,16 @@ public class PathSys : KHManagedBehaviour
         GridNode targetNode = GetNode(targetCell);
 
         if (startNode == null || targetNode == null)
+        {
+            Debug.Log($"{nameof(startNode)} or {nameof(targetNode)} is NULL");
             return null;
+        }
 
         if (!startNode.IsWalkable || !targetNode.IsWalkable)
+        {
+            Debug.Log($"{nameof(startNode)} or {nameof(targetNode)} is not on a Walkable Tilemap Area");
             return null;
+        }
 
         startNode.GCost = 0;
 
@@ -275,6 +306,7 @@ public class PathSys : KHManagedBehaviour
             }
         }
 
+        Debug.Log("No Paths");
         return null;
     }
 
@@ -340,8 +372,7 @@ public class PathSys : KHManagedBehaviour
             List<Vector2Int> currentPath = FindPathAlgorithm(pos,
                                                              data.pathTargetCell);
 
-            if (currentPath != null)
-                currentPaths.Add(currentPath);
+            currentPaths.Add(currentPath);
         }
 
         DrawPaths();
@@ -364,9 +395,6 @@ public class PathSys : KHManagedBehaviour
         // Draw each newly computed route using the path indicator tile.
         foreach (List<Vector2Int> path in currentPaths)
         {
-            if (path == null)
-                return;
-
             foreach (Vector2Int cell in path)
             {
                 groundTilemap.SetTile((Vector3Int)cell, groundRuleTile);
@@ -393,8 +421,7 @@ public class PathSys : KHManagedBehaviour
     {
         foreach (Vector2Int direction in Directions)
         {
-            GridNode neighbor =
-                GetNode(node.CellPosition + direction);
+            GridNode neighbor = GetNode(node.CellPosition + direction);
 
             if (neighbor == null)
                 continue;
@@ -434,3 +461,14 @@ public class PathSys : KHManagedBehaviour
 
     #endregion
 }
+
+#region PathSysData
+
+[Serializable]
+public class PathSysData
+{
+    public List<Vector2Int> pathStartCells;
+    public Vector2Int pathTargetCell;
+}
+
+#endregion

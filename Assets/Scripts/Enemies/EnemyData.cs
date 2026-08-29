@@ -2,8 +2,8 @@ using KH;
 using UnityEngine;
 using VInspector;
 
-[CreateAssetMenu(fileName = "TowerData", menuName = "Scriptable Objects/TowerData")]
-public class TowerData : ScriptableObject
+[CreateAssetMenu(fileName = "EnemyData", menuName = "Scriptable Objects/EnemyData")]
+public class EnemyData : ScriptableObject
 {
     #region FIELDS
 
@@ -12,8 +12,10 @@ public class TowerData : ScriptableObject
     public string ID => id;
     [EndFoldout]
 
-    public GameObject prefab;
+    public Enemy prefab;
     public Sprite icon;
+
+    [Min(0)] public float defaultMoveSpeed = 100;
 
     #endregion
     #region UNITY EVENTS

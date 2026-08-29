@@ -14,5 +14,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameDataBase
   towerDatas:
   - {fileID: 11400000, guid: 3ade3ea341e424cc48136a9c9a3cf29c, type: 2}
-  levelDatas:
-  - {fileID: 11400000, guid: 195664f73bf2948c09767002951a1504, type: 2}

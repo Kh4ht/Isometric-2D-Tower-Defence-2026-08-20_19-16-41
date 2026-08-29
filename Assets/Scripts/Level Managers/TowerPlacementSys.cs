@@ -6,8 +6,8 @@ using KH;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VInspector;
-using Unity.Mathematics;
 
+[DisallowMultipleComponent]
 public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 {
     #region FIELDS
@@ -15,6 +15,8 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
     public static TowerPlacementSys Ins { get; private set; }
 
     private readonly SelectedCells selectedCells = new();
+
+    private List<Vector2Int> hoveredCells;
 
     // INSPECTOR
 
@@ -32,34 +34,38 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         if (Ins == null)
             Ins = this;
         else
-            Destroy(gameObject);
+            Debug.LogWarning("More Than One Instance");
     }
 
     public void ManagedUpdate()
     {
-        RunMouseAndPlacementLogic();
+        RunMouseAndTowerPlacementLogic();
     }
 
     #endregion
     #region PRIVATE
 
-    private void RunMouseAndPlacementLogic()
+    private void RunMouseAndTowerPlacementLogic()
     {
         if (Kh.IsMouseOverUI())
             return;
 
         // TODO: exit if mouse is pointing at a Tower or a UI element.
 
-        List<Vector2Int> hoveredCells = Helper.GetHoveredCells(PathSys.Ins.walkableTilemap,
+        List<Vector2Int> newHoveredCells = Helper.GetHoveredCells(PathSys.Ins.walkableTilemap,
                                                               (Vector2Int)PathSys.Ins.WorldToCell(Kh.GetMouseWorldPos())).ToList();
 
-        if (!selectedCells.selected)
-            DrawMouseHoverShadow(hoveredCells);
+        if (hoveredCells == null
+            || !hoveredCells.SequenceEqual(newHoveredCells)
+            || !selectedCells.selected)
+        {
+            hoveredCells = newHoveredCells;
 
-        MouseClickLogic(hoveredCells);
+            if (!selectedCells.selected)
+                DrawMouseHoverShadow(hoveredCells);
+        }
 
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
-            selectedCells.Deselect(horizontalTowersContainer);
+        MouseClickLogic(newHoveredCells);
     }
 
     private void MouseClickLogic(List<Vector2Int> hoveredCells)
@@ -109,7 +115,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 
         Instantiate(towerData.prefab,
                     selectedCells.GetCenterWorld(PathSys.Ins.walkableTilemap),
-                    quaternion.identity);
+                    Quaternion.identity);
     }
 
     #endregion

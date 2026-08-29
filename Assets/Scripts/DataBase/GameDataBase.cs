@@ -7,18 +7,11 @@ using VInspector;
 public class GameDataBase : ScriptableObject
 {
     public List<TowerData> towerDatas;
-    public List<LevelData> levelDatas;
 
-    [Button]
-    private void UpdateDataBase()
-    {
-        towerDatas.KHAutoFillDataBase();
-        levelDatas.KHAutoFillDataBase();
-    }
 
     private void OnValidate()
     {
-        UpdateDataBase();
+        towerDatas.KHAutoFillDataBase();
     }
 }
 
@@ -34,18 +27,16 @@ public static class DB
                 return _db;
 
             // Load from Resources folder (recommended)
-            _db = Resources.Load<GameDataBase>("GameDataBase");
+            _db = Resources.Load<GameDataBase>(nameof(GameDataBase));
 
             if (_db == null)
-                Debug.LogError("DB: Could not load GameDataBase from Resources!");
+                Debug.LogError($"DB: Could not load {nameof(GameDataBase)} from Resources!");
 
             return _db;
         }
     }
 
-
     public static List<TowerData> TowersDB => Db.towerDatas;
-    public static List<LevelData> LevelsDB => Db.levelDatas;
 
     public static TowerData GetTowerDataById(string id)
     {

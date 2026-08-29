@@ -71,12 +71,16 @@
     "cSpell.words": [
         "Behaviour",
         "Datas",
+        "Despawn",
         "Interactable",
         "KHUI",
         "Mathf",
+        "Poolable",
         "Prefs",
+        "Rigidbody",
         "Scriptable",
         "Tilemap",
-        "Tilemaps"
+        "Tilemaps",
+        "trackpad"
     ]
 }
