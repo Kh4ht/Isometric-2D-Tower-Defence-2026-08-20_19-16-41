@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: vInspector Data
   m_EditorClassIdentifier: VInspector::VInspector.VInspectorData
   bookmarks:
-  - _obj: {fileID: 0}
+  - _obj: {fileID: 11400000, guid: 61aff044cfc2e45d0b6b74fed9c94746, type: 2}
     globalId:
-      globalObjectIdString: GlobalObjectId_V1-2-8c9cfa26abfee488c85f1582747f6a02-1209389836-0
-    isSceneGameObject: 1
-    isAsset: 0
-    _typeString: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
+      globalObjectIdString: GlobalObjectId_V1-3-61aff044cfc2e45d0b6b74fed9c94746-11400000-0
+    isSceneGameObject: 0
+    isAsset: 1
+    _typeString: GameDataBase, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null

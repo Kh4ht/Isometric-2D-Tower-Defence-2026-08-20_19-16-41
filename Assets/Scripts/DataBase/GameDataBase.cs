@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using VInspector;
+
 
 [CreateAssetMenu(fileName = "GameDataBase", menuName = "Scriptable Objects/GameDataBase")]
 public class GameDataBase : ScriptableObject
 {
     public List<TowerData> towerDatas;
-
 
     private void OnValidate()
     {

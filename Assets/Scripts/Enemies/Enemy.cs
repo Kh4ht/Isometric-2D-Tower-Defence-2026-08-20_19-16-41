@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using KH;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
 public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManagedFixedUpdate
 {
     #region FIELDS
@@ -17,6 +17,7 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     // COMPONENTS
 
     public Rigidbody2D rb2d { get; private set; }
+    public CapsuleCollider2D coll2d { get; private set; }
 
     // INSPECTOR
 
@@ -29,8 +30,13 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     private void Reset()
     {
         rb2d = GetComponent<Rigidbody2D>();
-        rb2d.bodyType = RigidbodyType2D.Dynamic;
-        rb2d.gravityScale = 0;
+        rb2d.bodyType = RigidbodyType2D.Kinematic;
+
+        coll2d = GetComponent<CapsuleCollider2D>();
+        coll2d.isTrigger = true;
+
+        //Set Tag
+        tag = GameTags.ENEMY;
     }
 
     private void Awake()
@@ -45,56 +51,45 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
         });
     }
 
-    public void ManagedUpdate()
+    public void KHManagedUpdate()
     {
         kHSubsystems.UpdateAll();
     }
 
-    public void ManagedFixedUpdate()
+    public void KHManagedFixedUpdate()
     {
         kHSubsystems.FixedUpdateAll();
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag(GameTags.VILLAGER))
+        {
+            KidnapVillagerAndEndMission(collision.GetComponent<Villager>());
+        }
     }
 
     #endregion
     #region PRIVATE
 
-    private void StopFollowingPath()
+    private void KidnapVillagerAndEndMission(Villager villager)
     {
-        // Stop A* movement
-    }
+        VillageManager.Ins.KidnapVillager(villager);
 
-    private void StartChasingVillager(Villager villager)
-    {
-        // Start movement toward villager
+        KHPoolManager.Ins.Despawn(data.ID, this);
     }
-
 
     #endregion
     #region PUBLIC
 
-    public void ResetStats(EnemyData enemyData, List<Vector2> path)
+    public void ResetEnemy(EnemyData enemyData, List<Vector2> path)
     {
-        stats = new(enemyData)
-        {
-            path = path
-        };
+        stats.Reset(enemyData, path);
     }
 
     public void ReachedVillagerArea()
     {
-        if (!stats.canFollowPath)
-            return;
-
         stats.canFollowPath = false;
-
-        StopFollowingPath();
-
-        // Villager nearestVillager = VillagerManager.Ins.GetNearestVillager(transform.position);
-
-        // if (nearestVillager == null)
-        //     return;
-
-        // StartChasingVillager(nearestVillager);
     }
 
     public void OnSpawn()
@@ -120,9 +115,20 @@ public class EnemyStats
     public Vector2 moveDir;
     public List<Vector2> path = new();
 
+    // Start from 1 because enemy spawns on path[pathIndex = 0]
+    public int pathIndex = 1;
+
     public EnemyStats(EnemyData enemyData)
     {
         moveSpeed = enemyData.defaultMoveSpeed;
+    }
+
+    public void Reset(EnemyData enemyData, List<Vector2> newPath)
+    {
+        canFollowPath = true;
+        moveSpeed = enemyData.defaultMoveSpeed;
+        path = newPath;
+        pathIndex = 1;
     }
 }
 

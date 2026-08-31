@@ -7,9 +7,6 @@ public class EnemyMovement : IKHSubsystem
 
     private readonly Enemy owner;
 
-    // Start from 1 because enemy spawns on path[pathIndex = 0]
-    private int pathIndex = 1;
-
     #endregion
     #region CONSTRUCTOR
 
@@ -28,34 +25,48 @@ public class EnemyMovement : IKHSubsystem
 
     public void IFixedUpdate()
     {
-        FollowPath();
+        if (owner.stats.canFollowPath)
+            FollowPath();
+        else
+            FollowVillager();
     }
 
     #endregion
     #region PRIVATE
 
-    private void UpdateMoveDir()
+    public void FollowVillager()
     {
-        owner.stats.moveDir = Kh.GetDir(owner.transform.position, owner.stats.path[pathIndex]);
+        Villager villager = VillageManager.Ins.GetNearestVillager(owner.transform.position);
+
+        if (villager == null)
+        {
+            Debug.Log("No Villagers Found");
+            owner.rb2d.linearVelocity = Vector3.zero;
+            return;
+        }
+
+        // Update Move Direction.
+        owner.stats.moveDir = Kh.GetDir(owner.transform.position,
+                                        villager.transform.position);
+
+        // Add Velocity.
+        owner.rb2d.linearVelocity = owner.stats.moveSpeed
+                                    * Time.fixedDeltaTime
+                                    * owner.stats.moveDir;
     }
 
     public void FollowPath()
     {
-        if (!owner.stats.canFollowPath)
-            return;
-
-        Debug.Log($"pathIndex: {pathIndex}");
-
-        Debug.Log($"path.Count: {owner.stats.path.Count}");
-
-        if (Kh.SqrDistanceIsLessThan(owner.stats.path[pathIndex], owner.transform.position, 0.1f))
+        if (Kh.SqrDistanceIsLessThan(owner.stats.path[owner.stats.pathIndex], owner.transform.position, 0.1f))
         {
-            if (pathIndex + 1 < owner.stats.path.Count)
-                pathIndex++;
+            if (owner.stats.pathIndex + 1 < owner.stats.path.Count)
+                owner.stats.pathIndex++;
         }
 
-        UpdateMoveDir();
+        // Update Move Direction.
+        owner.stats.moveDir = Kh.GetDir(owner.transform.position, owner.stats.path[owner.stats.pathIndex]);
 
+        // Add Velocity.
         owner.rb2d.linearVelocity = owner.stats.moveSpeed
                                     * Time.fixedDeltaTime
                                     * owner.stats.moveDir;

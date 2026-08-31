@@ -123,9 +123,9 @@ public class KHSaveDataWindow : EditorWindow
             EditorStyles.boldLabel
         );
 
-        saveData.maxHeldTowerCount =
+        saveData.maxSelectedTowersCount =
             EditorGUILayout.IntField(
-                saveData.maxHeldTowerCount
+                saveData.maxSelectedTowersCount
             );
     }
 

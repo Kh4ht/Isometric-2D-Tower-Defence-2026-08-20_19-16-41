@@ -21,7 +21,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
     // INSPECTOR
 
     [Foldout("UI Controller")]
-    [SerializeField] private KHUIController horizontalTowersContainer;
+    [SerializeField] private UIController horizontalTowersContainer;
     [EndFoldout]
 
     [SerializeField] private List<MouseHoverShadow> mouseHoverShadow = new();
@@ -37,8 +37,11 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
             Debug.LogWarning("More Than One Instance");
     }
 
-    public void ManagedUpdate()
+    public void KHManagedUpdate()
     {
+        if (LevelManager.Ins.LevelPaused)
+            return;
+
         RunMouseAndTowerPlacementLogic();
     }
 

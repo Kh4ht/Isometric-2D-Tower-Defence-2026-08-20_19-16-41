@@ -6,7 +6,6 @@ using UnityEngine;
 using KH;
 using VInspector;
 using UnityEngine.Tilemaps;
-using Unity.VisualScripting;
 
 [DisallowMultipleComponent]
 public class PathSys : KHManagedBehaviour

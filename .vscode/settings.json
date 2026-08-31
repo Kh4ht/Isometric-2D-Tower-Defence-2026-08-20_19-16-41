@@ -72,8 +72,10 @@
         "Behaviour",
         "Datas",
         "Despawn",
+        "Dont",
         "Interactable",
         "KHUI",
+        "Lerp",
         "Mathf",
         "Poolable",
         "Prefs",
@@ -81,6 +83,8 @@
         "Scriptable",
         "Tilemap",
         "Tilemaps",
-        "trackpad"
+        "trackpad",
+        "tweens",
+        "UGUI"
     ]
 }

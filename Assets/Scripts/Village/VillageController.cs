@@ -2,14 +2,13 @@ using System.Collections.Generic;
 using KH;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using VInspector;
 
 [RequireComponent(typeof(Tilemap))]
-public class VillageController : KHManagedBehaviour
+public class VillageManager : KHManagedBehaviour
 {
     #region FIELDS
 
-    public static VillageController Ins { get; private set; }
+    public static VillageManager Ins { get; private set; }
     private const int MAX_VILLAGER_COUNT = 20;
 
     private readonly List<Vector3Int> villageCells = new();
@@ -19,8 +18,11 @@ public class VillageController : KHManagedBehaviour
     // COMPONENTS
     private Tilemap villageAreaTilemap;
 
+    public List<Villager> villagers = new();
+    public event System.Action OnVillagerKidnapped;
+
+
     // INSPECTOR
-    [ReadOnly] public int currentVillagersCount = MAX_VILLAGER_COUNT;
     [SerializeField] private Villager villagerPrefab;
 
     #endregion
@@ -33,7 +35,7 @@ public class VillageController : KHManagedBehaviour
         if (Ins == null)
             Ins = this;
         else
-            Destroy(gameObject);
+            Debug.LogWarning("More Than One Instance");
     }
 
     protected override void Start()
@@ -47,15 +49,16 @@ public class VillageController : KHManagedBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Enemy enemy = other.GetComponentInParent<Enemy>();
+        if (!other.CompareTag(GameTags.ENEMY))
+            return;
 
-        if (enemy == null)
+        if (other.TryGetComponent(out Enemy enemy))
         {
-            Debug.Log("enemy == null");
+            enemy.ReachedVillagerArea();
             return;
         }
-
-        enemy.ReachedVillagerArea();
+        else
+            Debug.Log($"Component\'{nameof(Enemy)}\' is Not Found");
     }
 
     #endregion
@@ -129,11 +132,40 @@ public class VillageController : KHManagedBehaviour
 
     private void SpawnVillagers()
     {
-        Vector2 spawnPos = GetRandomVillagePosition();
+        // Vector2 spawnPos = GetRandomVillagePosition();
 
         this.KHRunBatched(count: MAX_VILLAGER_COUNT,
-                          action: (i) => Instantiate(villagerPrefab, spawnPos, Quaternion.identity),
-                          batchSize: 2);
+                          action: (i) => villagers.Add(Instantiate(villagerPrefab, GetRandomVillagePosition(), Quaternion.identity)),
+                          batchSize: 1);
+    }
+
+    #endregion
+    #region PUBLIC
+
+    public void KidnapVillager(Villager villager)
+    {
+        villagers.Remove(villager);
+
+        OnVillagerKidnapped?.Invoke();
+
+        villager.gameObject.SetActive(false);
+    }
+
+    public Villager GetNearestVillager(Vector2 pos)
+    {
+        float nearestSqrDis = float.MaxValue;
+        Villager nearestVillager = null;
+
+        foreach (Villager v in villagers)
+        {
+            if (Kh.GetSqrDistance(pos, v.transform.position) < nearestSqrDis)
+            {
+                nearestSqrDis = Kh.GetSqrDistance(pos, v.transform.position);
+                nearestVillager = v;
+            }
+        }
+
+        return nearestVillager;
     }
 
     #endregion

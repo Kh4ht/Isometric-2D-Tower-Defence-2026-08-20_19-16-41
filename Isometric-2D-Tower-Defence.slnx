@@ -4,6 +4,7 @@
   <Project Path="HelperKH.csproj" />
   <Project Path="ImpossibleRobert.Common.Editor.csproj" />
   <Project Path="AssetInventory.Editor.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="VHierarchy.csproj" />
   <Project Path="AudioTool.Editor.csproj" />
   <Project Path="Database.Editor.csproj" />
@@ -12,7 +13,6 @@
   <Project Path="AudioTool.JD.EditorAudioUtils.Editor.csproj" />
   <Project Path="Database.SQLite.csproj" />
   <Project Path="VInspector.csproj" />
-  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="ImpossibleRobert.Common.csproj" />
   <Project Path="ImpossibleRobert.Common.Imaging.Editor.csproj" />
   <Project Path="HelperKH.Editor.csproj" />

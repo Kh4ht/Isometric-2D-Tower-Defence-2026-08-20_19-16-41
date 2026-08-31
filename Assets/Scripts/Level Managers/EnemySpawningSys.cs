@@ -12,7 +12,13 @@ public class EnemySpawningSys : KHManagedBehaviour
 
     public static EnemySpawningSys Ins { get; private set; }
 
-    // 
+    public event Action OnFinishedSpawning;
+
+    // INSPECTOR
+
+    [Tab("Stats")]
+    public bool doneSpawning = false;
+    [Tab("Waves")]
     [SerializeField] private List<WaveData> waves;
 
     #endregion
@@ -24,8 +30,12 @@ public class EnemySpawningSys : KHManagedBehaviour
             Ins = this;
         else
             Debug.LogWarning("More Than One Instance");
+    }
+    protected override void Start()
+    {
+        base.Start();
 
-        RegisterLevelEnemies();
+        RegisterEnemiesToPool();
     }
 
     private void OnValidate()
@@ -57,7 +67,7 @@ public class EnemySpawningSys : KHManagedBehaviour
 
     #endregion
     #region PRIVATE
-    [Button]
+    [Button(color = "green")]
     private void StartSpawningEnemies()
     {
         StartCoroutine(SpawnWavesCoroutine());
@@ -85,6 +95,9 @@ public class EnemySpawningSys : KHManagedBehaviour
             // Wait until every path has finished.
             yield return new WaitUntil(() => remainingPaths <= 0);
         }
+
+        OnFinishedSpawning?.Invoke();
+        doneSpawning = true;
     }
 
     private IEnumerator SpawnPathCoroutine(EnemyPathData enemyPath,
@@ -113,10 +126,10 @@ public class EnemySpawningSys : KHManagedBehaviour
 
     private void SpawnEnemy(EnemyData enemyData, List<Vector2> path)
     {
-        KHPoolManager.Ins.Spawn<Enemy>(enemyData.ID, path[0]).ResetStats(enemyData, path);
+        KHPoolManager.Ins.Spawn<Enemy>(enemyData.ID, path[0]).ResetEnemy(enemyData, path);
     }
 
-    private void RegisterLevelEnemies()
+    private void RegisterEnemiesToPool()
     {
         foreach (WaveData wave in waves)
         {
@@ -124,7 +137,9 @@ public class EnemySpawningSys : KHManagedBehaviour
             {
                 foreach (EntryData entry in enemyPath.entries)
                 {
-                    KHPoolManager.Ins.Register(entry.enemyData.ID, entry.enemyData.prefab);
+                    KHPoolManager.Ins.Register(key: entry.enemyData.ID,
+                                               prefab: entry.enemyData.prefab,
+                                               initialSize: 0);
                 }
             }
         }
@@ -150,8 +165,10 @@ public class WaveData
     [Space, Space]
 
     [Tooltip("Amount of time before this wave starts.")]
-    [Min(0f)]
+    [Range(0.5f, 10f)]
     public float startDelay;
+
+    [Space, Space]
 
     [Tooltip("Amount Of Paths Is Automatically Changed Based On Path System's Start Cells Count.")]
     public List<EnemyPathData> enemyPaths = new();
@@ -174,15 +191,17 @@ public class EntryData
 
     public EnemyData enemyData;
 
+    [Space, Space]
+
     [Tooltip("Amount of time before this entry starts.")]
-    [Min(0f)]
+    [Range(0.5f, 10f)]
     public float startDelay;
 
     [Tooltip("Repeats The Same Entry, Instead Of Duplicates")]
     [Min(1)] public int repeatCount = 1;
 
     [Tooltip("Delay between each repetition.")]
-    [Min(0f)]
+    [Range(0.5f, 10f)]
     public float repeatDelay = 1f;
 
 

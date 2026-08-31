@@ -25,7 +25,7 @@ namespace MyClasses
 
         public bool selected;
 
-        public void Select(List<Vector2Int> hoveredCells, KHUIController uIController)
+        public void Select(List<Vector2Int> hoveredCells, UIController uIController)
         {
             cells.Clear();
             cells.AddRange(hoveredCells);
@@ -35,14 +35,14 @@ namespace MyClasses
             uIController.KH_UpShow();
         }
 
-        public void Deselect(KHUIController uIController)
+        public void Deselect(UIController uIController)
         {
             selected = false;
 
             uIController.KH_UpHide();
         }
 
-        public void ToggleSelect(List<Vector2Int> hoveredCells, KHUIController uIController)
+        public void ToggleSelect(List<Vector2Int> hoveredCells, UIController uIController)
         {
             selected = !selected;
 
