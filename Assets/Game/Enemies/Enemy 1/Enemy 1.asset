@@ -15,4 +15,5 @@ MonoBehaviour:
   id: Enemy_1__daX0a|-y
   prefab: {fileID: 5824658875397701318, guid: b1dce4e538c2642dda8136fa72700442, type: 3}
   icon: {fileID: 0}
-  defaultMoveSpeed: 50
+  defaultMaxHealth: 100
+  defaultMoveSpeed: 20

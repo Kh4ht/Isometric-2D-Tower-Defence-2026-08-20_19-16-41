@@ -54,7 +54,7 @@ public class VillageManager : KHManagedBehaviour
 
         if (other.TryGetComponent(out Enemy enemy))
         {
-            enemy.ReachedVillagerArea();
+            enemy.stats.ReachedVillagerArea();
             return;
         }
         else

@@ -1,7 +1,7 @@
 using KH;
 using UnityEngine;
 
-public class EnemyMovement : IKHSubsystem
+public class EnemyMovementSubSys : IKHSubsystem
 {
     #region FIELDS
 
@@ -10,7 +10,7 @@ public class EnemyMovement : IKHSubsystem
     #endregion
     #region CONSTRUCTOR
 
-    public EnemyMovement(Enemy owner)
+    public EnemyMovementSubSys(Enemy owner)
     {
         this.owner = owner;
     }
@@ -18,30 +18,25 @@ public class EnemyMovement : IKHSubsystem
     #endregion
     #region UNITY EVENTS
 
-    public void IUpdate()
-    {
-
-    }
-
     public void IFixedUpdate()
     {
-        if (owner.stats.canFollowPath)
+        if (!owner.stats.reachedVillageArea)
             FollowPath();
         else
-            FollowVillager();
+            FollowNearestVillager();
     }
 
     #endregion
     #region PRIVATE
 
-    public void FollowVillager()
+    public void FollowNearestVillager()
     {
         Villager villager = VillageManager.Ins.GetNearestVillager(owner.transform.position);
 
         if (villager == null)
         {
             Debug.Log("No Villagers Found");
-            owner.rb2d.linearVelocity = Vector3.zero;
+            owner.Rb2d.linearVelocity = Vector3.zero;
             return;
         }
 
@@ -50,7 +45,7 @@ public class EnemyMovement : IKHSubsystem
                                         villager.transform.position);
 
         // Add Velocity.
-        owner.rb2d.linearVelocity = owner.stats.moveSpeed
+        owner.Rb2d.linearVelocity = owner.stats.moveSpeed
                                     * Time.fixedDeltaTime
                                     * owner.stats.moveDir;
     }
@@ -67,7 +62,7 @@ public class EnemyMovement : IKHSubsystem
         owner.stats.moveDir = Kh.GetDir(owner.transform.position, owner.stats.path[owner.stats.pathIndex]);
 
         // Add Velocity.
-        owner.rb2d.linearVelocity = owner.stats.moveSpeed
+        owner.Rb2d.linearVelocity = owner.stats.moveSpeed
                                     * Time.fixedDeltaTime
                                     * owner.stats.moveDir;
     }

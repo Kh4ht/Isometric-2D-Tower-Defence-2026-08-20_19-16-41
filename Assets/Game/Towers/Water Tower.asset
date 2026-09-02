@@ -15,3 +15,18 @@ MonoBehaviour:
   id: Water_Tower__zvCThDH5
   prefab: {fileID: 3624856084399517176, guid: 1ef7ac6a3c021485eb0740fe290fb54d, type: 3}
   icon: {fileID: 21300000, guid: 5fc2fd8d4b115430eb163502233f85da, type: 3}
+  priceMultiplier: 1.14
+  price: 46000000500000005b000000680000007700000088000000
+  rangeMultiplier: 1.05
+  range:
+  - 2
+  - 2.1
+  - 2.2
+  - 2.31
+  - 2.43
+  - 2.55
+  haveShootingSubSys: 1
+  bulletSpawnOffset: {x: 0, y: 0.5}
+  bulletData: {fileID: 11400000, guid: ea2b2342b12f647298d16412920e10c6, type: 2}
+  shootCooldown: 1
+  test65: 158

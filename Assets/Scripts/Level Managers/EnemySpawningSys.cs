@@ -138,8 +138,7 @@ public class EnemySpawningSys : KHManagedBehaviour
                 foreach (EntryData entry in enemyPath.entries)
                 {
                     KHPoolManager.Ins.Register(key: entry.enemyData.ID,
-                                               prefab: entry.enemyData.prefab,
-                                               initialSize: 0);
+                                               prefab: entry.enemyData.prefab);
                 }
             }
         }

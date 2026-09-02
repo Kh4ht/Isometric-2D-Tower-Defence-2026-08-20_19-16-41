@@ -6,12 +6,17 @@ using UnityEngine;
 public class GameDataBase : ScriptableObject
 {
     public List<TowerData> towerDatas;
+    public List<EnemyData> enemyDatas;
 
     private void OnValidate()
     {
         towerDatas.KHAutoFillDataBase();
+        enemyDatas.KHAutoFillDataBase();
     }
 }
+
+
+
 
 public static class DB
 {
@@ -35,9 +40,36 @@ public static class DB
     }
 
     public static List<TowerData> TowersDB => Db.towerDatas;
+    public static List<EnemyData> EnemiesDB => Db.enemyDatas;
 
     public static TowerData GetTowerDataById(string id)
     {
         return TowersDB.Find(t => id == t.ID);
+    }
+
+    public static int GetHighestEnemyMaxHealth()
+    {
+        int highestMaxHealth = 0;
+
+        foreach (EnemyData enemyData in EnemiesDB)
+        {
+            if (enemyData.defaultMaxHealth > highestMaxHealth)
+                highestMaxHealth = enemyData.defaultMaxHealth;
+        }
+
+        return highestMaxHealth;
+    }
+
+    public static int GetLowestEnemyMaxHealth()
+    {
+        int lowestMaxHealth = int.MaxValue;
+
+        foreach (EnemyData enemyData in EnemiesDB)
+        {
+            if (enemyData.defaultMaxHealth < lowestMaxHealth)
+                lowestMaxHealth = enemyData.defaultMaxHealth;
+        }
+
+        return lowestMaxHealth;
     }
 }

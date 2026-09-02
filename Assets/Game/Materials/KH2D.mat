@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: KH2D
+  m_Shader: {fileID: 4800000, guid: acaf1fb26204d400883d8f91bee0af5a, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _SHINELOOP_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlphaTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DissolveNoiseTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AlphaCutoff: 0.1
+    - _Brightness: 0
+    - _ChromaticAmount: 1
+    - _Contrast: 1
+    - _Cull: 0
+    - _DissolveAmount: 0
+    - _DissolveEdgeWidth: 0.05
+    - _DissolveInvert: 0
+    - _EnableAlphaCutoff: 0
+    - _EnableChromatic: 0
+    - _EnableDissolve: 0
+    - _EnableExternalAlpha: 0
+    - _EnableFill: 0
+    - _EnableFlash: 0
+    - _EnableGrayscale: 0
+    - _EnableHSBC: 0
+    - _EnableInnerOutline: 0
+    - _EnableOutline: 0
+    - _EnablePixelate: 0
+    - _EnableRim: 0
+    - _EnableShine: 0
+    - _EnableWave: 0
+    - _FillAmount: 0
+    - _FlashAmount: 0
+    - _GrayscaleAmount: 0
+    - _Hue: 0
+    - _InnerOutlineWidth: 1
+    - _OutlineOnly: 0
+    - _OutlineWidth: 1
+    - _PixelSize: 8
+    - _RimIntensity: 1
+    - _RimWidth: 4
+    - _Saturation: 1
+    - _ShineAngle: 30
+    - _ShineIntensity: 1
+    - _ShineLoop: 1
+    - _ShineSpeed: 1
+    - _ShineWidth: 0.15
+    - _WaveAmplitude: 0.01
+    - _WaveFrequency: 10
+    - _WaveSpeed: 2
+    - _WaveVertical: 0
+    - _ZWrite: 0
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DissolveEdgeColor: {r: 1, g: 0.5, b: 0, a: 1}
+    - _FillColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FlashColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Flip: {r: 1, g: 1, b: 1, a: 1}
+    - _InnerOutlineColor: {r: 1, g: 1, b: 1, a: 1}
+    - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ShineColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

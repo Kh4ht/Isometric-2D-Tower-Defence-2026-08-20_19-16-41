@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb90a6a1e0b0945d3ac0830b6e4bf4cd, type: 3}
+  m_Name: StraightBullet 1
+  m_EditorClassIdentifier: Assembly-CSharp::BulletData
+  id: StraightBullet_1__uL7#x^qq
+  prefab: {fileID: 3740725963369276305, guid: c4352b816185545459f20fb83205021e, type: 3}
+  moveSpeed: 70
+  damage: 15
+  type: 0

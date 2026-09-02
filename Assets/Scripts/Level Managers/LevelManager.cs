@@ -67,7 +67,7 @@ public class LevelManager : KHManagedBehaviour, IKHManagedUpdate
     {
         if (EnemySpawningSys.Ins.doneSpawning)
         {
-            if (!KHPoolManager.Ins.AnyActive())
+            if (!KHPoolManager.Ins.GetAnyActive<Enemy>())
             {
                 OnWon();
             }
