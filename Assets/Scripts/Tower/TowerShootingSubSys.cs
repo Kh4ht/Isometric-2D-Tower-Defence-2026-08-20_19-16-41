@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using KH;
 using MyHelper;
 using UnityEngine;
@@ -38,8 +39,11 @@ public class TowerShootingSubSys : IKHSubsystem
 
         if (shootCooldownTimer.DidExceed(owner.stats.shootCooldown))
         {
-            shootCooldownTimer.Reset();
-            SpawnBullet();
+            if ((owner.stats.enemyTargeted = GetTarget()) != null)
+            {
+                shootCooldownTimer.Reset();
+                SpawnBullet();
+            }
         }
     }
 
@@ -48,19 +52,27 @@ public class TowerShootingSubSys : IKHSubsystem
         if (!owner.data.haveShootingSubSys)
             return null;
 
+        List<Enemy> enemiesInRange = new();
+
+        foreach (Enemy enemy in Helper.GetAllEnemies())
+        {
+            if (enemy.IsWithinRange(owner.transform.position, owner.stats.range))
+                enemiesInRange.Add(enemy);
+        }
+
         switch (owner.stats.targetSearchType)
         {
             case TargetSearchType.First:
-                return owner.towerRangeSubSys.GetEnemiesInRange().GetFirstEnemy();
+                return enemiesInRange.GetFirstEnemy();
 
             case TargetSearchType.Last:
-                return owner.towerRangeSubSys.GetEnemiesInRange().GetLastEnemy();
+                return enemiesInRange.GetLastEnemy();
 
             case TargetSearchType.Strongest:
-                return owner.towerRangeSubSys.GetEnemiesInRange().GetStrongestEnemy();
+                return enemiesInRange.GetStrongestEnemy();
 
             case TargetSearchType.Weakest:
-                return owner.towerRangeSubSys.GetEnemiesInRange().GetWeakestEnemy();
+                return enemiesInRange.GetWeakestEnemy();
 
             default:
                 Debug.LogWarning($"Unsupported {nameof(TargetSearchType)}: {owner.stats.targetSearchType}.");
@@ -77,7 +89,7 @@ public class TowerShootingSubSys : IKHSubsystem
 
         KHPoolManager.Ins.Spawn<Bullet>(owner.data.bulletData.ID,
                                         spawnPos).ResetBullet(owner.data.bulletData,
-                                                              GetTarget());
+                                                              owner.stats.enemyTargeted);
     }
 
     #endregion

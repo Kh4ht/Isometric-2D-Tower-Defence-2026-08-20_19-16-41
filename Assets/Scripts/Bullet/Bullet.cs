@@ -40,22 +40,17 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
         Rb2d = GetComponent<Rigidbody2D>();
 
         stats = new(data);
-    }
 
-    protected override void Start()
-    {
-        base.Start();
-
-        stats.targetPos = stats.target.transform.position;
+        kHSubSystems.AddRange(new IKHSubsystem[]
+        {
+            bulletCollisionSubSys = new(this),
+        });
     }
 
     public void KHManagedUpdate()
     {
         switch (data.type)
         {
-            case BulletMoveType.Straight:
-                StraightMove();
-                break;
             case BulletMoveType.Parabolic:
                 ParabolicMove();
                 break;
@@ -79,8 +74,7 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
     private void StraightMove()
     {
         Rb2d.linearVelocity = stats.moveSpeed
-                              * Time.fixedDeltaTime
-                              * stats.targetPos.normalized;
+                              * Kh.GetDir(transform.position, stats.targetPos);
     }
 
     private void ParabolicMove()
@@ -102,9 +96,19 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
         stats.Reset(bulletData, target);
 
         kHSubSystems.ResetAll();
+
+        switch (data.type)
+        {
+            case BulletMoveType.Straight:
+                StraightMove();
+                break;
+        }
     }
 
-    public void OnDespawn() { }
+    public void OnDespawn()
+    {
+        Rb2d.linearVelocity = Vector2.zero;
+    }
 
     public void OnSpawn() { }
 
@@ -138,6 +142,7 @@ public class BulletStats
     public void Reset(BulletData data, Enemy target)
     {
         this.target = target;
+        targetPos = target.transform.position;
         moveSpeed = data.moveSpeed;
         damage = data.damage;
     }

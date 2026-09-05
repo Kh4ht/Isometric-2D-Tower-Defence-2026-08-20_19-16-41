@@ -14,5 +14,5 @@ AssetOrigin:
   productId: 263643
   packageName: vFavorites 2
   packageVersion: 2.0.16
-  assetPath: Assets/vFavorites/VFavoritesState.cs
-  uploadId: 942074
+  assetPath: Assets/ThirdParty/Tools/vFavorites/VFavoritesState.cs
+  uploadId: 987790

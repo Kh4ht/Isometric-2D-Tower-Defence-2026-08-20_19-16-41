@@ -5,6 +5,29 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.8.0]
+
+- Reworked Additional Folder relocation to preserve filesystem roots, verify repeated path segments against the selected destination, update shared and nested sources safely, and roll back database and configuration changes on failure.
+- Added compatibility with Unity 6.7 while retaining support for Unity 2022.3.
+- Added experimental Synty Importer compatibility that discovers and indexes valid packages from its shared local cache as a dedicated Synty source without signing in or making online Synty requests.
+- Added optional Unity Asset Store metadata linking for locally downloaded Synty packages while preserving their cache identity, tags, indexed content, and user settings.
+- Added 31 Asset Inventory operations for Unity Pipeline and Unity AI Assistant, with automatic activation, preview-based confirmation for changes, and expanded CLI and MCP guidance with copyable dry-run examples.
+- Added automatic and choose-first indexing setup paths with clear next-step guidance, resumable progress, saved-search-compatible maintenance filters, selected-only include and index actions, retained-content cleanup, and reversible exclusions.
+- Simplified the dependency explorer with a complete graph, one search field for graph and list views, and compact layout and framing controls.
+- Improved Search and Packages keyboard navigation with Ctrl/Cmd+F query focus and Ctrl/Cmd+Page Up/Page Down paging.
+- Added a compact storage comparison for package files, database data, previews, cache, and total required space.
+- Added an optional Unity Asset Manager integration switch that keeps cloud controls hidden until they are needed without losing synchronized data or the update schedule.
+- Made Index Now start explicitly selected Asset Store downloads immediately, without a redundant confirmation.
+- Improved metadata editing with compact tag pills, live color updates, and aligned Boolean fields.
+- Improved download and subpackage indexing performance by removing repeated database lookups.
+- Fixed bulk imports so later selection changes cannot disrupt work already in progress.
+- Fixed the Previews Wizard layout so Stop and Cancel remain accessible for long file names, with the full name available in a tooltip.
+- Fixed in-project dependency matching so self-contained packages remain grouped and unmatched files use the Current Project label.
+- Fixed connected custom packages and archives losing access to package data editing and manual location changes.
+- Fixed automation filters to validate values and inclusive ranges correctly, match package source and deprecation state accurately, reject unsafe import paths, and prevent stale previews from being executed.
+- Fixed fractional audio-length filters in comma-decimal locales.
+- Fixed search example menu placement so it opens beside the clicked help button.
+
 ## [4.7.1] - 2026-08-07
 
 - The welcome guide now opens once for standalone installations, stays quiet when bundled inside another Wetzold tool, and remains available from the Tools menu.

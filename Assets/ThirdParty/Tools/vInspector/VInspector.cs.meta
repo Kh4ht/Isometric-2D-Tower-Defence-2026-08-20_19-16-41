@@ -13,6 +13,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 252297
   packageName: vInspector 2
-  packageVersion: 2.0.19
-  assetPath: Assets/vInspector/VInspector.cs
-  uploadId: 942058
+  packageVersion: 2.0.20
+  assetPath: Assets/ThirdParty/Tools/vInspector/VInspector.cs
+  uploadId: 987784

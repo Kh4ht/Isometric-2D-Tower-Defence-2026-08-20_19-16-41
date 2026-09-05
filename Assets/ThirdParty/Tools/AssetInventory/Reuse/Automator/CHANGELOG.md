@@ -2,15 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## [1.0.0] - 2024-01-01
 
 ### Improved
 
+- Added Unity 6.7 lifecycle ownership for action registries and runner state while retaining deterministic subsystem resets on older supported Unity versions.
 - Kept built-in automation steps available to the authoring workflow without presenting them as the primary scripting API.
 - Require Unity 2022.3 or newer.
 - Rebuilt action editing with a polished responsive UI Toolkit workflow, categorized step creation, clearer validation, native parameter controls, and safer step reordering.
-
-## [1.0.0] - 2024-01-01
 
 ### Added
 - Initial release

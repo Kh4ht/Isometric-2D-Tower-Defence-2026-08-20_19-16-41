@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using KH;
 using MyClasses;
 using UnityEngine;
@@ -109,6 +108,41 @@ namespace MyHelper
             Vector3 d = tilemap.GetCellCenterWorld((Vector3Int)(origin + Vector2Int.one));
 
             return (a + b + c + d) / 4f;
+        }
+
+        #endregion
+        #region TileCircleToWorld
+
+        /// Returns the world-space point for step "i" of a circle of radius "range"
+        /// (in tile units), squashed back into isometric world space.
+        public static Vector2 TileCircleToWorld(Vector2 origin, float range, int step)
+        {
+            float angle = (step / (float)GameConsts.GIZMO_SEGMENTS) * Mathf.PI * 2f;
+
+            // Point on a normal circle, in tile space
+            Vector2 tileSpacePoint = new Vector2(
+                Mathf.Cos(angle) * range,
+                Mathf.Sin(angle) * range
+            );
+
+            // Re-apply the isometric squash to get back to world space
+            tileSpacePoint.y *= GameConsts.ISO_Y_SCALE;
+
+            return origin + tileSpacePoint;
+        }
+
+        #endregion
+        #region IsWithinRange
+
+        public static bool IsWithinRange(this MonoBehaviour target, Vector2 origin, float range)
+        {
+            Vector2 delta = (Vector2)target.transform.position - origin;
+
+            // Undo the isometric squash so distance is measured in tile units
+            delta.y /= GameConsts.ISO_Y_SCALE;
+
+            float distanceInTiles = delta.magnitude;
+            return distanceInTiles <= range;
         }
 
         #endregion

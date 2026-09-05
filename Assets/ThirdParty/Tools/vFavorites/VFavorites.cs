@@ -1852,13 +1852,27 @@ namespace VFavorites
                 if (_lockedBrowser) return _lockedBrowser;
 
 
-                var lockedBrowserInstanceId = EditorPrefsCached.GetInt("vFavorites-lockedBrowserInstanceId", 0);
+#if UNITY_6000_6_OR_NEWER
+                var lockedBrowserEntityIdULongString = EditorPrefsCached.GetString("vFavorites-lockedBrowserEntityIdULongString", default);
 
-                if (lockedBrowserInstanceId == 0) return null;
+                if (lockedBrowserEntityIdULongString == default) return null;
+                if(!ulong.TryParse(lockedBrowserEntityIdULongString, out _)) return null;
+
+
+                var lockedBrowserObjectId = EntityId.FromULong(ulong.Parse(lockedBrowserEntityIdULongString));
+
+                if (lockedBrowserObjectId == default) return null;
+
+
+#else
+                var lockedBrowserObjectId = EditorPrefsCached.GetInt("vFavorites-lockedBrowserInstanceId", 0);
+
+                if (lockedBrowserObjectId == 0) return null;
+#endif
 
 
 
-                var window = _EditorUtility_ObjectIDToObject(lockedBrowserInstanceId) as EditorWindow;
+                var window = _EditorUtility_ObjectIDToObject(lockedBrowserObjectId) as EditorWindow;
 
                 if (window && window.GetType() == t_BrowserWindow) // prevents iid collisions
                     _lockedBrowser = window;
@@ -1885,14 +1899,23 @@ namespace VFavorites
 
                 if (value == null)
                 {
+#if UNITY_6000_6_OR_NEWER
+                    EditorPrefsCached.SetString("vFavorites-lockedBrowserEntityIdULongString", default);
+#else
                     EditorPrefsCached.SetInt("vFavorites-lockedBrowserInstanceId", 0);
+#endif
 
                     _lockedBrowser = null;
 
                 }
                 else
                 {
+#if UNITY_6000_6_OR_NEWER
+                    EditorPrefsCached.SetString("vFavorites-lockedBrowserEntityIdULongString", EntityId.ToULong(value.GetEntityId()).ToString());
+#else
                     EditorPrefsCached.SetInt("vFavorites-lockedBrowserInstanceId", value.GetObjectID().GetHashCode());
+#endif
+
 
                     MarkAsLocked(value);
 
@@ -2048,7 +2071,7 @@ namespace VFavorites
 
 
 
-        const string version = "2.0.16";
+        const string version = "2.0.17";
 
     }
 }

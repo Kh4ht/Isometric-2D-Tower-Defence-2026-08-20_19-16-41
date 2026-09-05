@@ -241,8 +241,7 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 2faa610713d3b3c439473daa55e8c60a,
-    type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
@@ -256,7 +255,7 @@ ModelImporter:
 AssetOrigin:
   serializedVersion: 1
   productId: 349582
-  packageName: Asset Inventory 4
-  packageVersion: 4.7.1
-  assetPath: Assets/AssetInventory/Editor/Images/Animation/Test.fbx
-  uploadId: 969138
+  packageName: Asset Inventory - Find Every Asset in Your Library
+  packageVersion: 4.8.0
+  assetPath: Assets/ThirdParty/Tools/AssetInventory/Editor/Images/Animation/Test.fbx
+  uploadId: 983278

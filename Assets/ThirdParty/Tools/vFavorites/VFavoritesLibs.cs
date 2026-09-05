@@ -758,22 +758,6 @@ namespace VFavorites.Libs
         #region Objects
 
 
-        public static Object[] FindObjects(Type type)
-        {
-#if UNITY_2023_1_OR_NEWER
-            return Object.FindObjectsByType(type, FindObjectsSortMode.None);
-#else
-            return Object.FindObjectsOfType(type);
-#endif
-        }
-        public static T[] FindObjects<T>() where T : Object
-        {
-#if UNITY_2023_1_OR_NEWER
-            return Object.FindObjectsByType<T>(FindObjectsSortMode.None);
-#else
-            return Object.FindObjectsOfType<T>();
-#endif
-        }
 
         public static void Destroy(this Object r)
         {
@@ -1137,8 +1121,8 @@ namespace VFavorites.Libs
 
 
 
-        public static void RemoveEditorErrors() => removeEditorErrorsMethod.Invoke(null, new object[] { 1 });
-        static MethodInfo removeEditorErrorsMethod = System.AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(r => r.GetName().ToString().Contains("UnityEditor.CoreModule")).GetTypes().First(r => r.Name.Contains("LogEntry")).GetMethod("RemoveLogEntriesByMode", BindingFlags.Static | BindingFlags.NonPublic);
+        // public static void RemoveEditorErrors() => removeEditorErrorsMethod.Invoke(null, new object[] { 1 });
+        // static MethodInfo removeEditorErrorsMethod = System.AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(r => r.GetName().ToString().Contains("UnityEditor.CoreModule")).GetTypes().First(r => r.Name.Contains("LogEntry")).GetMethod("RemoveLogEntriesByMode", BindingFlags.Static | BindingFlags.NonPublic);
 
 
 

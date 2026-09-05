@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BulletData
   id: StraightBullet_1__uL7#x^qq
   prefab: {fileID: 3740725963369276305, guid: c4352b816185545459f20fb83205021e, type: 3}
-  moveSpeed: 70
+  moveSpeed: 200
   damage: 15
   type: 0

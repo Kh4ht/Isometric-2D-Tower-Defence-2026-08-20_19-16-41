@@ -177,7 +177,7 @@ public class EnemyStats
     {
         reachedVillageArea = false;
         moveSpeed = enemyData.defaultMoveSpeed;
-        path = newPath;
+        path = new(newPath);
         pathIndex = 1;
     }
 }

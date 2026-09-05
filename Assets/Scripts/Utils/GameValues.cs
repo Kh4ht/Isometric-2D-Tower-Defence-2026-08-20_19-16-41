@@ -1,3 +1,12 @@
+#region CONSTANTS
+
+public static class GameConsts
+{
+    public const int GIZMO_SEGMENTS = 32;
+    public const float ISO_Y_SCALE = 0.5f;
+}
+
+#endregion
 #region TAGS
 
 public static class GameTags

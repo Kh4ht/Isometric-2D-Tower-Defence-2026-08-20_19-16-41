@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using KH;
+using MyHelper;
 using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(AudioSource))]
-public class Tower : KHManagedBehaviour
+public class Tower : KHManagedBehaviour, IKHManagedUpdate
 {
     #region FIELDS
 
@@ -13,7 +14,7 @@ public class Tower : KHManagedBehaviour
 
     // Subsystems
     private readonly List<IKHSubsystem> kHSubsystems = new();
-    public TowerRangeSubSys towerRangeSubSys { get; private set; }
+    public TowerShootingSubSys towerShootingSubSys { get; private set; }
 
     // Components
     public AudioSource AudioS { get; private set; }
@@ -46,7 +47,7 @@ public class Tower : KHManagedBehaviour
         kHSubsystems.Clear();
         kHSubsystems.AddRange(new IKHSubsystem[]
         {
-            towerRangeSubSys = new(this),
+            towerShootingSubSys = new(this),
         });
     }
 
@@ -64,20 +65,45 @@ public class Tower : KHManagedBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        kHSubsystems.Clear();
-        kHSubsystems.AddRange(new IKHSubsystem[]
-        {
-            towerRangeSubSys = new(this),
-        });
+        PointAtEnemy();
 
-        if (stats.enemyTargeted != null)
+        DrawTowerRange();
+
+
+
+        void PointAtEnemy()
         {
-            Gizmos.color = Color.red;
-            // draw a line at the target
-            Gizmos.DrawLine(transform.position, stats.enemyTargeted.transform.position);
+            if (!data.haveShootingSubSys)
+                return;
+
+            if (stats.enemyTargeted != null)
+            {
+                Gizmos.color = Color.red;
+                // draw a line at the target
+                Gizmos.DrawLine(transform.position, stats.enemyTargeted.transform.position);
+            }
         }
 
-        kHSubsystems.OnDrawGizmosSelectedAll();
+        void DrawTowerRange()
+        {
+            float range = stats.range;
+
+            if (range <= 0f)
+                return;
+
+            Vector2 origin = transform.position;
+
+            Gizmos.color = Color.cyan;
+
+            Vector2 prevPoint = Helper.TileCircleToWorld(origin, range, 0);
+
+            for (int i = 1; i <= GameConsts.GIZMO_SEGMENTS; i++)
+            {
+                Vector2 nextPoint = Helper.TileCircleToWorld(origin, range, i);
+                Gizmos.DrawLine(prevPoint, nextPoint);
+                prevPoint = nextPoint;
+            }
+        }
     }
 
     #endregion

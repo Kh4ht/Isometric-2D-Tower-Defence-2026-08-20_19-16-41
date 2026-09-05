@@ -5,6 +5,11 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.2.0]
+
+- Added Unity 6.7 lifecycle ownership for audio preview state and editor registrations while retaining Unity 2022.3 support.
+- Standardized Tools and Project-window context-menu labels to omit ellipses.
+
 ## [1.1.1] - 2026-08-07
 
 - The welcome guide now opens once for standalone installations, stays quiet when bundled inside another Wetzold tool, and remains available from the Tools menu.

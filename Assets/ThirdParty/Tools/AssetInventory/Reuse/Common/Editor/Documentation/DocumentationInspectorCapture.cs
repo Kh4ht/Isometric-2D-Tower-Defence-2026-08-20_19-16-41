@@ -79,7 +79,11 @@ namespace ImpossibleRobert.Common.Editor.Documentation
     }
 
     [InitializeOnLoad]
-    public static class DocumentationInspectorCaptureCoordinator
+#if UNITY_6000_7_OR_NEWER
+    // Static-constructor state is code-load scoped; cleanup is handled explicitly where the type crosses Play Mode.
+    [Unity.Scripting.LifecycleManagement.NoAutoStaticsCleanup]
+#endif
+    public static partial class DocumentationInspectorCaptureCoordinator
     {
         const string PendingSessionKey = "ImpossibleRobert.Common.DocumentationInspectorCapture.Pending";
         const string RunningSessionKey = "ImpossibleRobert.Common.DocumentationInspectorCapture.Running";
@@ -411,29 +415,42 @@ namespace ImpossibleRobert.Common.Editor.Documentation
                     throw new InvalidOperationException("The output path has no directory: " + spec.OutputPath + ".");
                 Directory.CreateDirectory(directory);
                 byte[] pngData = cropped.EncodeToPNG();
+                string temporaryPath = fullPath + "." + Guid.NewGuid().ToString("N") + ".capturing";
+                File.WriteAllBytes(temporaryPath, pngData);
                 IOException writeException = null;
                 bool written = false;
-                for (int attempt = 0; attempt < 3 && !written; attempt++)
+                try
                 {
-                    AssetDatabase.ReleaseCachedFileHandles();
-                    try
+                    for (int attempt = 0; attempt < 20 && !written; attempt++)
                     {
-                        File.WriteAllBytes(fullPath, pngData);
-                        written = true;
-                    }
-                    catch (IOException exception)
-                    {
-                        writeException = exception;
-                    }
+                        AssetDatabase.ReleaseCachedFileHandles();
+                        try
+                        {
+                            if (File.Exists(fullPath))
+                                File.Replace(temporaryPath, fullPath, null);
+                            else
+                                File.Move(temporaryPath, fullPath);
+                            written = true;
+                        }
+                        catch (IOException exception)
+                        {
+                            writeException = exception;
+                        }
 
-                    if (!written && attempt < 2)
-                        yield return null;
+                        if (!written && attempt < 19)
+                            yield return null;
+                    }
+                }
+                finally
+                {
+                    if (File.Exists(temporaryPath))
+                        File.Delete(temporaryPath);
                 }
 
                 if (!written)
                 {
                     throw new IOException(
-                        "Could not replace the documentation screenshot after releasing Unity's cached file handles: " +
+                        "Could not atomically replace the documentation screenshot after releasing Unity's cached file handles: " +
                         fullPath,
                         writeException);
                 }
