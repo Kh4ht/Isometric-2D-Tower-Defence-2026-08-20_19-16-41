@@ -10,6 +10,7 @@ public class EnemySpawningSys : KHManagedBehaviour
 {
     #region FIELDS
 
+    [KHResetStatic]
     public static EnemySpawningSys Ins { get; private set; }
 
     public event Action OnFinishedSpawning;

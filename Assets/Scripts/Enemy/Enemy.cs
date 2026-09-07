@@ -70,12 +70,12 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
         healthSlider.gameObject.SetActive(false);
     }
 
-    public void KHManagedUpdate()
+    public void KHUpdate()
     {
         // kHSubsystems.UpdateAll();
     }
 
-    public void KHManagedFixedUpdate()
+    public void KHFixedUpdate()
     {
         kHSubSystems.FixedUpdateAll();
     }

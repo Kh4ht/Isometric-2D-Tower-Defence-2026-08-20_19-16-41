@@ -1,4 +1,5 @@
 using System.Collections;
+using KH;
 using PrimeTween;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,6 +9,7 @@ public class SceneTransitionManager : MonoBehaviour
 {
     #region FIELDS
 
+    [KHResetStatic]
     public static SceneTransitionManager Ins { get; private set; }
     private const float FADE_DURATION = 0.2f;
 

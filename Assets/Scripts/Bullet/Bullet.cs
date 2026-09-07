@@ -47,7 +47,7 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
         });
     }
 
-    public void KHManagedUpdate()
+    public void KHUpdate()
     {
         switch (data.type)
         {

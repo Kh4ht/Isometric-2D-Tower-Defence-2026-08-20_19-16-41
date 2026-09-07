@@ -9,6 +9,7 @@ public class LevelManager : KHManagedBehaviour, IKHManagedUpdate
 {
     #region FIELDS
 
+    [KHResetStatic]
     public static LevelManager Ins { get; private set; }
     private const float TIMESCALE_TWEEN_DURATION = 0.2f;
 
@@ -55,7 +56,7 @@ public class LevelManager : KHManagedBehaviour, IKHManagedUpdate
         VillageManager.Ins.OnVillagerKidnapped -= OnVillagerKidnapped;
     }
 
-    public void KHManagedUpdate()
+    public void KHUpdate()
     {
         CheckIfWon();
     }

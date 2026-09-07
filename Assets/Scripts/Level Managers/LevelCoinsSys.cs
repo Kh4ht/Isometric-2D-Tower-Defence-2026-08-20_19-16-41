@@ -5,6 +5,7 @@ public class LevelCoinsSys : KHManagedBehaviour
 {
     #region FIELDS
 
+    [KHResetStatic]
     public static LevelCoinsSys Ins { get; private set; }
 
     [SerializeField] private int startingCoins = 0;

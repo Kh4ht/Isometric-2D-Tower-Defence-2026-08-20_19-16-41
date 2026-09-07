@@ -58,7 +58,7 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate
         RegisterBulletsToPool();
     }
 
-    public void KHManagedUpdate()
+    public void KHUpdate()
     {
         kHSubsystems.UpdateAll();
     }
@@ -69,11 +69,20 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate
 
         DrawTowerRange();
 
+        DrawBulletSpawnPoint();
 
+        void DrawBulletSpawnPoint()
+        {
+            if (data == null)
+                return;
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawSphere((Vector2)transform.position + data.bulletSpawnOffset, 0.05f);
+        }
 
         void PointAtEnemy()
         {
-            if (!data.haveShootingSubSys)
+            if (data == null || !data.haveShootingSubSys)
                 return;
 
             if (stats.enemyTargeted != null)

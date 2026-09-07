@@ -8,6 +8,7 @@ public class VillageManager : KHManagedBehaviour
 {
     #region FIELDS
 
+    [KHResetStatic]
     public static VillageManager Ins { get; private set; }
     private const int MAX_VILLAGER_COUNT = 20;
 

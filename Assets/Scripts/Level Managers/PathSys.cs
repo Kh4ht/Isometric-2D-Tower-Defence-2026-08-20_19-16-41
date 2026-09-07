@@ -26,6 +26,7 @@ public class PathSys : KHManagedBehaviour
     }
 #endif
 
+    [KHResetStatic]
     public static PathSys Ins { get; private set; }
     private const int MOVE_COST = 10;
 

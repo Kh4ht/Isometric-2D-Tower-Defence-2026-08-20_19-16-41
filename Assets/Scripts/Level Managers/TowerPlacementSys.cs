@@ -12,6 +12,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 {
     #region FIELDS
 
+    [KHResetStatic]
     public static TowerPlacementSys Ins { get; private set; }
 
     private readonly SelectedCells selectedCells = new();
@@ -37,7 +38,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
             Debug.LogWarning("More Than One Instance");
     }
 
-    public void KHManagedUpdate()
+    public void KHUpdate()
     {
         if (LevelManager.Ins.LevelPaused)
             return;
