@@ -52,14 +52,14 @@ public class EnemyMovementSubSys : IKHSubsystem
 
     public void FollowPath()
     {
-        if (Kh.SqrDistanceIsLessThan(owner.stats.path[owner.stats.pathIndex], owner.transform.position, 0.1f))
+        if (Kh.SqrDistanceIsLessThan(owner.stats.path[owner.stats.reachedPathIndex], owner.transform.position, 0.1f))
         {
-            if (owner.stats.pathIndex + 1 < owner.stats.path.Count)
-                owner.stats.pathIndex++;
+            if (owner.stats.reachedPathIndex + 1 < owner.stats.path.Count)
+                owner.stats.reachedPathIndex++;
         }
 
         // Update Move Direction.
-        owner.stats.moveDir = Kh.GetDir(owner.transform.position, owner.stats.path[owner.stats.pathIndex]);
+        owner.stats.moveDir = Kh.GetDir(owner.transform.position, owner.stats.path[owner.stats.reachedPathIndex]);
 
         // Add Velocity.
         owner.Rb2d.linearVelocity = owner.stats.moveSpeed

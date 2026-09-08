@@ -5,16 +5,14 @@ using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
-public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
+public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHManagedFixedUpdate, IKHPoolable
 {
     #region FIELDS
 
     // SUBSYSTEMS
     private readonly List<IKHSubsystem> kHSubSystems = new();
     public BulletCollisionSubSys bulletCollisionSubSys { get; private set; }
-
-    // COMPONENTS
-    public Rigidbody2D Rb2d { get; private set; }
+    public BulletMovementSubSys bulletMovementSubSys { get; private set; }
 
     // INSPECTOR
     [Tab("STATS")]
@@ -26,67 +24,33 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
     #endregion
     #region UNITY EVENTS
 
-    private void Reset()
-    {
-        Rb2d = GetComponent<Rigidbody2D>();
-        Rb2d.bodyType = RigidbodyType2D.Kinematic;
-
-        //Set Tag
-        // tag = GameTags.BULLET;
-    }
-
     private void Awake()
     {
-        Rb2d = GetComponent<Rigidbody2D>();
-
         stats = new(data);
 
         kHSubSystems.AddRange(new IKHSubsystem[]
         {
             bulletCollisionSubSys = new(this),
+            bulletMovementSubSys = new(this),
         });
     }
 
     public void KHUpdate()
     {
-        switch (data.type)
-        {
-            case BulletMoveType.Parabolic:
-                ParabolicMove();
-                break;
-            case BulletMoveType.Laser:
-                LaserMove();
-                break;
-            case BulletMoveType.Follow:
-                FollowMove();
-                break;
-        }
+        stats.UpdateEnemyLastPos();
+
+        kHSubSystems.UpdateAll();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void KHFixedUpdate()
     {
-        kHSubSystems.OnTriggerEnter2DAll(collision);
+        kHSubSystems.FixedUpdateAll();
     }
 
     #endregion
     #region PRIVATE
 
-    private void StraightMove()
-    {
-        Rb2d.linearVelocity = stats.moveSpeed
-                              * Kh.GetDir(transform.position, stats.targetPos);
-    }
 
-    private void ParabolicMove()
-    { }
-
-    private void LaserMove()
-    { }
-
-    private void FollowMove()
-    {
-
-    }
 
     #endregion
     #region PUBLIC
@@ -96,19 +60,9 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
         stats.Reset(bulletData, target);
 
         kHSubSystems.ResetAll();
-
-        switch (data.type)
-        {
-            case BulletMoveType.Straight:
-                StraightMove();
-                break;
-        }
     }
 
-    public void OnDespawn()
-    {
-        Rb2d.linearVelocity = Vector2.zero;
-    }
+    public void OnDespawn() { }
 
     public void OnSpawn() { }
 
@@ -124,7 +78,8 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 [Serializable]
 public class BulletStats
 {
-    public Vector2 targetPos = Vector2.zero;
+    public Vector2 targetFirstPos = Vector2.zero;
+    public Vector2 targetLastPosBeforeDeath;
 
     // Requires Initialization
     public float moveSpeed;
@@ -142,9 +97,17 @@ public class BulletStats
     public void Reset(BulletData data, Enemy target)
     {
         this.target = target;
-        targetPos = target.transform.position;
+        targetFirstPos = target.transform.position;
         moveSpeed = data.moveSpeed;
         damage = data.damage;
+    }
+
+    public void UpdateEnemyLastPos()
+    {
+        if (target != null && !target.HealthController.IsDead)
+        {
+            targetLastPosBeforeDeath = target.transform.position;
+        }
     }
 }
 

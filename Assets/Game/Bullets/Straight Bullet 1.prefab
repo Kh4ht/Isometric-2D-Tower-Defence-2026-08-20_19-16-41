@@ -152,12 +152,12 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 1}
+  m_Offset: {x: -0.025242984, y: 0.035340235}
+  m_Size: {x: 0.21241796, y: 0.24270937}
   m_Direction: 0
 --- !u!114 &3740725963369276305
 MonoBehaviour:
@@ -175,4 +175,5 @@ MonoBehaviour:
     targetPos: {x: 0, y: 0}
     moveSpeed: 0
     target: {fileID: 0}
+    damage: 0
   data: {fileID: 11400000, guid: ea2b2342b12f647298d16412920e10c6, type: 2}

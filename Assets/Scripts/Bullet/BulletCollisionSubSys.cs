@@ -1,14 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using KH;
-using MyHelper;
-using UnityEngine;
 
 public class BulletCollisionSubSys : IKHSubsystem
 {
     #region FIELDS
 
     private readonly Bullet owner;
+
+    private bool targetIsDead = false;
 
     #endregion
     #region CONSTRUCTOR
@@ -21,21 +19,45 @@ public class BulletCollisionSubSys : IKHSubsystem
     #endregion
     #region UNITY EVENTS
 
-    public void IOnTriggerEnter2D(Collider2D collision)
+    public void IUpdate()
     {
-        if (collision.CompareTag(GameTags.ENEMY))
-        {
-            if (collision.TryGetComponent<Enemy>(out var enemy))
-            {
-                // Apply damage to the enemy
-                enemy.HealthController.Health -= owner.stats.damage;
+        CheckTargetReached();
+    }
 
-                // Destroy the bullet after hitting the enemy
-                KHPoolManager.Ins.Despawn(owner.data.ID, owner);
+    #endregion
+    #region PRIVATE
+
+    private void CheckTargetReached()
+    {
+        if (!targetIsDead && (owner.stats.target == null || owner.stats.target.HealthController.IsDead))
+            targetIsDead = true;
+
+        if (targetIsDead)
+        {
+            if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.stats.targetLastPosBeforeDeath, GameConsts.COMPARISON_DIS_1))
+            {
+                OnBulletCollided(owner.stats.target);
             }
-            else
-                Debug.LogWarning("Enemy component not found on the collided object.");
         }
+        else
+        {
+            if (Kh.SqrDistanceIsLessThan(owner, owner.stats.target, GameConsts.COMPARISON_DIS_2))
+            {
+                OnBulletCollided(owner.stats.target);
+            }
+        }
+    }
+
+    private void OnBulletCollided(Enemy enemy)
+    {
+        if (enemy != null)
+        {
+            // Apply damage to the enemy
+            enemy.HealthController.Health -= owner.stats.damage;
+        }
+
+        // Destroy the bullet after hitting the enemy
+        KHPoolManager.Ins.Despawn(owner.data.ID, owner);
     }
 
     #endregion
@@ -43,7 +65,7 @@ public class BulletCollisionSubSys : IKHSubsystem
 
     public void IReset()
     {
-        // Nothing to reset for this subsystem
+        targetIsDead = false;
     }
 
     #endregion

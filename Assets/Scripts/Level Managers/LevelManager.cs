@@ -1,7 +1,6 @@
 using KH;
 using PrimeTween;
 using UnityEngine;
-using UnityEngine.UI;
 using VInspector;
 
 [DisallowMultipleComponent]

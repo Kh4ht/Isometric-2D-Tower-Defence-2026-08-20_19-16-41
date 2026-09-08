@@ -15,6 +15,8 @@ public class EnemySpawningSys : KHManagedBehaviour
 
     public event Action OnFinishedSpawning;
 
+    private bool startedSpawning;
+
     // INSPECTOR
 
     [Tab("Stats")]
@@ -68,9 +70,14 @@ public class EnemySpawningSys : KHManagedBehaviour
 
     #endregion
     #region PRIVATE
+
     [Button(color = "green")]
     private void StartSpawningEnemies()
     {
+        if (startedSpawning)
+            return;
+
+        startedSpawning = true;
         StartCoroutine(SpawnWavesCoroutine());
     }
 
@@ -83,12 +90,12 @@ public class EnemySpawningSys : KHManagedBehaviour
 
             int remainingPaths = wave.enemyPaths.Count;
 
-            for (int i = 0; i < wave.enemyPaths.Count; i++)
+            for (int pathIndex = 0; pathIndex < wave.enemyPaths.Count; pathIndex++)
             {
-                EnemyPathData enemyPath = wave.enemyPaths[i];
+                EnemyPathData enemyPath = wave.enemyPaths[pathIndex];
 
                 StartCoroutine(SpawnPathCoroutine(enemyPath,
-                                                  PathSys.Ins.GetCellCenterWorld(PathSys.Ins.currentPaths[i]),
+                                                  pathIndex,
                                                   () => remainingPaths--)
                 );
             }
@@ -102,7 +109,7 @@ public class EnemySpawningSys : KHManagedBehaviour
     }
 
     private IEnumerator SpawnPathCoroutine(EnemyPathData enemyPath,
-                                           List<Vector2> path,
+                                           int pathIndex,
                                            Action onFinished)
     {
         foreach (EntryData entry in enemyPath.entries)
@@ -112,7 +119,7 @@ public class EnemySpawningSys : KHManagedBehaviour
 
             for (int i = 0; i < entry.repeatCount; i++)
             {
-                SpawnEnemy(entry.enemyData, path);
+                SpawnEnemy(entry.enemyData, pathIndex);
 
                 if (i < entry.repeatCount - 1 &&
                     entry.repeatDelay > 0f)
@@ -125,9 +132,13 @@ public class EnemySpawningSys : KHManagedBehaviour
         onFinished?.Invoke();
     }
 
-    private void SpawnEnemy(EnemyData enemyData, List<Vector2> path)
+    private void SpawnEnemy(EnemyData enemyData, int pathIndex)
     {
-        KHPoolManager.Ins.Spawn<Enemy>(enemyData.ID, path[0]).ResetEnemy(enemyData, path);
+        List<Vector2> path = PathSys.Ins.GetPath(pathIndex);
+
+        Vector2 spawnPos = path[0];
+
+        KHPoolManager.Ins.Spawn<Enemy>(enemyData.ID, spawnPos).ResetEnemy(enemyData, path, pathIndex);
     }
 
     private void RegisterEnemiesToPool()

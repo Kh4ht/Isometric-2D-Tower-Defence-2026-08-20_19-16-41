@@ -126,9 +126,9 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     #endregion
     #region PUBLIC
 
-    public void ResetEnemy(EnemyData enemyData, List<Vector2> path)
+    public void ResetEnemy(EnemyData enemyData, List<Vector2> path, int selectedPathIndex)
     {
-        stats.Reset(enemyData, path);
+        stats.Reset(enemyData, path, selectedPathIndex);
 
         HealthController?.Revive();
 
@@ -155,11 +155,12 @@ public class EnemyStats
 {
     public bool reachedVillageArea = false;
     public Vector2 moveDir = Vector2.zero;
-    public int pathIndex = 1; // Start from 1 because enemy spawns on path[pathIndex = 0]
+    public int reachedPathIndex = 1; // Start from 1 because enemy spawns on path[pathIndex = 0]
 
     // Requires Initialization
     public float moveSpeed;
     public List<Vector2> path = new();
+    public int selectedPath;
 
     // CONSTRUCTOR
     public EnemyStats(EnemyData enemyData)
@@ -173,12 +174,13 @@ public class EnemyStats
         reachedVillageArea = true;
     }
 
-    public void Reset(EnemyData enemyData, List<Vector2> newPath)
+    public void Reset(EnemyData enemyData, List<Vector2> newPath, int selectedPathIndex)
     {
         reachedVillageArea = false;
         moveSpeed = enemyData.defaultMoveSpeed;
         path = new(newPath);
-        pathIndex = 1;
+        this.selectedPath = selectedPathIndex;
+        reachedPathIndex = 1;
     }
 }
 

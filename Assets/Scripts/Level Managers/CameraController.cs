@@ -28,7 +28,6 @@ public class CameraController : KHManagedBehaviour, IKHManagedUpdate
     [SerializeField] private float zoomSpeed = 1f;
     [SerializeField] private float minZoom = 2f;
     [SerializeField] private float maxZoom = 20f;
-    [SerializeField] private bool zoomTowardCursor = true;
 
     [Space(30), Header("Other Settings")]
     [SerializeField] private float lerpSpeed = 1f;
@@ -77,13 +76,13 @@ public class CameraController : KHManagedBehaviour, IKHManagedUpdate
         if (IsCamSizeGreaterThanConstraintsSize)
             return;
 
-        if (Mouse.current.rightButton.wasPressedThisFrame)
+        if (Mouse.current.rightButton.wasPressedThisFrame || Mouse.current.middleButton.wasPressedThisFrame)
         {
             isDragging = true;
             lastMouseWorldPos = Kh.GetMouseWorldPos();
         }
 
-        if (Mouse.current.rightButton.wasReleasedThisFrame)
+        if (Mouse.current.rightButton.wasReleasedThisFrame || Mouse.current.middleButton.wasReleasedThisFrame)
         {
             isDragging = false;
         }
@@ -108,12 +107,12 @@ public class CameraController : KHManagedBehaviour, IKHManagedUpdate
         if (Mathf.Approximately(scrollInput, 0f))
             return;
 
-        Vector3 mouseWorldPosBefore = zoomTowardCursor ? Kh.GetMouseWorldPos() : Vector3.zero;
+        Vector3 mouseWorldPosBefore = Kh.GetMouseWorldPos();
 
         float newSize = camera.orthographicSize - scrollInput * zoomSpeed;
         camera.orthographicSize = Mathf.Clamp(newSize, minZoom, maxZoom);
 
-        if (zoomTowardCursor)
+        if (!IsCamSizeGreaterThanConstraintsSize)
         {
             Vector3 mouseWorldPosAfter = Kh.GetMouseWorldPos();
             Vector3 delta = mouseWorldPosBefore - mouseWorldPosAfter;

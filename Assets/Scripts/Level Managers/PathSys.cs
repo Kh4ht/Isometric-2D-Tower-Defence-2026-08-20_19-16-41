@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MyClasses;
 using MyHelper;
 using UnityEngine;
@@ -179,6 +180,11 @@ public class PathSys : KHManagedBehaviour
         }
 
         return result;
+    }
+
+    public List<Vector2> GetPath(int index)
+    {
+        return GetCellCenterWorld(currentPaths[index]);
     }
 
     public Vector3Int WorldToCell(Vector2 cell)
@@ -367,14 +373,44 @@ public class PathSys : KHManagedBehaviour
 
         currentPaths.Clear();
 
-        foreach (Vector2Int pos in data.pathStartCells)
+        foreach (Vector2Int startPos in data.pathStartCells)
         {
-            List<Vector2Int> currentPath = FindPathAlgorithm(pos,
-                                                             data.pathTargetCell);
-
-            currentPaths.Add(currentPath);
+            currentPaths.Add(FindPathAlgorithm(startPos, data.pathTargetCell));
         }
 
+        // Update The Alive Enemy path
+        foreach (Enemy enemy in Helper.GetAllAliveEnemies())
+        {
+            int reachedPathIndex = enemy.stats.reachedPathIndex;
+            List<Vector2> oldEnemyPath = enemy.stats.path;
+            int selectedPath = enemy.stats.selectedPath;
+            List<Vector2> newPath = GetPath(selectedPath);
+
+            int oldRemainingCount = oldEnemyPath.Count - reachedPathIndex;
+            List<Vector2> oldSuffix = oldEnemyPath.GetRange(reachedPathIndex, oldRemainingCount);
+
+            bool unaffected = false;
+
+            if (newPath.Count >= oldRemainingCount)
+            {
+                List<Vector2> newSuffix = newPath.GetRange(newPath.Count - oldRemainingCount, oldRemainingCount);
+                unaffected = oldSuffix.SequenceEqual(newSuffix);
+            }
+
+            if (unaffected)
+            {
+                // Same remaining route, just shifted — realign the index, don't teleport progress.
+                enemy.stats.reachedPathIndex = newPath.Count - oldRemainingCount;
+            }
+            else
+            {
+                // The tower changed the route the enemy still has to walk.
+                // Decide your desired behavior here (e.g. re-path from current world position,
+                // snap to nearest cell on newPath, etc.) — this is a design decision, not a bug fix.
+            }
+
+            enemy.stats.path = newPath;
+        }
         DrawPaths();
     }
 

@@ -151,7 +151,7 @@ namespace MyHelper
         /// <summary>
         /// Gets all currently active enemies from the pool manager.
         /// </summary>
-        public static IEnumerable<Enemy> GetAllEnemies()
+        public static IEnumerable<Enemy> GetAllAliveEnemies()
         {
             return KHPoolManager.Ins.GetAllActive<Enemy>();
         }
@@ -166,7 +166,7 @@ namespace MyHelper
             Enemy firstEnemy = null;
 
             foreach (Enemy enemy in enemies)
-                if (firstEnemy == null || enemy.stats.pathIndex > firstEnemy.stats.pathIndex)
+                if (firstEnemy == null || enemy.stats.reachedPathIndex > firstEnemy.stats.reachedPathIndex)
                     firstEnemy = enemy;
 
             return firstEnemy;
@@ -178,7 +178,7 @@ namespace MyHelper
         /// <returns>The active enemy with the highest path index, or <see langword="null"/> if no enemies are active.</returns>
         public static Enemy GetFirstEnemy()
         {
-            return GetFirstEnemy(GetAllEnemies());
+            return GetFirstEnemy(GetAllAliveEnemies());
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace MyHelper
             Enemy lastEnemy = null;
 
             foreach (Enemy enemy in enemies)
-                if (lastEnemy == null || enemy.stats.pathIndex < lastEnemy.stats.pathIndex)
+                if (lastEnemy == null || enemy.stats.reachedPathIndex < lastEnemy.stats.reachedPathIndex)
                     lastEnemy = enemy;
 
             return lastEnemy;
@@ -203,7 +203,7 @@ namespace MyHelper
         /// <returns>The active enemy with the lowest path index, or <see langword="null"/> if no enemies are active.</returns>
         public static Enemy GetLastEnemy()
         {
-            return GetLastEnemy(GetAllEnemies());
+            return GetLastEnemy(GetAllAliveEnemies());
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace MyHelper
         /// <returns>The active enemy with the lowest health, or <see langword="null"/> if no enemies are active.</returns>
         public static Enemy GetWeakestEnemy()
         {
-            return GetWeakestEnemy(GetAllEnemies());
+            return GetWeakestEnemy(GetAllAliveEnemies());
         }
 
         /// <summary>
@@ -253,7 +253,7 @@ namespace MyHelper
         /// <returns>The active enemy with the highest health, or <see langword="null"/> if no enemies are active.</returns>
         public static Enemy GetStrongestEnemy()
         {
-            return GetStrongestEnemy(GetAllEnemies());
+            return GetStrongestEnemy(GetAllAliveEnemies());
         }
 
         #endregion

@@ -11,8 +11,42 @@ namespace MyClasses
     [Serializable]
     public class MouseHoverShadow
     {
+        public enum ShadowColor
+        {
+            Red,
+            Green,
+            GreenSelected,
+        }
+
         public GameObject shadow;
-        public SpriteRenderer spriteRenderer;
+        private SpriteRenderer spriteRenderer;
+
+        public static void SetColors(List<MouseHoverShadow> shadowColors, ShadowColor shadowColor)
+        {
+            foreach (var shadow in shadowColors)
+                shadow.SetColor(shadowColor);
+        }
+
+        public void SetColor(ShadowColor shadowColor)
+        {
+            if (spriteRenderer == null)
+                spriteRenderer = shadow.GetComponent<SpriteRenderer>();
+
+            switch (shadowColor)
+            {
+                case ShadowColor.Red:
+                    spriteRenderer.color = new Color(1f, 0f, 0f, 0.15f);
+                    break;
+
+                case ShadowColor.Green:
+                    spriteRenderer.color = new Color(0f, 1f, 0f, 0.15f);
+                    break;
+
+                case ShadowColor.GreenSelected:
+                    spriteRenderer.color = new Color(0f, 1f, 0f, 0.25f);
+                    break;
+            }
+        }
     }
 
     #endregion

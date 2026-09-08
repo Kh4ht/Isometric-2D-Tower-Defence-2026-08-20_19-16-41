@@ -1,5 +1,4 @@
 using KH;
-using UnityEngine;
 
 public class EnemyHealthSubSys : IKHSubsystem
 {

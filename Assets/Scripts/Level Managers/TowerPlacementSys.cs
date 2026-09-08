@@ -87,6 +87,8 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         }
 
         selectedCells.ToggleSelect(hoveredCells, horizontalTowersContainer);
+        if (selectedCells.selected)
+            MouseHoverShadow.SetColors(mouseHoverShadow, MouseHoverShadow.ShadowColor.GreenSelected);
     }
 
     private void DrawMouseHoverShadow(List<Vector2Int> hoveredCells)
@@ -96,9 +98,10 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
             mouseHoverShadow[i].shadow.SetActive(true);
             mouseHoverShadow[i].shadow.transform.position = PathSys.Ins.GetCellCenterWorld(hoveredCells[i]);
 
-            mouseHoverShadow[i].spriteRenderer.color = PathSys.Ins.ValidateTowerPlacementCell(hoveredCells[i])
-                ? new Color(0f, 1f, 0f, 0.2f)
-                : new Color(1f, 0f, 0f, 0.2f);
+            if (PathSys.Ins.ValidateTowerPlacementCell(hoveredCells[i]))
+                mouseHoverShadow[i].SetColor(MouseHoverShadow.ShadowColor.Green);
+            else
+                mouseHoverShadow[i].SetColor(MouseHoverShadow.ShadowColor.Red);
         }
     }
 

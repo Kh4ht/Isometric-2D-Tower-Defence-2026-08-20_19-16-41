@@ -1,4 +1,3 @@
-using KH;
 using UnityEngine;
 
 public class UIController : KHUIController

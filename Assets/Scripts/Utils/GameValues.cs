@@ -4,6 +4,8 @@ public static class GameConsts
 {
     public const int GIZMO_SEGMENTS = 32;
     public const float ISO_Y_SCALE = 0.5f;
+    public const float COMPARISON_DIS_1 = 0.25f;
+    public const float COMPARISON_DIS_2 = 0.5f;
 }
 
 #endregion
