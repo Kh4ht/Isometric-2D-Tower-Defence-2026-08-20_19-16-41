@@ -38,6 +38,20 @@ public class PathSys : KHManagedBehaviour
     public readonly List<List<Vector2Int>> currentPaths = new();
     private List<List<Vector2Int>> oldPaths = new();
 
+    // GETTERS
+    public int GetDifferenceFromShortestPath(int pathIndex)
+    {
+        int shortestPathCount = int.MaxValue;
+
+        foreach (List<Vector2Int> path in currentPaths)
+        {
+            if (path.Count < shortestPathCount)
+                shortestPathCount = path.Count;
+        }
+
+        return currentPaths[pathIndex].Count - shortestPathCount;
+    }
+
     private static readonly Vector2Int[] Directions =
     {
         Vector2Int.up,
@@ -340,7 +354,7 @@ public class PathSys : KHManagedBehaviour
     #region PRIVATE
 
 #if UNITY_EDITOR
-    [Button, Foldout("EDITOR TOOLS")]
+    [Button(color = "green"), Foldout("EDITOR TOOLS")]
     private void AutoDrawTiles()
     {
         BuildGrid();
@@ -381,9 +395,9 @@ public class PathSys : KHManagedBehaviour
         // Update The Alive Enemy path
         foreach (Enemy enemy in Helper.GetAllAliveEnemies())
         {
-            int reachedPathIndex = enemy.stats.reachedPathIndex;
+            int reachedPathIndex = enemy.stats.nextPathPointIndex;
             List<Vector2> oldEnemyPath = enemy.stats.path;
-            int selectedPath = enemy.stats.selectedPath;
+            int selectedPath = enemy.stats.pathIndex;
             List<Vector2> newPath = GetPath(selectedPath);
 
             int oldRemainingCount = oldEnemyPath.Count - reachedPathIndex;
@@ -400,7 +414,7 @@ public class PathSys : KHManagedBehaviour
             if (unaffected)
             {
                 // Same remaining route, just shifted — realign the index, don't teleport progress.
-                enemy.stats.reachedPathIndex = newPath.Count - oldRemainingCount;
+                enemy.stats.nextPathPointIndex = newPath.Count - oldRemainingCount;
             }
             else
             {

@@ -77,6 +77,12 @@ public class EnemySpawningSys : KHManagedBehaviour
         if (startedSpawning)
             return;
 
+        if (!Application.isPlaying)
+        {
+            Debug.Log("Play Mode Only");
+            return;
+        }
+
         startedSpawning = true;
         StartCoroutine(SpawnWavesCoroutine());
     }

@@ -162,12 +162,32 @@ namespace MyHelper
         /// <param name="enemies">The enemies to search.</param>
         /// <returns>The enemy with the highest path index, or <see langword="null"/> if the collection is empty.</returns>
         public static Enemy GetFirstEnemy(this IEnumerable<Enemy> enemies)
-        { // TODO: return the enemy with closest distance to the highest path index.
+        {
             Enemy firstEnemy = null;
+            float closestSqrDis = float.MaxValue;
 
             foreach (Enemy enemy in enemies)
-                if (firstEnemy == null || enemy.stats.reachedPathIndex > firstEnemy.stats.reachedPathIndex)
+            {
+                if (firstEnemy == null || enemy.stats.GlobalNextPathPointIndex > firstEnemy.stats.GlobalNextPathPointIndex)
+                {
+                    Vector2 nextPathPointIndexPos = enemy.stats.path[enemy.stats.nextPathPointIndex];
+
                     firstEnemy = enemy;
+                    closestSqrDis = Kh.GetSqrDistance(enemy.transform.position, nextPathPointIndexPos);
+                    continue;
+                }
+
+                if (enemy.stats.GlobalNextPathPointIndex == firstEnemy.stats.GlobalNextPathPointIndex)
+                {
+                    Vector2 nextPathIndexPos = enemy.stats.path[enemy.stats.nextPathPointIndex];
+
+                    if (Kh.SqrDistanceIsLessThan(enemy.transform.position, nextPathIndexPos, closestSqrDis, out float sqrDis))
+                    {
+                        firstEnemy = enemy;
+                        closestSqrDis = sqrDis;
+                    }
+                }
+            }
 
             return firstEnemy;
         }
@@ -191,7 +211,7 @@ namespace MyHelper
             Enemy lastEnemy = null;
 
             foreach (Enemy enemy in enemies)
-                if (lastEnemy == null || enemy.stats.reachedPathIndex < lastEnemy.stats.reachedPathIndex)
+                if (lastEnemy == null || enemy.stats.nextPathPointIndex < lastEnemy.stats.nextPathPointIndex)
                     lastEnemy = enemy;
 
             return lastEnemy;

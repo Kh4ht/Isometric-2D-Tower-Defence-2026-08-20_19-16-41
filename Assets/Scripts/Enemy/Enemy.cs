@@ -105,16 +105,16 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     #endregion
     #region PRIVATE
 
-    [Button]
-    private void DamageEnemy10()
+# if UNITY_EDITOR
+    [Button(color = "green")]
+    private void DamageEnemy(int damageAmount)
     {
-        HealthController.RemoveHealth(10);
+        if (!Application.isPlaying)
+            return;
+
+        HealthController.RemoveHealth(damageAmount);
     }
-    [Button]
-    private void DamageEnemy50()
-    {
-        HealthController.RemoveHealth(50);
-    }
+#endif
 
     private void KidnapVillagerAndEndMission(Villager villager)
     {
@@ -135,15 +135,9 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
         kHSubSystems.ResetAll();
     }
 
-    public void OnSpawn()
-    {
+    public void OnSpawn() { }
 
-    }
-
-    public void OnDespawn()
-    {
-
-    }
+    public void OnDespawn() { }
 
     #endregion
 }
@@ -155,12 +149,13 @@ public class EnemyStats
 {
     public bool reachedVillageArea = false;
     public Vector2 moveDir = Vector2.zero;
-    public int reachedPathIndex = 1; // Start from 1 because enemy spawns on path[pathIndex = 0]
+    public int nextPathPointIndex = 1; // Start from 1 because enemy spawns on path[pathIndex = 0]
+    public int GlobalNextPathPointIndex => nextPathPointIndex - PathSys.Ins.GetDifferenceFromShortestPath(pathIndex);
 
     // Requires Initialization
     public float moveSpeed;
     public List<Vector2> path = new();
-    public int selectedPath;
+    public int pathIndex;
 
     // CONSTRUCTOR
     public EnemyStats(EnemyData enemyData)
@@ -179,8 +174,8 @@ public class EnemyStats
         reachedVillageArea = false;
         moveSpeed = enemyData.defaultMoveSpeed;
         path = new(newPath);
-        this.selectedPath = selectedPathIndex;
-        reachedPathIndex = 1;
+        this.pathIndex = selectedPathIndex;
+        nextPathPointIndex = 1;
     }
 }
 
