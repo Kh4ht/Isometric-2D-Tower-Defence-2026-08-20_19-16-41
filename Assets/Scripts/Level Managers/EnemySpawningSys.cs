@@ -71,17 +71,13 @@ public class EnemySpawningSys : KHManagedBehaviour
     #endregion
     #region PRIVATE
 
+    private bool NotPlayMode => !Application.isPlaying;
+    [DisableIf(nameof(NotPlayMode))]
     [Button(color = "green")]
     private void StartSpawningEnemies()
     {
         if (startedSpawning)
             return;
-
-        if (!Application.isPlaying)
-        {
-            Debug.Log("Play Mode Only");
-            return;
-        }
 
         startedSpawning = true;
         StartCoroutine(SpawnWavesCoroutine());

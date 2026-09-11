@@ -52,7 +52,7 @@ public class EnemyMovementSubSys : IKHSubsystem
 
     public void FollowPath()
     {
-        if (Kh.SqrDistanceIsLessThan(owner.stats.path[owner.stats.nextPathPointIndex], owner.transform.position, 0.1f))
+        if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.stats.NextPathPointPos, 0.1f))
         {
             if (owner.stats.nextPathPointIndex + 1 < owner.stats.path.Count)
                 owner.stats.nextPathPointIndex++;

@@ -8,8 +8,8 @@ public class DoubleSliders : KHManagedBehaviour
     #region FIELDS
 
     private const int MAX_ADDITIONAL_WIDTH = 200;
-    private const float WHITE_DELAY = 0.5f;
-    private const float WHITE_DURATION = 0.5f;
+    private const float WHITE_DELAY = 0.4f;
+    private const float WHITE_DURATION = 0.4f;
 
     private RectTransform rectTransform;
     private float originalWidth;
@@ -48,7 +48,7 @@ public class DoubleSliders : KHManagedBehaviour
         if (whiteTween.isAlive)
             whiteTween.Stop();
 
-        Tween.Custom(startValue: secondaryWhite.value,
+        whiteTween = Tween.Custom(startValue: secondaryWhite.value,
                      endValue: targetValue,
                      duration: WHITE_DURATION,
                      onValueChange: newVal => secondaryWhite.value = newVal,

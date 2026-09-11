@@ -8,7 +8,8 @@ namespace MyHelper
 {
     public static class Helper
     {
-        #region offsets
+        #region FIELDS
+
         private static Vector2Int[] offsets =
         {
             new(0, 0),
@@ -146,7 +147,7 @@ namespace MyHelper
         }
 
         #endregion
-        #region Enemy Queries
+        #region ENEMY QUERIES
 
         /// <summary>
         /// Gets all currently active enemies from the pool manager.
@@ -164,41 +165,27 @@ namespace MyHelper
         public static Enemy GetFirstEnemy(this IEnumerable<Enemy> enemies)
         {
             Enemy firstEnemy = null;
-            float closestSqrDis = float.MaxValue;
 
             foreach (Enemy enemy in enemies)
             {
                 if (firstEnemy == null || enemy.stats.GlobalNextPathPointIndex > firstEnemy.stats.GlobalNextPathPointIndex)
                 {
-                    Vector2 nextPathPointIndexPos = enemy.stats.path[enemy.stats.nextPathPointIndex];
-
                     firstEnemy = enemy;
-                    closestSqrDis = Kh.GetSqrDistance(enemy.transform.position, nextPathPointIndexPos);
+
                     continue;
                 }
 
                 if (enemy.stats.GlobalNextPathPointIndex == firstEnemy.stats.GlobalNextPathPointIndex)
                 {
-                    Vector2 nextPathIndexPos = enemy.stats.path[enemy.stats.nextPathPointIndex];
-
-                    if (Kh.SqrDistanceIsLessThan(enemy.transform.position, nextPathIndexPos, closestSqrDis, out float sqrDis))
+                    if (Kh.GetSqrDistance(enemy.transform.position, enemy.stats.NextPathPointPos)
+                        < Kh.GetSqrDistance(firstEnemy.transform.position, firstEnemy.stats.NextPathPointPos))
                     {
                         firstEnemy = enemy;
-                        closestSqrDis = sqrDis;
                     }
                 }
             }
 
             return firstEnemy;
-        }
-
-        /// <summary>
-        /// Gets the active enemy that has progressed the farthest along the path.
-        /// </summary>
-        /// <returns>The active enemy with the highest path index, or <see langword="null"/> if no enemies are active.</returns>
-        public static Enemy GetFirstEnemy()
-        {
-            return GetFirstEnemy(GetAllAliveEnemies());
         }
 
         /// <summary>
@@ -218,15 +205,6 @@ namespace MyHelper
         }
 
         /// <summary>
-        /// Gets the active enemy that has progressed the least along the path.
-        /// </summary>
-        /// <returns>The active enemy with the lowest path index, or <see langword="null"/> if no enemies are active.</returns>
-        public static Enemy GetLastEnemy()
-        {
-            return GetLastEnemy(GetAllAliveEnemies());
-        }
-
-        /// <summary>
         /// Gets the enemy with the lowest current health.
         /// </summary>
         /// <param name="enemies">The enemies to search.</param>
@@ -243,15 +221,6 @@ namespace MyHelper
         }
 
         /// <summary>
-        /// Gets the active enemy with the lowest current health.
-        /// </summary>
-        /// <returns>The active enemy with the lowest health, or <see langword="null"/> if no enemies are active.</returns>
-        public static Enemy GetWeakestEnemy()
-        {
-            return GetWeakestEnemy(GetAllAliveEnemies());
-        }
-
-        /// <summary>
         /// Gets the enemy with the highest current health.
         /// </summary>
         /// <param name="enemies">The enemies to search.</param>
@@ -265,15 +234,6 @@ namespace MyHelper
                     strongestEnemy = enemy;
 
             return strongestEnemy;
-        }
-
-        /// <summary>
-        /// Gets the active enemy with the highest current health.
-        /// </summary>
-        /// <returns>The active enemy with the highest health, or <see langword="null"/> if no enemies are active.</returns>
-        public static Enemy GetStrongestEnemy()
-        {
-            return GetStrongestEnemy(GetAllAliveEnemies());
         }
 
         #endregion

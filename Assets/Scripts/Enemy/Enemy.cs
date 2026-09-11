@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using KH;
+using MyHelper;
 using UnityEngine;
 using VInspector;
 
@@ -22,15 +23,13 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
 
     // INSPECTOR
 
-    [Tab("OTHER")]
-
-    public DoubleSliders healthSlider;
-
-    [Header("DATA")]
-    public EnemyData data;
-
     [Tab("STATS")]
     public EnemyStats stats;
+
+    [Tab("DATA")]
+
+    public DoubleSliders healthSlider;
+    public EnemyData data;
 
     #endregion
     #region UNITY EVENTS
@@ -102,16 +101,21 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
         }
     }
 
+    private void OnDrawGizmosSelected()
+    {
+        Debug.Log(stats.GlobalNextPathPointIndex);
+        Debug.Log(Kh.GetSqrDistance(transform.position, stats.NextPathPointPos));
+    }
+
     #endregion
     #region PRIVATE
 
-# if UNITY_EDITOR
+#if UNITY_EDITOR
+    private bool NotPlayMode => !Application.isPlaying;
+    [DisableIf(nameof(NotPlayMode))]
     [Button(color = "green")]
     private void DamageEnemy(int damageAmount)
     {
-        if (!Application.isPlaying)
-            return;
-
         HealthController.RemoveHealth(damageAmount);
     }
 #endif
@@ -150,12 +154,15 @@ public class EnemyStats
     public bool reachedVillageArea = false;
     public Vector2 moveDir = Vector2.zero;
     public int nextPathPointIndex = 1; // Start from 1 because enemy spawns on path[pathIndex = 0]
-    public int GlobalNextPathPointIndex => nextPathPointIndex - PathSys.Ins.GetDifferenceFromShortestPath(pathIndex);
 
     // Requires Initialization
     public float moveSpeed;
     public List<Vector2> path = new();
     public int pathIndex;
+
+    // GETTERS
+    public Vector2 NextPathPointPos => path[nextPathPointIndex];
+    public int GlobalNextPathPointIndex => nextPathPointIndex - PathSys.Ins.GetDifferenceFromShortestPath(pathIndex);
 
     // CONSTRUCTOR
     public EnemyStats(EnemyData enemyData)

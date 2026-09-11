@@ -106,6 +106,24 @@ public class PathSys : KHManagedBehaviour
 
         DrawWalkableGridGizmos();
 
+        DrawPaths();
+
+        void DrawPaths()
+        {
+            if (!Application.isPlaying)
+                return;
+
+            Gizmos.color = Color.darkBlue;
+
+            foreach (List<Vector2Int> path in currentPaths)
+            {
+                foreach (Vector2Int point in path)
+                {
+                    Gizmos.DrawSphere(GetCellCenterWorld(point), 0.05f);
+                }
+            }
+        }
+
         void DrawStartAndTargetGizmos()
         {
             Gizmos.color = Color.yellow;

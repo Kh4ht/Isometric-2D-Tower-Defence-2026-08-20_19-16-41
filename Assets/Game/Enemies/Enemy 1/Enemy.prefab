@@ -108,14 +108,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79db48d2250e94be49ea12e64fff0f82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  healthSlider: {fileID: 6094786419597188536}
-  data: {fileID: 11400000, guid: 426c1749f5271405ab7594a32decbe38, type: 2}
   stats:
     reachedVillageArea: 0
-    moveSpeed: 0
     moveDir: {x: 0, y: 0}
+    nextPathPointIndex: 0
+    moveSpeed: 0
     path: []
     pathIndex: 0
+  healthSlider: {fileID: 6094786419597188536}
+  data: {fileID: 11400000, guid: 426c1749f5271405ab7594a32decbe38, type: 2}
 --- !u!50 &1446768656652227769
 Rigidbody2D:
   serializedVersion: 5
