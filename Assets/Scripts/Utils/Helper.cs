@@ -176,14 +176,6 @@ namespace MyHelper
         #region ENEMY QUERIES
 
         /// <summary>
-        /// Gets all currently active enemies from the pool manager.
-        /// </summary>
-        public static IEnumerable<Enemy> GetAllAliveEnemies()
-        {
-            return KHPoolManager.Ins.GetAllActive<Enemy>();
-        }
-
-        /// <summary>
         /// Gets the enemy that has progressed the farthest along the path.
         /// </summary>
         /// <param name="enemies">The enemies to search.</param>
@@ -194,6 +186,9 @@ namespace MyHelper
 
             foreach (Enemy enemy in enemies)
             {
+                if (enemy.HealthController.IsDead)
+                    continue;
+
                 if (firstEnemy == null || enemy.stats.GlobalNextPathPointIndex > firstEnemy.stats.GlobalNextPathPointIndex)
                 {
                     firstEnemy = enemy;
@@ -225,6 +220,9 @@ namespace MyHelper
 
             foreach (Enemy enemy in enemies)
             {
+                if (enemy.HealthController.IsDead)
+                    continue;
+
                 if (lastEnemy == null || enemy.stats.GlobalNextPathPointIndex < lastEnemy.stats.GlobalNextPathPointIndex)
                 {
                     lastEnemy = enemy;
@@ -255,8 +253,13 @@ namespace MyHelper
             Enemy weakestEnemy = null;
 
             foreach (Enemy enemy in enemies)
+            {
+                if (enemy.HealthController.IsDead)
+                    continue;
+
                 if (weakestEnemy == null || enemy.HealthController.Health < weakestEnemy.HealthController.Health)
                     weakestEnemy = enemy;
+            }
 
             return weakestEnemy;
         }
@@ -271,8 +274,13 @@ namespace MyHelper
             Enemy strongestEnemy = null;
 
             foreach (Enemy enemy in enemies)
+            {
+                if (enemy.HealthController.IsDead)
+                    continue;
+
                 if (strongestEnemy == null || enemy.HealthController.Health > strongestEnemy.HealthController.Health)
                     strongestEnemy = enemy;
+            }
 
             return strongestEnemy;
         }

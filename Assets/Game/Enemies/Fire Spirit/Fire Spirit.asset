@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   id: Enemy_1__daX0a|-y
   prefab: {fileID: 5824658875397701318, guid: b1dce4e538c2642dda8136fa72700442, type: 3}
-  icon: {fileID: -7148362386118995623, guid: 953fbba385fac4f74b05cf6732cb5778, type: 3}
+  icon: {fileID: -4781564405865503225, guid: 5526c89977dc2416d8329e2d91ba1476, type: 3}
   defaultMaxHealth: 100
   defaultMoveSpeed: 0.6

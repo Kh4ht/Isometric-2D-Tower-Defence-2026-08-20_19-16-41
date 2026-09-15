@@ -54,7 +54,7 @@ public class TowerShootingSubSys : IKHSubsystem
 
         List<Enemy> enemiesInRange = new();
 
-        foreach (Enemy enemy in Helper.GetAllAliveEnemies())
+        foreach (Enemy enemy in KHPoolManager.Ins.GetAllActive<Enemy>())
         {
             if (enemy.IsWithinRange(owner.transform.position, owner.stats.range))
                 enemiesInRange.Add(enemy);

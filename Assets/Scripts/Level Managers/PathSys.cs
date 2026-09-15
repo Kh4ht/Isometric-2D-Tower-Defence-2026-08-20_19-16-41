@@ -244,7 +244,7 @@ public class PathSys : KHManagedBehaviour
         }
 
         // Update The Alive Enemy path
-        foreach (Enemy enemy in Helper.GetAllAliveEnemies())
+        foreach (Enemy enemy in KHPoolManager.Ins.GetAllActive<Enemy>())
         {
             int reachedPathIndex = enemy.stats.nextPathPointIndex;
             List<Vector2> oldEnemyPath = enemy.stats.path;

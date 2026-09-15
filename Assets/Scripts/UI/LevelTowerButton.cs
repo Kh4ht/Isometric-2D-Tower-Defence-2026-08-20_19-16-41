@@ -22,7 +22,7 @@ public class LevelTowerButton : KHManagedBehaviour
     private Button button;
 
 
-    public Type type;
+    public Type type = Type.Buy;
 
     [HideInInspector]
     public TowerData towerData;

@@ -20,11 +20,11 @@ public class LevelTowerContainer : UIController
 
         SaveData saveData = KHSaveSystem.Load<SaveData>();
 
-        foreach (string towerId in saveData.selectedTowerIDs)
+        foreach (TowerData td in saveData.GetSelectedTowerDatas())
         {
             LevelTowerButton levelTowerButton = Instantiate(levelTowerButtonPrefab, transform);
 
-            levelTowerButton.towerData = DB.GetTowerDataById(towerId); ;
+            levelTowerButton.towerData = td;
 
             levelTowerButtons.Add(levelTowerButton);
         }

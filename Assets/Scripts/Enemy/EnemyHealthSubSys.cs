@@ -1,4 +1,5 @@
 using KH;
+using PrimeTween;
 
 public class EnemyHealthSubSys : IKHSubsystem
 {
@@ -68,7 +69,10 @@ public class EnemyHealthSubSys : IKHSubsystem
 
         // TODO: Add animations & effects.
 
-        KHPoolManager.Ins.Despawn(owner.data.ID, owner);
+        Tween.Delay(4, () =>
+        {
+            KHPoolManager.Ins.Despawn(owner.data.ID, owner);
+        });
     }
 
     private void OnRevive()

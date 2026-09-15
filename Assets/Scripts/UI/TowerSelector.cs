@@ -29,8 +29,7 @@ public class TowerSelector : KHManagedBehaviour
     {
         SaveData saveData = KHSaveSystem.Load<SaveData>();
 
-        saveData.selectedTowerIDs.Clear();
-        saveData.selectedTowerIDs.Add(towerData.ID);
+        saveData.SelectTower(towerData.ID);
 
         KHSaveSystem.Save(saveData);
     }

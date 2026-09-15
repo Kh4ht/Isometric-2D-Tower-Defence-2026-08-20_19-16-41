@@ -49,7 +49,6 @@ public class KHSaveDataWindow : EditorWindow
 
         DrawSelectedTowers();
         DrawUnlockedTowers();
-        DrawMaxHeldTowerCount();
 
         EditorGUILayout.Space(15);
 
@@ -67,8 +66,8 @@ public class KHSaveDataWindow : EditorWindow
             EditorStyles.boldLabel
         );
 
-        if (saveData.selectedTowerIDs == null ||
-            saveData.selectedTowerIDs.Count == 0)
+        if (saveData.SelectedTowerIDs == null ||
+            saveData.SelectedTowerIDs.Count == 0)
         {
             EditorGUILayout.HelpBox(
                 "No selected towers.",
@@ -78,10 +77,10 @@ public class KHSaveDataWindow : EditorWindow
             return;
         }
 
-        for (int i = 0; i < saveData.selectedTowerIDs.Count; i++)
+        for (int i = 0; i < saveData.SelectedTowerIDs.Count; i++)
         {
             EditorGUILayout.LabelField(
-                $"{i}: {saveData.selectedTowerIDs[i]}"
+                $"{i}: {saveData.SelectedTowerIDs[i]}"
             );
         }
     }
@@ -95,8 +94,8 @@ public class KHSaveDataWindow : EditorWindow
             EditorStyles.boldLabel
         );
 
-        if (saveData.unlockedTowers == null ||
-            saveData.unlockedTowers.Count == 0)
+        if (saveData.UnlockedTowers == null ||
+            saveData.UnlockedTowers.Count == 0)
         {
             EditorGUILayout.HelpBox(
                 "No unlocked towers.",
@@ -106,28 +105,15 @@ public class KHSaveDataWindow : EditorWindow
             return;
         }
 
-        for (int i = 0; i < saveData.unlockedTowers.Count; i++)
+        for (int i = 0; i < saveData.UnlockedTowers.Count; i++)
         {
             EditorGUILayout.LabelField(
-                $"{i}: {saveData.unlockedTowers[i]}"
+                $"{i}: {saveData.UnlockedTowers[i]}"
             );
         }
     }
 
-    private void DrawMaxHeldTowerCount()
-    {
-        EditorGUILayout.Space(10);
 
-        EditorGUILayout.LabelField(
-            "Max Held Tower Count",
-            EditorStyles.boldLabel
-        );
-
-        saveData.maxSelectedTowersCount =
-            EditorGUILayout.IntField(
-                saveData.maxSelectedTowersCount
-            );
-    }
 
     private void LoadSaveData()
     {

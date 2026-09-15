@@ -6,7 +6,7 @@ using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(AudioSource), typeof(SpriteRenderer))]
-public class Tower : KHManagedBehaviour, IKHManagedUpdate
+public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 {
     #region FIELDS
 
@@ -168,8 +168,12 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate
 
         // TODO: Get Money.
 
-        Destroy(gameObject);
+        KHPoolManager.Ins.Despawn(data.ID, this);
     }
+
+    public void OnSpawn() { }
+
+    public void OnDespawn() { }
 
     #endregion
 }

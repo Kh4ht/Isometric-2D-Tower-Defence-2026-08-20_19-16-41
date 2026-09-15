@@ -17,37 +17,6 @@ public class SelectedCells
 
     #endregion
     #region PUBLIC
-
-    public bool IsHoveringSameTower(out Tower tower)
-    {
-        Tower t = null;
-
-        foreach (var cell in hoveredCells)
-        {
-            if (!PathSys.Ins.gameGrid.GetNode(cell).IsBlocked || PathSys.Ins.gameGrid.GetNode(cell).Tower == null)
-            {
-                tower = null;
-                return false;
-            }
-
-            if (t == null)
-            {
-                t = PathSys.Ins.gameGrid.GetNode(cell).Tower;
-                continue;
-            }
-
-            if (PathSys.Ins.gameGrid.GetNode(cell).Tower != t)
-            {
-                tower = null;
-                return false;
-            }
-        }
-
-
-        tower = t;
-        return true;
-    }
-
     public void Deselect()
     {
         Selected = false;

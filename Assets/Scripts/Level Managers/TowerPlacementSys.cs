@@ -5,6 +5,7 @@ using KH;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VInspector;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// Manages the tower placement workflow, including hover previews, selection,
@@ -39,6 +40,13 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
             Debug.LogWarning("More Than One Instance");
     }
 
+    protected override void Start()
+    {
+        base.Start();
+
+        RegisterSelectedTowersToPool();
+    }
+
     public void KHUpdate()
     {
         if (LevelManager.Ins.LevelPaused)
@@ -49,6 +57,16 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 
     #endregion
     #region PRIVATE
+
+    private void RegisterSelectedTowersToPool()
+    {
+        SaveData saveD = KHSaveSystem.Load<SaveData>();
+
+        foreach (TowerData td in saveD.GetSelectedTowerDatas())
+        {
+            KHPoolManager.Ins.Register(td.ID, td.prefab);
+        }
+    }
 
     private void RunMouseAndTowerPlacementLogic()
     {
@@ -156,9 +174,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 
         Vector2 towerPos = cells.GetCenterWorld();
 
-        Instantiate(towerData.prefab,
-                    towerPos,
-                    Quaternion.identity).ResetTower(cells.selectedCells);
+        KHPoolManager.Ins.Spawn<Tower>(towerData.ID, towerPos, Quaternion.identity).ResetTower(cells.selectedCells);
     }
 
     #endregion

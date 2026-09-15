@@ -14,6 +14,9 @@ public class EnemyAnimatorSubSys : IKHSubsystem
     // bool
     private readonly int WALK = Animator.StringToHash("Walk");
 
+    // trigger 
+    private readonly int DEATH = Animator.StringToHash("Death");
+
     private bool oldCanWalk;
     private int oldDirection;
 
@@ -33,8 +36,21 @@ public class EnemyAnimatorSubSys : IKHSubsystem
         IReset();
     }
 
+    public void IOnEnable()
+    {
+
+    }
+
+    public void IOnDisable()
+    {
+        owner.HealthController.RemoveOnDeathListener(OnDeath);
+    }
+
     public void IUpdate()
     {
+        if (owner.HealthController.IsDead)
+            return;
+
         if (oldCanWalk != owner.stats.canWalk)
         {
             oldCanWalk = owner.stats.canWalk;
@@ -51,6 +67,12 @@ public class EnemyAnimatorSubSys : IKHSubsystem
     #endregion
     #region PRIVATE
 
+    private void OnDeath()
+    {
+        owner.animator.SetBool(WALK, false);
+        owner.animator.SetTrigger(DEATH);
+    }
+
     private void UpdateDirection(int newDir)
     {
         owner.animator.SetInteger(DIRECTION, newDir);
@@ -61,6 +83,8 @@ public class EnemyAnimatorSubSys : IKHSubsystem
 
     public void IReset()
     {
+        owner.HealthController.AddOnDeathListener(OnDeath);
+
         oldCanWalk = owner.stats.canWalk;
         owner.animator.SetBool(WALK, owner.stats.canWalk);
 

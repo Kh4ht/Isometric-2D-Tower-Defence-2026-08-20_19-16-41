@@ -20,7 +20,7 @@ public class EnemyMovementSubSys : IKHSubsystem
 
     public void IFixedUpdate()
     {
-        if (!owner.stats.canWalk)
+        if (!owner.stats.canWalk || owner.HealthController.IsDead)
             return;
 
         if (!owner.stats.reachedVillageArea)
