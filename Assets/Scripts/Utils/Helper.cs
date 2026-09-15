@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using KH;
-using MyClasses;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -24,10 +23,10 @@ namespace MyHelper
         public static int GetDistanceAlgorithm(GridNode a, GridNode b, int moveCost)
         {
             int xDistance =
-                Mathf.Abs(a.CellPosition.x - b.CellPosition.x);
+                Mathf.Abs(a.GetPos.x - b.GetPos.x);
 
             int yDistance =
-                Mathf.Abs(a.CellPosition.y - b.CellPosition.y);
+                Mathf.Abs(a.GetPos.y - b.GetPos.y);
 
             return (xDistance + yDistance) * moveCost;
         }
@@ -44,12 +43,12 @@ namespace MyHelper
 
             while (currentNode != startNode)
             {
-                path.Add(currentNode.CellPosition);
+                path.Add(currentNode.GetPos);
 
                 currentNode = currentNode.Parent;
             }
 
-            path.Add(startNode.CellPosition);
+            path.Add(startNode.GetPos);
 
             path.Reverse();
 
@@ -57,11 +56,17 @@ namespace MyHelper
         }
 
         #endregion
-        #region GetHoveredCells
+        #region GRID
 
-        public static IEnumerable<Vector2Int> GetHoveredCells(Tilemap tilemap,
-                                                              Vector2Int currentCell)
+        public static GridNode GetNodeMouseIsPointingAt()
         {
+            return PathSys.Ins.gameGrid.GetNode(Kh.GetMouseWorldPos());
+        }
+
+        public static IEnumerable<Vector2Int> GetHoveredCells()
+        {
+            Vector2Int currentCell = PathSys.Ins.gameGrid.WorldToCell(Kh.GetMouseWorldPos());
+
             Vector2 mouseWorldPos = Kh.GetMouseWorldPos();
 
             Vector2Int[] origins =
@@ -77,11 +82,9 @@ namespace MyHelper
 
             foreach (Vector2Int origin in origins)
             {
-                Vector2 center =
-                    GetFootprintCenter(tilemap, origin);
+                Vector2 center = GetFootprintCenter(PathSys.Ins.gameGrid.walkableTilemap, origin);
 
-                float distance =
-                    (mouseWorldPos - center).sqrMagnitude;
+                float distance = (mouseWorldPos - center).sqrMagnitude;
 
                 if (distance < closestDistance)
                 {
@@ -94,6 +97,29 @@ namespace MyHelper
             yield return closestOrigin + Vector2Int.right;
             yield return closestOrigin + Vector2Int.up;
             yield return closestOrigin + Vector2Int.one;
+        }
+
+        #endregion
+        #region ANIMATION
+
+        public static int ToAnimatorValue(this Vector2 dir)
+        {
+            if (dir.x >= 0 && dir.y >= 0)
+            {
+                return 1;
+            }
+            else if (dir.x >= 0 && dir.y < 0)
+            {
+                return 2;
+            }
+            else if (dir.x < 0 && dir.y <= 0)
+            {
+                return 3;
+            }
+            else
+            {
+                return 4;
+            }
         }
 
         #endregion
@@ -198,8 +224,23 @@ namespace MyHelper
             Enemy lastEnemy = null;
 
             foreach (Enemy enemy in enemies)
-                if (lastEnemy == null || enemy.stats.nextPathPointIndex < lastEnemy.stats.nextPathPointIndex)
+            {
+                if (lastEnemy == null || enemy.stats.GlobalNextPathPointIndex < lastEnemy.stats.GlobalNextPathPointIndex)
+                {
                     lastEnemy = enemy;
+
+                    continue;
+                }
+
+                if (enemy.stats.GlobalNextPathPointIndex == lastEnemy.stats.GlobalNextPathPointIndex)
+                {
+                    if (Kh.GetSqrDistance(enemy.transform.position, enemy.stats.NextPathPointPos)
+                        > Kh.GetSqrDistance(lastEnemy.transform.position, lastEnemy.stats.NextPathPointPos))
+                    {
+                        lastEnemy = enemy;
+                    }
+                }
+            }
 
             return lastEnemy;
         }

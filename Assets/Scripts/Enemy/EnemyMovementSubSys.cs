@@ -20,6 +20,9 @@ public class EnemyMovementSubSys : IKHSubsystem
 
     public void IFixedUpdate()
     {
+        if (!owner.stats.canWalk)
+            return;
+
         if (!owner.stats.reachedVillageArea)
             FollowPath();
         else
@@ -29,28 +32,24 @@ public class EnemyMovementSubSys : IKHSubsystem
     #endregion
     #region PRIVATE
 
-    public void FollowNearestVillager()
+    private void FollowNearestVillager()
     {
         Villager villager = VillageManager.Ins.GetNearestVillager(owner.transform.position);
 
         if (villager == null)
         {
             Debug.Log("No Villagers Found");
-            owner.Rb2d.linearVelocity = Vector3.zero;
             return;
         }
 
         // Update Move Direction.
-        owner.stats.moveDir = Kh.GetDir(owner.transform.position,
-                                        villager.transform.position);
+        owner.stats.moveDir = Kh.GetDir(owner.transform.position, villager.transform.position);
 
         // Add Velocity.
-        owner.Rb2d.linearVelocity = owner.stats.moveSpeed
-                                    * Time.fixedDeltaTime
-                                    * owner.stats.moveDir;
+        Move(villager.transform.position);
     }
 
-    public void FollowPath()
+    private void FollowPath()
     {
         if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.stats.NextPathPointPos, 0.1f))
         {
@@ -62,9 +61,12 @@ public class EnemyMovementSubSys : IKHSubsystem
         owner.stats.moveDir = Kh.GetDir(owner.transform.position, owner.stats.path[owner.stats.nextPathPointIndex]);
 
         // Add Velocity.
-        owner.Rb2d.linearVelocity = owner.stats.moveSpeed
-                                    * Time.fixedDeltaTime
-                                    * owner.stats.moveDir;
+        Move(owner.stats.path[owner.stats.nextPathPointIndex]);
+    }
+
+    private void Move(Vector2 targetPos)
+    {
+        owner.KHMoveTowards(targetPos, owner.stats.moveSpeed * Time.fixedDeltaTime);
     }
 
     #endregion

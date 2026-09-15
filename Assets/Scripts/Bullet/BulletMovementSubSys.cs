@@ -45,7 +45,7 @@ public class BulletMovementSubSys : IKHSubsystem
 
     private void StraightMove()
     {
-        owner.KHMoveLinear(owner.stats.targetFirstPos, owner.stats.moveSpeed * Time.fixedDeltaTime);
+        owner.KHMoveTowards(owner.stats.targetFirstPos, owner.stats.moveSpeed * Time.fixedDeltaTime);
     }
 
     private void ParabolicMove() { }

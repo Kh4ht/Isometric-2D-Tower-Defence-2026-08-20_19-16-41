@@ -32,7 +32,7 @@ public class EnemySpawningSys : KHManagedBehaviour
         if (Ins == null)
             Ins = this;
         else
-            Debug.LogWarning("More Than One Instance");
+            Debug.LogError($"More Than One Instance of type {nameof(EnemySpawningSys)}".AddColorTag(KHUtils.XMLColors.Red));
     }
     protected override void Start()
     {
@@ -49,7 +49,7 @@ public class EnemySpawningSys : KHManagedBehaviour
 
             wave.name = $"Wave {i + 1}";
 
-            wave.enemyPaths.KHMatchCount(PathSys.InsEditor.data.pathStartCells.Count);
+            CheckEnemyPathsCount(i);
 
             for (int j = 0; j < wave.enemyPaths.Count; j++)
             {
@@ -81,6 +81,16 @@ public class EnemySpawningSys : KHManagedBehaviour
 
         startedSpawning = true;
         StartCoroutine(SpawnWavesCoroutine());
+    }
+
+    private void CheckEnemyPathsCount(int i)
+    {
+        WaveData wave = waves[i];
+
+        if (wave.enemyPaths.Count > PathSys.InsEditor.pathStartCells.Count)
+            Debug.LogError($"There Are More {nameof(wave.enemyPaths)} Than The {nameof(PathSys.InsEditor.pathStartCells)} in {wave.name}".AddColorTag(KHUtils.XMLColors.Red));
+        else if (wave.enemyPaths.Count < PathSys.InsEditor.pathStartCells.Count)
+            Debug.LogError($"There Are Less {nameof(wave.enemyPaths)} Than The {nameof(PathSys.InsEditor.pathStartCells)} in {wave.name}".AddColorTag(KHUtils.XMLColors.Red));
     }
 
     private IEnumerator SpawnWavesCoroutine()
@@ -140,7 +150,7 @@ public class EnemySpawningSys : KHManagedBehaviour
 
         Vector2 spawnPos = path[0];
 
-        KHPoolManager.Ins.Spawn<Enemy>(enemyData.ID, spawnPos).ResetEnemy(enemyData, path, pathIndex);
+        KHPoolManager.Ins.Spawn<Enemy>(enemyData.ID, spawnPos).ResetEnemy(path, pathIndex);
     }
 
     private void RegisterEnemiesToPool()

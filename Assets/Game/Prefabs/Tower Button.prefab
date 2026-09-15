@@ -145,4 +145,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e444ff93a9a254acda90f77bc24bd7c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelTowerButton
+  type: 0
   towerData: {fileID: 0}

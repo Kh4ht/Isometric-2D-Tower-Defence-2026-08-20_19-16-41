@@ -5,14 +5,24 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GameDataBase", menuName = "Scriptable Objects/GameDataBase")]
 public class GameDataBase : ScriptableObject
 {
+    #region FIELDS
+
+    public Sprite upgradeTowerImage, sellTowerImage, targetOptionsImage;
+
+    [Space(20)]
     public List<TowerData> towerDatas;
     public List<EnemyData> enemyDatas;
+
+    #endregion
+    #region UNITY EVENTS
 
     private void OnValidate()
     {
         towerDatas.KHAutoFillDataBase();
         enemyDatas.KHAutoFillDataBase();
     }
+
+    #endregion
 }
 
 

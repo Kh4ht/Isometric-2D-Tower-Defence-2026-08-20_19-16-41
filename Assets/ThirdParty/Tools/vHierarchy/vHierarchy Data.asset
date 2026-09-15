@@ -116,6 +116,7 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-7ec377844faff47cbbbbe265429489f1-1492995465-0
         - globalObjectIdString: GlobalObjectId_V1-2-7ec377844faff47cbbbbe265429489f1-35945872-0
         - globalObjectIdString: GlobalObjectId_V1-2-7ec377844faff47cbbbbe265429489f1-1887274964-0
+        - globalObjectIdString: GlobalObjectId_V1-2-7ec377844faff47cbbbbe265429489f1-1886732490836440437-1396809531
         values:
         - colorIndex: 0
           iconNameOrGuid: Camera Icon
@@ -131,6 +132,10 @@ MonoBehaviour:
           isColorRecursive: 0
         - colorIndex: 0
           iconNameOrGuid: Canvas Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 0
+          iconNameOrGuid: Settings Icon
           isIconRecursive: 0
           isColorRecursive: 0
   bookmarks:

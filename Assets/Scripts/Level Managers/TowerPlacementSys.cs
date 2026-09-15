@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
-using MyClasses;
 using MyHelper;
 using KH;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VInspector;
 
+/// <summary>
+/// Manages the tower placement workflow, including hover previews, selection,
+/// validation, and instantiating towers on valid map cells.
+/// </summary>
 [DisallowMultipleComponent]
 public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 {
@@ -15,17 +18,15 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
     [KHResetStatic]
     public static TowerPlacementSys Ins { get; private set; }
 
-    private readonly SelectedCells selectedCells = new();
-
-    private List<Vector2Int> hoveredCells;
-
     // INSPECTOR
 
-    [Foldout("UI Controller")]
-    [SerializeField] private UIController horizontalTowersContainer;
-    [EndFoldout]
+    [Tab("UI Controller")]
 
-    [SerializeField] private List<MouseHoverShadow> mouseHoverShadow = new();
+    public SelectedCells cells = new();
+
+    [Space(20)]
+
+    [SerializeField] private List<MouseHoverEffect> mouseHoverEffect = new();
 
     #endregion
     #region UNITY EVENTS
@@ -54,20 +55,26 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         if (Kh.IsMouseOverUI())
             return;
 
-        // TODO: exit if mouse is pointing at a Tower or a UI element.
+        // Optimization: we only resolve the hovered cell set from the mouse position once per frame,
+        // but we do not run the expensive hover/placement validation logic unless the hovered cells changed.
+        // This avoids reprocessing the same selection every frame while the cursor is stationary.
+        List<Vector2Int> newHoveredCells = Helper.GetHoveredCells().ToList();
 
-        List<Vector2Int> newHoveredCells = Helper.GetHoveredCells(PathSys.Ins.walkableTilemap,
-                                                              (Vector2Int)PathSys.Ins.WorldToCell(Kh.GetMouseWorldPos())).ToList();
+        GridNode gridNodeMousePointingAt = Helper.GetNodeMouseIsPointingAt();
 
-        if (hoveredCells == null
-            || !hoveredCells.SequenceEqual(newHoveredCells)
-            || !selectedCells.selected)
+        if (!cells.Selected && gridNodeMousePointingAt.IsBlocked)
         {
-            hoveredCells = newHoveredCells;
-
-            if (!selectedCells.selected)
-                DrawMouseHoverShadow(hoveredCells);
+            MouseHoverLogic(newHoveredCells, gridNodeMousePointingAt);
         }
+
+        // UpdateHoveredCells() is the guard that prevents redundant hover logic when the cursor is still on
+        // the same grid cells. The callback only executes when the hovered selection actually changes,
+        // so MouseHoverLogic() and related work are not called every frame for the same tile.
+        cells.UpdateHoveredCells(newHoveredCells, () =>
+        {
+            if (!cells.Selected)
+                MouseHoverLogic(cells.hoveredCells, gridNodeMousePointingAt);
+        });
 
         MouseClickLogic(newHoveredCells);
     }
@@ -77,31 +84,60 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         if (!Mouse.current.leftButton.wasPressedThisFrame)
             return;
 
-        if (!PathSys.Ins.ValidateTowerPlacementCells(hoveredCells)
-            || !PathSys.Ins.CanBlockCells(hoveredCells))
-        {
-            // TODO: little feedback or rejection sound effect.
+        GridNode pointingAtNode = Helper.GetNodeMouseIsPointingAt();
 
-            selectedCells.Deselect(horizontalTowersContainer);
+        // If the node under the mouse is already blocked
+        if (pointingAtNode.IsBlocked)
+        {
+            cells.SelectTower(pointingAtNode.Tower);
             return;
         }
 
-        selectedCells.ToggleSelect(hoveredCells, horizontalTowersContainer);
-        if (selectedCells.selected)
-            MouseHoverShadow.SetColors(mouseHoverShadow, MouseHoverShadow.ShadowColor.GreenSelected);
+        if (!PathSys.Ins.ValidateTowerPlacementCells(hoveredCells)
+            || PathSys.Ins.WillBlockEnemyPath(hoveredCells))
+        {
+            // TODO: little feedback or rejection sound effect.
+
+            cells.Deselect();
+            return;
+        }
+
+        cells.SelectHovered();
+
+        if (cells.Selected)
+            MouseHoverEffect.SetColors(mouseHoverEffect, MouseHoverEffect.EffectColor.GreenSelected);
     }
 
-    private void DrawMouseHoverShadow(List<Vector2Int> hoveredCells)
+    private void MouseHoverLogic(List<Vector2Int> hoveredCells, GridNode pointingAtNode)
     {
-        for (int i = 0; i < Mathf.Min(hoveredCells.Count, mouseHoverShadow.Count); i++)
+        // If the node under the mouse is already blocked, show a blue hover indicator
+        if (pointingAtNode.IsBlocked)
         {
-            mouseHoverShadow[i].shadow.SetActive(true);
-            mouseHoverShadow[i].shadow.transform.position = PathSys.Ins.GetCellCenterWorld(hoveredCells[i]);
+            for (int i = 0; i < Mathf.Min(hoveredCells.Count, mouseHoverEffect.Count); i++)
+            {
+                mouseHoverEffect[i].Move(pointingAtNode.Tower.transform.position);
+                mouseHoverEffect[i].SetColor(MouseHoverEffect.EffectColor.Blue);
+            }
 
-            if (PathSys.Ins.ValidateTowerPlacementCell(hoveredCells[i]))
-                mouseHoverShadow[i].SetColor(MouseHoverShadow.ShadowColor.Green);
+            return;
+        }
+
+        bool willBlockPath = PathSys.Ins.WillBlockEnemyPath(hoveredCells);
+
+        for (int i = 0; i < Mathf.Min(hoveredCells.Count, mouseHoverEffect.Count); i++)
+        {
+            mouseHoverEffect[i].Move(PathSys.Ins.gameGrid.GetCellCenterWorld(hoveredCells[i]));
+
+            if (willBlockPath)
+            {
+                mouseHoverEffect[i].SetColor(MouseHoverEffect.EffectColor.Red);
+                continue;
+            }
+
+            if (PathSys.Ins.IsTowerPlacable(hoveredCells[i]))
+                mouseHoverEffect[i].SetColor(MouseHoverEffect.EffectColor.Green);
             else
-                mouseHoverShadow[i].SetColor(MouseHoverShadow.ShadowColor.Red);
+                mouseHoverEffect[i].SetColor(MouseHoverEffect.EffectColor.Red);
         }
     }
 
@@ -110,19 +146,19 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 
     public void PlaceTowerOnSelectedPos(TowerData towerData)
     {
-        if (!selectedCells.selected)
+        if (!cells.Selected)
         {
-            selectedCells.Deselect(horizontalTowersContainer);
+            cells.Deselect();
             return;
         }
 
-        PathSys.Ins.BlockCells(selectedCells.cells);
+        cells.Deselect();
 
-        selectedCells.Deselect(horizontalTowersContainer);
+        Vector2 towerPos = cells.GetCenterWorld();
 
         Instantiate(towerData.prefab,
-                    selectedCells.GetCenterWorld(PathSys.Ins.walkableTilemap),
-                    Quaternion.identity);
+                    towerPos,
+                    Quaternion.identity).ResetTower(cells.selectedCells);
     }
 
     #endregion

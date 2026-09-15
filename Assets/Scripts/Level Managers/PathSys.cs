@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MyClasses;
 using MyHelper;
 using UnityEngine;
 using KH;
@@ -14,6 +13,7 @@ public class PathSys : KHManagedBehaviour
     #region FIELDS
 
 #if UNITY_EDITOR
+    [KHResetStatic]
     private static PathSys insEditor;
     public static PathSys InsEditor
     {
@@ -31,26 +31,10 @@ public class PathSys : KHManagedBehaviour
     public static PathSys Ins { get; private set; }
     private const int MOVE_COST = 10;
 
-    [HideInInspector, NonSerialized] public GridNode[,] mapGrid;
-
-    private Vector2Int gridOrigin;
-
     public readonly List<List<Vector2Int>> currentPaths = new();
     private List<List<Vector2Int>> oldPaths = new();
 
     // GETTERS
-    public int GetDifferenceFromShortestPath(int pathIndex)
-    {
-        int shortestPathCount = int.MaxValue;
-
-        foreach (List<Vector2Int> path in currentPaths)
-        {
-            if (path.Count < shortestPathCount)
-                shortestPathCount = path.Count;
-        }
-
-        return currentPaths[pathIndex].Count - shortestPathCount;
-    }
 
     private static readonly Vector2Int[] Directions =
     {
@@ -62,19 +46,19 @@ public class PathSys : KHManagedBehaviour
 
     // INSPECTOR
 
-    [Foldout("TILE MAPs")]
-    public Tilemap groundTilemap;
-    public Tilemap towerPlacableTilemap;
+    [Tab("STATS")]
     public Tilemap walkableTilemap;
-    public Tilemap decorationTilemap;
 
-    [Foldout("TILEs")]
+    public GameGrid gameGrid;
+
     public TileBase groundRuleTile;
+    public TileBase towerPlacableOnlyTile;
     public TileBase groundNormalTile;
     public TileBase decorationTile;
 
-    [Foldout("DATA")]
-    public PathSysData data;
+    [Tab("DATA")]
+    public List<Vector2Int> pathStartCells;
+    public Vector2Int pathTargetCell;
 
     #endregion
     #region UNITY EVENTS
@@ -91,196 +75,95 @@ public class PathSys : KHManagedBehaviour
     {
         base.Start();
 
-        BuildGrid();
+        gameGrid.BuildGrid();
 
         UpdatePaths();
     }
 
     private void OnDrawGizmos()
     {
-        if (data == null)
-            return;
-
-
         DrawStartAndTargetGizmos();
 
-        DrawWalkableGridGizmos();
-
-        DrawPaths();
-
-        void DrawPaths()
-        {
-            if (!Application.isPlaying)
-                return;
-
-            Gizmos.color = Color.darkBlue;
-
-            foreach (List<Vector2Int> path in currentPaths)
-            {
-                foreach (Vector2Int point in path)
-                {
-                    Gizmos.DrawSphere(GetCellCenterWorld(point), 0.05f);
-                }
-            }
-        }
+        DrawGridGizmos();
 
         void DrawStartAndTargetGizmos()
         {
             Gizmos.color = Color.yellow;
-            foreach (Vector2Int pos in data.pathStartCells)
-                Gizmos.DrawCube(GetCellCenterWorld(pos), new Vector2(0.2f, 0.2f));
+            foreach (Vector2Int pos in pathStartCells)
+                Gizmos.DrawCube(walkableTilemap.GetCellCenterWorld((Vector3Int)pos), new Vector2(0.2f, 0.2f));
 
             Gizmos.color = Color.green;
-            Gizmos.DrawCube(GetCellCenterWorld(data.pathTargetCell), new Vector2(0.2f, 0.2f));
+            Gizmos.DrawCube(walkableTilemap.GetCellCenterWorld((Vector3Int)pathTargetCell), new Vector2(0.2f, 0.2f));
         }
 
-        void DrawWalkableGridGizmos()
+        void DrawGridGizmos()
         {
-            if (mapGrid == null)
+            if (gameGrid.grid == null)
                 return;
 
-            for (int i = 0; i < mapGrid.GetLength(0); i++)
+            foreach (GridNode node in gameGrid.grid)
             {
-                for (int j = 0; j < mapGrid.GetLength(1); j++)
-                {
-                    GridNode gridNode = mapGrid[i, j];
+                if (node.IsDecoration)
+                    continue;
 
-                    if (gridNode.IsWalkable)
-                        Gizmos.color = Color.green;
-                    else
-                        Gizmos.color = Color.red;
+                if (node.IsWalkable)
+                    Gizmos.color = Color.green;
+                else
+                    Gizmos.color = Color.red;
 
-                    Gizmos.DrawSphere(gridNode.CellWorldPosition, 0.025f);
-                }
+                Gizmos.DrawSphere(node.GetWorldPos, 0.025f);
             }
         }
     }
 
     #endregion
-    #region PUBLIC
+    #region PRIVATE
 
-    public bool CanPlaceTower(List<Vector2Int> cells)
+#if UNITY_EDITOR
+    private bool NotPlayMode => !Application.isPlaying;
+    [EnableIf(nameof(NotPlayMode))]
+    [Button(color = "green")]
+    private void AutoDrawTiles()
     {
-        if (!ValidateTowerPlacementCells(cells))
-            return false;
+        gameGrid.BuildGrid();
 
-        if (!Ins.CanBlockCells(cells))
-            return false;
+        gameGrid.EraseAllTiles(GameTilemap.Decoration);
 
-        return true;
-    }
-
-    /// <summary>
-    /// Check if a tower can be placed on this cell.
-    /// </summary>
-    /// 
-    public bool ValidateTowerPlacementCell(Vector2Int hoveredCell)
-    {
-        GridNode node = Ins.GetNode(hoveredCell);
-
-        if (node == null)
-            return false;
-
-        return node.IsWalkable;
-    }
-
-    public bool ValidateTowerPlacementCells(List<Vector2Int> hoveredCells)
-    {
-        foreach (var hoveredCell in hoveredCells)
+        foreach (GridNode gridNode in gameGrid.grid)
         {
-            if (ValidateTowerPlacementCell(hoveredCell))
+            if (!gameGrid.HasTile(GameTilemap.Ground, gridNode.GetPos))
                 continue;
-            else
-                return false;
-        }
 
-        return true;
-    }
-
-    public Vector2 GetCellCenterWorld(Vector2Int cell)
-    {
-        return walkableTilemap.GetCellCenterWorld((Vector3Int)cell);
-    }
-
-    public List<Vector2> GetCellCenterWorld(List<Vector2Int> cells)
-    {
-        List<Vector2> result = new();
-
-        foreach (Vector2Int cell in cells)
-        {
-            result.Add(GetCellCenterWorld(cell));
-        }
-
-        return result;
-    }
-
-    public List<Vector2> GetPath(int index)
-    {
-        return GetCellCenterWorld(currentPaths[index]);
-    }
-
-    public Vector3Int WorldToCell(Vector2 cell)
-    {
-        return walkableTilemap.WorldToCell(cell);
-    }
-
-
-    public GridNode GetNode(Vector2Int cell)
-    {
-        int x = cell.x - gridOrigin.x;
-        int y = cell.y - gridOrigin.y;
-
-        if (x < 0 || x >= mapGrid.GetLength(0))
-            return null;
-
-        if (y < 0 || y >= mapGrid.GetLength(1))
-            return null;
-
-        return mapGrid[x, y];
-    }
-
-    public bool CanBlockCells(IEnumerable<Vector2Int> cells)
-    {
-        List<(GridNode node, bool wasWalkable)> affectedNodes = new();
-
-        foreach (Vector2Int cell in cells)
-        {
-            GridNode node = Ins.GetNode(cell);
-
-            if (!node.IsWalkable)
-                return false;
-
-            affectedNodes.Add((node, node.IsWalkable));
-        }
-
-        foreach ((GridNode node, _) in affectedNodes)
-            node.IsWalkable = false;
-
-        bool canReachTarget = true;
-
-        foreach (Vector2Int startCell in data.pathStartCells)
-        {
-            if (Ins.FindPathAlgorithm(startCell, data.pathTargetCell) == null)
+            if (gridNode.IsTowerPlacableOnly)
             {
-                canReachTarget = false;
-                break;
+                gameGrid.SetTile(GameTilemap.Ground, gridNode.GetPos, towerPlacableOnlyTile);
+                continue;
+            }
+
+            if (gridNode.IsDecoration)
+            {
+                gameGrid.SetTile(GameTilemap.Decoration, gridNode.GetPos, decorationTile);
             }
         }
-
-        foreach ((GridNode node, bool wasWalkable) in affectedNodes)
-            node.IsWalkable = wasWalkable;
-
-        return canReachTarget;
     }
+    [EndFoldout]
+#endif
 
-    // A* PATH FINDING ALGORITHM
-    public List<Vector2Int> FindPathAlgorithm(Vector2Int startCell,
-                                               Vector2Int targetCell)
+    /// <summary>
+    /// Finds the shortest walkable path between two grid cells using the A* algorithm.
+    /// </summary>
+    /// <param name="startCell">The starting grid position.</param>
+    /// <param name="targetCell">The destination grid position.</param>
+    /// <returns>
+    /// A list of grid positions from the start to the target, or null if either cell is invalid
+    /// or not walkable.
+    /// </returns>
+    private List<Vector2Int> FindPathAlgorithm(Vector2Int startCell, Vector2Int targetCell)
     {
         ResetNodes();
 
-        GridNode startNode = GetNode(startCell);
-        GridNode targetNode = GetNode(targetCell);
+        GridNode startNode = gameGrid.GetNode(startCell);
+        GridNode targetNode = gameGrid.GetNode(targetCell);
 
         if (startNode == null || targetNode == null)
         {
@@ -348,56 +231,6 @@ public class PathSys : KHManagedBehaviour
         return null;
     }
 
-    public void BlockCells(List<Vector2Int> cells)
-    {
-        foreach (var cell in cells)
-        {
-            GetNode(cell).IsWalkable = false;
-        }
-
-        UpdatePaths();
-    }
-
-    public void UnBlockCells(List<Vector2Int> cells)
-    {
-        foreach (var cell in cells)
-        {
-            GetNode(cell).IsWalkable = true;
-        }
-
-        UpdatePaths();
-    }
-
-    #endregion
-    #region PRIVATE
-
-#if UNITY_EDITOR
-    [Button(color = "green"), Foldout("EDITOR TOOLS")]
-    private void AutoDrawTiles()
-    {
-        BuildGrid();
-
-        for (int i = 0; i < mapGrid.GetLength(0); i++)
-        {
-            for (int j = 0; j < mapGrid.GetLength(1); j++)
-            {
-                GridNode gridNode = mapGrid[i, j];
-
-                if (!groundTilemap.HasTile((Vector3Int)gridNode.CellPosition))
-                    continue;
-
-                // TODO: Add !gridNode.IsTowerPlacable check also
-
-                if (!gridNode.IsWalkable)
-                {
-                    decorationTilemap.SetTile((Vector3Int)gridNode.CellPosition, decorationTile);
-                }
-            }
-        }
-    }
-    [EndFoldout]
-#endif
-
     private void UpdatePaths()
     {
         // Store the old path
@@ -405,9 +238,9 @@ public class PathSys : KHManagedBehaviour
 
         currentPaths.Clear();
 
-        foreach (Vector2Int startPos in data.pathStartCells)
+        foreach (Vector2Int startPos in pathStartCells)
         {
-            currentPaths.Add(FindPathAlgorithm(startPos, data.pathTargetCell));
+            currentPaths.Add(FindPathAlgorithm(startPos, pathTargetCell));
         }
 
         // Update The Alive Enemy path
@@ -443,6 +276,7 @@ public class PathSys : KHManagedBehaviour
 
             enemy.stats.path = newPath;
         }
+
         DrawPaths();
     }
 
@@ -455,8 +289,7 @@ public class PathSys : KHManagedBehaviour
         {
             foreach (Vector2Int cell in path)
             {
-                groundTilemap.SetTile((Vector3Int)GetNode(cell).CellPosition,
-                                                       groundNormalTile);
+                gameGrid.SetTile(GameTilemap.Ground, gameGrid.GetNode(cell).GetPos, groundNormalTile);
             }
         }
 
@@ -465,7 +298,7 @@ public class PathSys : KHManagedBehaviour
         {
             foreach (Vector2Int cell in path)
             {
-                groundTilemap.SetTile((Vector3Int)cell, groundRuleTile);
+                gameGrid.SetTile(GameTilemap.Ground, cell, groundRuleTile);
             }
         }
     }
@@ -473,7 +306,7 @@ public class PathSys : KHManagedBehaviour
     // Reset pathFinding metadata before running a fresh A* search.
     private void ResetNodes()
     {
-        foreach (GridNode node in mapGrid)
+        foreach (GridNode node in gameGrid.grid)
         {
             if (node == null)
                 continue;
@@ -489,7 +322,7 @@ public class PathSys : KHManagedBehaviour
     {
         foreach (Vector2Int direction in Directions)
         {
-            GridNode neighbor = GetNode(node.CellPosition + direction);
+            GridNode neighbor = gameGrid.GetNode(node.GetPos + direction);
 
             if (neighbor == null)
                 continue;
@@ -501,42 +334,108 @@ public class PathSys : KHManagedBehaviour
         }
     }
 
-    private void BuildGrid()
+    #endregion
+    #region PUBLIC
+
+    public int GetDifferenceFromShortestPath(int pathIndex)
     {
-        BoundsInt bounds = groundTilemap.cellBounds;
+        int shortestPathCount = int.MaxValue;
 
-        gridOrigin = (Vector2Int)bounds.min;
-
-        mapGrid = new GridNode[bounds.size.x, bounds.size.y];
-
-        for (int x = bounds.xMin; x < bounds.xMax; x++)
+        foreach (List<Vector2Int> path in currentPaths)
         {
-            for (int y = bounds.yMin; y < bounds.yMax; y++)
+            if (path.Count < shortestPathCount)
+                shortestPathCount = path.Count;
+        }
+
+        return currentPaths[pathIndex].Count - shortestPathCount;
+    }
+
+    public bool CanPlaceTower(List<Vector2Int> cells)
+    {
+        if (!ValidateTowerPlacementCells(cells))
+            return false;
+
+        if (WillBlockEnemyPath(cells))
+            return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Check if a tower can be placed on this cell.
+    /// </summary>
+    public bool IsTowerPlacable(Vector2Int cell)
+    {
+        GridNode node = gameGrid.GetNode(cell);
+
+        if (node == null)
+        {
+            Debug.Log("node is null");
+            return false;
+        }
+
+        return node.IsTowerPlacable;
+    }
+
+    public bool ValidateTowerPlacementCells(List<Vector2Int> hoveredCells)
+    {
+        foreach (var hoveredCell in hoveredCells)
+        {
+            if (IsTowerPlacable(hoveredCell))
+                continue;
+            else
+                return false;
+        }
+
+        return true;
+    }
+
+    public List<Vector2> GetPath(int index)
+    {
+        return gameGrid.GetCellsCenterWorld(currentPaths[index]);
+    }
+
+    public bool WillBlockEnemyPath(IEnumerable<Vector2Int> cells)
+    {
+        List<GridNode> affectedNodes = new();
+
+        // 
+        foreach (Vector2Int cell in cells)
+        {
+            GridNode node = gameGrid.GetNode(cell);
+
+            if (!node.IsTowerPlacable)
+                return false;
+
+            affectedNodes.Add(node);
+        }
+
+        foreach (GridNode node in affectedNodes)
+            node.Block(true, null);
+
+        bool willBlockPath = false;
+
+        foreach (Vector2Int startCell in pathStartCells)
+        {
+            if (FindPathAlgorithm(startCell, pathTargetCell) == null)
             {
-                Vector2Int cell = new(x, y);
-
-                bool walkable = walkableTilemap.HasTile((Vector3Int)cell);
-
-                int gridX = x - bounds.xMin;
-                int gridY = y - bounds.yMin;
-
-                mapGrid[gridX, gridY] = new GridNode(cellPosition: cell,
-                                                     cellWorldPosition: GetCellCenterWorld(cell),
-                                                     isWalkable: walkable);
+                willBlockPath = true;
+                break;
             }
         }
+
+        foreach (GridNode node in affectedNodes)
+            node.Block(false, null);
+
+        return willBlockPath;
+    }
+
+    public void BlockCells(List<Vector2Int> cells, bool block, Tower newTower)
+    {
+        gameGrid.BlockNodes(cells, block, newTower);
+
+        UpdatePaths();
     }
 
     #endregion
 }
-
-#region PathSysData
-
-[Serializable]
-public class PathSysData
-{
-    public List<Vector2Int> pathStartCells;
-    public Vector2Int pathTargetCell;
-}
-
-#endregion

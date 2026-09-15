@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3594306943390488375}
+  - component: {fileID: 5214342326636426512}
   - component: {fileID: 6221411975437129198}
   m_Layer: 0
   m_Name: Mouse Hover Effect
@@ -27,11 +28,23 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -19, y: -1, z: 1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.94, y: 0.94, z: 0.94}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5214342326636426512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5148157189362259219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f645eeadd2a76421482ca1f7e04579a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MouseHoverEffect
 --- !u!212 &6221411975437129198
 SpriteRenderer:
   serializedVersion: 3

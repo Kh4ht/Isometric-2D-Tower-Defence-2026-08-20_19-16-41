@@ -16,9 +16,9 @@ public class TowerSelector : KHManagedBehaviour
             name = towerData.name;
         }
 
-        if (TryGetComponent(out Image img) && towerData.icon != null)
+        if (TryGetComponent(out Image img) && towerData.icons != null)
         {
-            img.sprite = towerData.icon;
+            img.sprite = towerData.icons[0];
         }
     }
 

@@ -12,5 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3670d5c76375d416a887ad16840cacff, type: 3}
   m_Name: GameDataBase
   m_EditorClassIdentifier: Assembly-CSharp::GameDataBase
+  upgradeTowerImage: {fileID: 21300000, guid: e7aeba73966ea5541bf313c3bc634500, type: 3}
+  sellTowerImage: {fileID: 21300000, guid: 38350092e13fab14eb5b051a9331a083, type: 3}
+  targetOptionsImage: {fileID: 4625513774435505376, guid: 3c4de26e160a749f99b0541fd69e91cc, type: 3}
   towerDatas:
   - {fileID: 11400000, guid: 3ade3ea341e424cc48136a9c9a3cf29c, type: 2}
+  enemyDatas:
+  - {fileID: 11400000, guid: 426c1749f5271405ab7594a32decbe38, type: 2}

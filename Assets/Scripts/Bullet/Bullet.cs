@@ -4,7 +4,6 @@ using KH;
 using UnityEngine;
 using VInspector;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
 public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHManagedFixedUpdate, IKHPoolable
 {
     #region FIELDS

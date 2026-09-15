@@ -13,10 +13,11 @@ public class TowerData : ScriptableObject
     public string ID => id;
 
     [Space(20)]
-    public GameObject prefab;
-    public Sprite icon;
+    public Tower prefab;
 
     [Space(20)]
+    public List<Sprite> icons;
+
     // PRICE
     [Foldout("Price")]
 #if UNITY_EDITOR
@@ -58,14 +59,14 @@ public class TowerData : ScriptableObject
 
     public int test65;
 
+    [Space(20)]
+    [SerializeField] private bool enableListCountEditingButton;
+
     #endregion
     #region UNITY EVENTS
 
     private void OnValidate()
     {
-        price.KHMatchCount(Tower.TOWER_MAX_LEVEL);
-        range.KHMatchCount(Tower.TOWER_MAX_LEVEL);
-
         if (string.IsNullOrEmpty(ID))
             id = Kh.GenerateId(name, 8);
     }
@@ -88,6 +89,15 @@ public class TowerData : ScriptableObject
     {
         for (int i = 1; i < Tower.TOWER_MAX_LEVEL; i++)
             range[i] = (range[i - 1] * rangeMultiplier).KHRoundToDecimalPlaces();
+    }
+
+    [EnableIf(nameof(enableListCountEditingButton))]
+    [Button(color = "green")]
+    private void EditAllListsCount(int count)
+    {
+        icons.KHMatchCount(count);
+        range.KHMatchCount(count);
+        price.KHMatchCount(count);
     }
 #endif
 

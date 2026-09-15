@@ -5,22 +5,25 @@ using MyHelper;
 using UnityEngine;
 using VInspector;
 
-[RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(AudioSource), typeof(SpriteRenderer))]
 public class Tower : KHManagedBehaviour, IKHManagedUpdate
 {
     #region FIELDS
 
-    public const int TOWER_MAX_LEVEL = 6;
+    public const int TOWER_MAX_LEVEL = 5;
 
-    // Subsystems
+    // SUBSYSTEMS
     private readonly List<IKHSubsystem> kHSubsystems = new();
     public TowerShootingSubSys towerShootingSubSys { get; private set; }
 
-    // Components
-    public AudioSource AudioS { get; private set; }
+    // COMPONENTS
+    private AudioSource audioSource;
+    private SpriteRenderer spriteRenderer;
+
+    // GETTERS
+    public bool IsMaxLevel => stats.lvl >= TOWER_MAX_LEVEL;
 
     // INSPECTOR
-
     [Tab("STATS")]
     public TowerStats stats;
 
@@ -34,13 +37,14 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate
 
     private void Reset()
     {
-        AudioS = GetComponent<AudioSource>();
-        AudioS.playOnAwake = false;
+        audioSource = GetComponent<AudioSource>();
+        audioSource.playOnAwake = false;
     }
 
     private void Awake()
     {
-        AudioS = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         stats = new(data);
 
@@ -126,23 +130,45 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate
     #endregion
     #region PUBLIC
 
-    public void ResetTower(TowerData towerData)
+    public Tower ResetTower(List<Vector2Int> occupiedCells)
     {
-        stats.Reset(towerData);
+        stats.Reset(data, occupiedCells);
+
+        PathSys.Ins.BlockCells(cells: occupiedCells,
+                               block: true,
+                               newTower: this);
+
+        spriteRenderer.sprite = data.icons[0];
 
         kHSubsystems.ResetAll();
+
+        return this;
     }
 
     /// <summary>Increases tower level by 1</summary>
     public void UpgradeTower()
     {
-        if (stats.lvl >= TOWER_MAX_LEVEL)
+        if (IsMaxLevel)
         {
             Debug.Log("Max level reached");
             return;
         }
 
         stats.lvl++;
+
+        spriteRenderer.sprite = data.icons[stats.lvl];
+        stats.sellPrice += data.price[stats.lvl] / 2;
+    }
+
+    public void SellTower()
+    {
+        PathSys.Ins.BlockCells(cells: stats.occupiedCells,
+                               block: false,
+                               newTower: null);
+
+        // TODO: Get Money.
+
+        Destroy(gameObject);
     }
 
     #endregion
@@ -161,23 +187,24 @@ public class TowerStats
     public Enemy enemyTargeted = null;
 
     // Requires Initialization
-
+    public int sellPrice;
     public float shootCooldown;
     [Min(0)] public float range;
-
+    public List<Vector2Int> occupiedCells;
 
     // CONSTRUCTOR
     public TowerStats(TowerData towerData)
     {
-        shootCooldown = towerData.shootCooldown;
-        range = towerData.range[0];
+        Reset(towerData, new());
     }
 
     // METHODS
-    public void Reset(TowerData towerData)
+    public void Reset(TowerData towerData, List<Vector2Int> occupiedCells)
     {
         shootCooldown = towerData.shootCooldown;
         range = towerData.range[0];
+        sellPrice = towerData.price[0] / 2;
+        this.occupiedCells = occupiedCells;
     }
 }
 
@@ -187,7 +214,7 @@ public class TowerStats
 public enum TargetSearchType
 {
     First,
-    Last,
+    Last = 50,
     Strongest,
     Weakest,
 }

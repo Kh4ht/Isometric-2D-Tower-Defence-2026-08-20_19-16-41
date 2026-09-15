@@ -5,7 +5,7 @@ using MyHelper;
 using UnityEngine;
 using VInspector;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
+[RequireComponent(typeof(CapsuleCollider2D), typeof(Animator))]
 public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManagedFixedUpdate
 {
     #region FIELDS
@@ -15,11 +15,12 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     private readonly List<IKHSubsystem> kHSubSystems = new();
     private EnemyMovementSubSys enemyMovementSubSys;
     private EnemyHealthSubSys enemyHealthSubSys;
+    private EnemyAnimatorSubSys enemyAnimatorSubSys;
 
     // COMPONENTS
     public KHHealthController HealthController { get; private set; }
-    public Rigidbody2D Rb2d { get; private set; }
     public CapsuleCollider2D Coll2d { get; private set; }
+    public Animator animator { get; private set; }
 
     // INSPECTOR
 
@@ -36,9 +37,6 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
 
     private void Reset()
     {
-        Rb2d = GetComponent<Rigidbody2D>();
-        Rb2d.bodyType = RigidbodyType2D.Kinematic;
-
         Coll2d = GetComponent<CapsuleCollider2D>();
         Coll2d.isTrigger = true;
 
@@ -48,7 +46,8 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
 
     private void Awake()
     {
-        Rb2d = GetComponent<Rigidbody2D>();
+        Coll2d = GetComponent<CapsuleCollider2D>();
+        animator = GetComponent<Animator>();
 
         HealthController = new(this, data.defaultMaxHealth, data.defaultMaxHealth);
 
@@ -57,7 +56,8 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
         kHSubSystems.AddRange(new IKHSubsystem[]
         {
             enemyMovementSubSys = new(this),
-            enemyHealthSubSys = new(this)
+            enemyHealthSubSys = new(this),
+            enemyAnimatorSubSys = new(this)
         });
     }
 
@@ -71,7 +71,7 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
 
     public void KHUpdate()
     {
-        // kHSubsystems.UpdateAll();
+        kHSubSystems.UpdateAll();
     }
 
     public void KHFixedUpdate()
@@ -101,12 +101,6 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
         }
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        Debug.Log(stats.GlobalNextPathPointIndex);
-        Debug.Log(Kh.GetSqrDistance(transform.position, stats.NextPathPointPos));
-    }
-
     #endregion
     #region PRIVATE
 
@@ -130,9 +124,9 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     #endregion
     #region PUBLIC
 
-    public void ResetEnemy(EnemyData enemyData, List<Vector2> path, int selectedPathIndex)
+    public void ResetEnemy(List<Vector2> path, int selectedPathIndex)
     {
-        stats.Reset(enemyData, path, selectedPathIndex);
+        stats.Reset(data, path, selectedPathIndex);
 
         HealthController?.Revive();
 
@@ -159,6 +153,7 @@ public class EnemyStats
     public float moveSpeed;
     public List<Vector2> path = new();
     public int pathIndex;
+    public bool canWalk;
 
     // GETTERS
     public Vector2 NextPathPointPos => path[nextPathPointIndex];
@@ -167,22 +162,23 @@ public class EnemyStats
     // CONSTRUCTOR
     public EnemyStats(EnemyData enemyData)
     {
-        moveSpeed = enemyData.defaultMoveSpeed;
+        Reset(enemyData, new(), 0);
     }
 
     // METHODS
-    public void ReachedVillagerArea()
-    {
-        reachedVillageArea = true;
-    }
 
     public void Reset(EnemyData enemyData, List<Vector2> newPath, int selectedPathIndex)
     {
         reachedVillageArea = false;
         moveSpeed = enemyData.defaultMoveSpeed;
         path = new(newPath);
-        this.pathIndex = selectedPathIndex;
+        pathIndex = selectedPathIndex;
         nextPathPointIndex = 1;
+        canWalk = true;
+    }
+    public void ReachedVillagerArea()
+    {
+        reachedVillageArea = true;
     }
 }
 

@@ -1,10 +1,12 @@
 using KH;
-using UnityEngine.UI;
 using UnityEngine;
+using System.Collections.Generic;
 
-public class LevelTowerContainer : KHManagedBehaviour
+public class LevelTowerContainer : UIController
 {
     #region FIELDS
+
+    private readonly List<LevelTowerButton> levelTowerButtons = new();
 
     // Inspector
     [SerializeField] private LevelTowerButton levelTowerButtonPrefab;
@@ -12,31 +14,63 @@ public class LevelTowerContainer : KHManagedBehaviour
     #endregion
     #region UNITY EVENTS
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
 
         SaveData saveData = KHSaveSystem.Load<SaveData>();
 
         foreach (string towerId in saveData.selectedTowerIDs)
         {
-            TowerData towerData = DB.GetTowerDataById(towerId);
-
-            if (towerData == null)
-                Debug.Log("towerData == null");
-
             LevelTowerButton levelTowerButton = Instantiate(levelTowerButtonPrefab, transform);
 
-            levelTowerButton.towerData = towerData;
+            levelTowerButton.towerData = DB.GetTowerDataById(towerId); ;
 
-            if (levelTowerButton.GetComponent<Image>() == null)
-                Debug.Log("GetComponent<Image>() == null");
+            levelTowerButtons.Add(levelTowerButton);
+        }
 
-            if (towerData.icon == null)
-                Debug.Log("towerData.icon == null");
+        LevelTowerButton upgradeTowerButton = Instantiate(levelTowerButtonPrefab, transform);
+        upgradeTowerButton.type = LevelTowerButton.Type.Upgrade;
+        levelTowerButtons.Add(upgradeTowerButton);
 
-            levelTowerButton.GetComponent<Image>().sprite = towerData.icon;
-            levelTowerButton.name = towerData.name;
+        LevelTowerButton sellTowerButton = Instantiate(levelTowerButtonPrefab, transform);
+        sellTowerButton.type = LevelTowerButton.Type.Sell;
+        levelTowerButtons.Add(sellTowerButton);
+
+        LevelTowerButton targetOptionsTowerButton = Instantiate(levelTowerButtonPrefab, transform);
+        targetOptionsTowerButton.type = LevelTowerButton.Type.TargetOption;
+        levelTowerButtons.Add(targetOptionsTowerButton);
+
+        gameObject.SetActive(false);
+    }
+
+    #endregion
+    #region PUBLIC
+
+    public void ShowBuyOptions()
+    {
+        foreach (LevelTowerButton b in levelTowerButtons)
+        {
+            if (b.type == LevelTowerButton.Type.Buy)
+                b.gameObject.SetActive(true);
+            else
+                b.gameObject.SetActive(false);
+        }
+    }
+
+    public void ShowSellUpgradeOptions(Tower tower)
+    {
+        foreach (LevelTowerButton b in levelTowerButtons)
+        {
+            if (b.type == LevelTowerButton.Type.Buy)
+            {
+                b.gameObject.SetActive(false);
+            }
+            else
+            {
+                b.gameObject.SetActive(true);
+                b.EditButton(tower);
+            }
         }
     }
 
