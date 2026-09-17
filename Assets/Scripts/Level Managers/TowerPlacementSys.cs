@@ -19,6 +19,8 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
     [KHResetStatic]
     public static TowerPlacementSys Ins { get; private set; }
 
+    private GridNode gridNodeMousePointingAt;
+
     // INSPECTOR
 
     [Tab("UI Controller")]
@@ -73,46 +75,55 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         if (Kh.IsMouseOverUI())
             return;
 
-        // Optimization: we only resolve the hovered cell set from the mouse position once per frame,
-        // but we do not run the expensive hover/placement validation logic unless the hovered cells changed.
-        // This avoids reprocessing the same selection every frame while the cursor is stationary.
-        List<Vector2Int> newHoveredCells = Helper.GetHoveredCells().ToList();
-
-        GridNode gridNodeMousePointingAt = Helper.GetNodeMouseIsPointingAt();
-
-        if (!cells.Selected && gridNodeMousePointingAt.IsBlocked)
-        {
-            MouseHoverLogic(newHoveredCells, gridNodeMousePointingAt);
-        }
+        gridNodeMousePointingAt = Helper.GetNodeMouseIsPointingAt();
 
         // UpdateHoveredCells() is the guard that prevents redundant hover logic when the cursor is still on
         // the same grid cells. The callback only executes when the hovered selection actually changes,
         // so MouseHoverLogic() and related work are not called every frame for the same tile.
-        cells.UpdateHoveredCells(newHoveredCells, () =>
-        {
-            if (!cells.Selected)
-                MouseHoverLogic(cells.hoveredCells, gridNodeMousePointingAt);
-        });
+        cells.UpdateHoveredCells(
+            newHoveredCells: Helper.GetHoveredCells().ToList(),
+            onHoverCellsUpdated: () =>
+            {
+                OnMouseHover();
+            });
 
-        MouseClickLogic(newHoveredCells);
+        if (!cells.IsSelected)
+        {
+            // Hide mouse hover effect if pointing at non tower placable
+            if (gridNodeMousePointingAt == null || gridNodeMousePointingAt.IsDecoration)
+                MouseHoverEffect.EnableSpriteRenderer(mouseHoverEffect, false);
+            else
+                MouseHoverEffect.EnableSpriteRenderer(mouseHoverEffect, true);
+        }
+
+        // when pointing at a blocked cell, move the hover effect
+        if (gridNodeMousePointingAt != null && gridNodeMousePointingAt.IsBlocked)
+            OnMouseHover();
+
+        OnMouseClick();
     }
 
-    private void MouseClickLogic(List<Vector2Int> hoveredCells)
+    private void OnMouseClick()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame)
             return;
 
-        GridNode pointingAtNode = Helper.GetNodeMouseIsPointingAt();
-
-        // If the node under the mouse is already blocked
-        if (pointingAtNode.IsBlocked)
+        if ((gridNodeMousePointingAt.IsDecoration || gridNodeMousePointingAt == null) && cells.IsSelected)
         {
-            cells.SelectTower(pointingAtNode.Tower);
+            cells.Deselect();
             return;
         }
 
-        if (!PathSys.Ins.ValidateTowerPlacementCells(hoveredCells)
-            || PathSys.Ins.WillBlockEnemyPath(hoveredCells))
+
+        // If the node under the mouse is already blocked
+        if (gridNodeMousePointingAt.IsBlocked)
+        {
+            cells.Select(gridNodeMousePointingAt.Tower);
+            return;
+        }
+
+        if (!PathSys.Ins.ValidateTowerPlacementCells(cells.hoveredCells)
+            || PathSys.Ins.WillBlockEnemyPath(cells.hoveredCells))
         {
             // TODO: little feedback or rejection sound effect.
 
@@ -120,31 +131,34 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
             return;
         }
 
-        cells.SelectHovered();
+        cells.Select();
 
-        if (cells.Selected)
+        if (cells.IsSelected)
             MouseHoverEffect.SetColors(mouseHoverEffect, MouseHoverEffect.EffectColor.GreenSelected);
     }
 
-    private void MouseHoverLogic(List<Vector2Int> hoveredCells, GridNode pointingAtNode)
+    private void OnMouseHover()
     {
+        if (cells.IsSelected || gridNodeMousePointingAt == null)
+            return;
+
         // If the node under the mouse is already blocked, show a blue hover indicator
-        if (pointingAtNode.IsBlocked)
+        if (gridNodeMousePointingAt.IsBlocked)
         {
-            for (int i = 0; i < Mathf.Min(hoveredCells.Count, mouseHoverEffect.Count); i++)
+            for (int i = 0; i < Mathf.Min(cells.hoveredCells.Count, mouseHoverEffect.Count); i++)
             {
-                mouseHoverEffect[i].Move(pointingAtNode.Tower.transform.position);
+                mouseHoverEffect[i].Move(gridNodeMousePointingAt.Tower.stats.GetOccupiedCells()[i].GetCellCenterWorld());
                 mouseHoverEffect[i].SetColor(MouseHoverEffect.EffectColor.Blue);
             }
 
             return;
         }
 
-        bool willBlockPath = PathSys.Ins.WillBlockEnemyPath(hoveredCells);
+        bool willBlockPath = PathSys.Ins.WillBlockEnemyPath(cells.hoveredCells);
 
-        for (int i = 0; i < Mathf.Min(hoveredCells.Count, mouseHoverEffect.Count); i++)
+        for (int i = 0; i < Mathf.Min(cells.hoveredCells.Count, mouseHoverEffect.Count); i++)
         {
-            mouseHoverEffect[i].Move(PathSys.Ins.gameGrid.GetCellCenterWorld(hoveredCells[i]));
+            mouseHoverEffect[i].Move(cells.hoveredCells[i].GetCellCenterWorld());
 
             if (willBlockPath)
             {
@@ -152,7 +166,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
                 continue;
             }
 
-            if (PathSys.Ins.IsTowerPlacable(hoveredCells[i]))
+            if (PathSys.Ins.IsTowerPlacable(cells.hoveredCells[i]))
                 mouseHoverEffect[i].SetColor(MouseHoverEffect.EffectColor.Green);
             else
                 mouseHoverEffect[i].SetColor(MouseHoverEffect.EffectColor.Red);
@@ -164,7 +178,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 
     public void PlaceTowerOnSelectedPos(TowerData towerData)
     {
-        if (!cells.Selected)
+        if (!cells.IsSelected)
         {
             cells.Deselect();
             return;

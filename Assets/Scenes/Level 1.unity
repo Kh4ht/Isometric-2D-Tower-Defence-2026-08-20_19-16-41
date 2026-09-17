@@ -3883,10 +3883,11 @@ MonoBehaviour:
   panSpeed: 1
   minConstraints: {x: -10, y: -6}
   maxConstraints: {x: 10, y: 6}
+  sizeConstraints: {x: 10, y: 6}
+  canZoom: 1
   zoomSpeed: 0.1
-  minZoom: 2
-  maxZoom: 10
   lerpSpeed: 10
+  centerCamPosOnMaxZoom: 1
 --- !u!4 &156331155
 Transform:
   m_ObjectHideFlags: 0
@@ -5100,7 +5101,7 @@ Camera:
   far clip plane: 1000
   field of view: 70
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 6.26
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

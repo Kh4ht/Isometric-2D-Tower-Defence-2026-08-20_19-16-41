@@ -17,9 +17,6 @@ public class EnemyAnimatorSubSys : IKHSubsystem
     // trigger 
     private readonly int DEATH = Animator.StringToHash("Death");
 
-    private bool oldCanWalk;
-    private int oldDirection;
-
     #endregion
     #region CONSTRUCTOR
 
@@ -36,32 +33,12 @@ public class EnemyAnimatorSubSys : IKHSubsystem
         IReset();
     }
 
-    public void IOnEnable()
-    {
-
-    }
-
     public void IOnDisable()
     {
-        owner.HealthController.RemoveOnDeathListener(OnDeath);
-    }
-
-    public void IUpdate()
-    {
-        if (owner.HealthController.IsDead)
-            return;
-
-        if (oldCanWalk != owner.stats.canWalk)
-        {
-            oldCanWalk = owner.stats.canWalk;
-            owner.animator.SetBool(WALK, owner.stats.canWalk);
-        }
-        if (oldDirection != owner.stats.moveDir.ToAnimatorValue())
-        {
-            int newDir = owner.stats.moveDir.ToAnimatorValue();
-            oldDirection = newDir;
-            UpdateDirection(newDir);
-        }
+        // REMOVE LISTENERS
+        owner.stats.healthController.RemoveOnDeathListener(OnDeath);
+        owner.stats.OnMoveDirChanged -= OnMoveDirChanged;
+        owner.stats.OnCanMoveChanged -= OnCanMoveChanged;
     }
 
     #endregion
@@ -73,9 +50,14 @@ public class EnemyAnimatorSubSys : IKHSubsystem
         owner.animator.SetTrigger(DEATH);
     }
 
-    private void UpdateDirection(int newDir)
+    private void OnMoveDirChanged(Vector2 newDir)
     {
-        owner.animator.SetInteger(DIRECTION, newDir);
+        owner.animator.SetInteger(DIRECTION, newDir.ToAnimatorValue());
+    }
+
+    private void OnCanMoveChanged(bool canMove)
+    {
+        owner.animator.SetBool(WALK, canMove);
     }
 
     #endregion
@@ -83,14 +65,13 @@ public class EnemyAnimatorSubSys : IKHSubsystem
 
     public void IReset()
     {
-        owner.HealthController.AddOnDeathListener(OnDeath);
+        // ADD LISTENERS
+        owner.stats.healthController.AddOnDeathListener(OnDeath);
+        owner.stats.OnMoveDirChanged += OnMoveDirChanged;
+        owner.stats.OnCanMoveChanged += OnCanMoveChanged;
 
-        oldCanWalk = owner.stats.canWalk;
-        owner.animator.SetBool(WALK, owner.stats.canWalk);
-
-        int newDir = owner.stats.moveDir.ToAnimatorValue();
-        oldDirection = newDir;
-        UpdateDirection(newDir);
+        OnMoveDirChanged(owner.stats.GetMoveDir());
+        OnCanMoveChanged(owner.stats.GetCanMove());
     }
 
     #endregion

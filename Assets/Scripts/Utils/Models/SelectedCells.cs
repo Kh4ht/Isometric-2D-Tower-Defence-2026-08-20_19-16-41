@@ -10,7 +10,8 @@ public class SelectedCells
     [HideInInspector] public List<Vector2Int> selectedCells = new();
     [HideInInspector] public List<Vector2Int> hoveredCells = new();
 
-    public bool Selected { get; private set; }
+    public bool IsSelected { get; private set; }
+    private Tower selectedTower;
 
     // INSPECTOR
     [SerializeField] private LevelTowerContainer horizontalTowersContainer;
@@ -19,10 +20,16 @@ public class SelectedCells
     #region PUBLIC
     public void Deselect()
     {
-        Selected = false;
+        IsSelected = false;
         hoveredCells = null;
 
         horizontalTowersContainer.KH_UpHide();
+
+        if (selectedTower != null)
+        {
+            selectedTower.OnSelected(false);
+            selectedTower = null;
+        }
     }
 
     /// <summary>
@@ -50,9 +57,9 @@ public class SelectedCells
         return center / selectedCells.Count;
     }
 
-    public void SelectHovered()
+    public void Select(Tower tower = null)
     {
-        if (Selected)
+        if (IsSelected)
         {
             Deselect();
             return;
@@ -61,37 +68,28 @@ public class SelectedCells
         selectedCells.Clear();
         selectedCells.AddRange(hoveredCells);
 
-        Selected = true;
+        IsSelected = true;
 
         horizontalTowersContainer.KH_UpShow();
 
-        horizontalTowersContainer.ShowBuyOptions();
-    }
-
-    public void SelectTower(Tower tower)
-    {
-        if (Selected)
+        if (tower == null)
         {
-            Deselect();
-            return;
+            horizontalTowersContainer.ShowBuyOptions();
         }
-
-        selectedCells.Clear();
-        selectedCells.AddRange(hoveredCells);
-
-        Selected = true;
-
-        horizontalTowersContainer.KH_UpShow();
-
-        horizontalTowersContainer.ShowSellUpgradeOptions(tower);
+        else
+        {
+            selectedTower = tower;
+            horizontalTowersContainer.ShowSellUpgradeOptions(tower);
+            tower.OnSelected(true);
+        }
     }
 
-    public void UpdateHoveredCells(List<Vector2Int> newHoveredCells, Action onUpdated)
+    public void UpdateHoveredCells(List<Vector2Int> newHoveredCells, Action onHoverCellsUpdated)
     {
         if (hoveredCells == null || !hoveredCells.SequenceEqual(newHoveredCells))
         {
             hoveredCells = newHoveredCells;
-            onUpdated();
+            onHoverCellsUpdated();
         }
     }
 

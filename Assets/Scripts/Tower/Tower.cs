@@ -4,8 +4,9 @@ using KH;
 using MyHelper;
 using UnityEngine;
 using VInspector;
-
 [RequireComponent(typeof(AudioSource), typeof(SpriteRenderer))]
+
+[RequireComponent(typeof(LineRenderer))]
 public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 {
     #region FIELDS
@@ -15,13 +16,18 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
     // SUBSYSTEMS
     private readonly List<IKHSubsystem> kHSubsystems = new();
     public TowerShootingSubSys towerShootingSubSys { get; private set; }
+    public TowerAnimatorSubSys towerAnimatorSubSys { get; private set; }
 
     // COMPONENTS
     private AudioSource audioSource;
     private SpriteRenderer spriteRenderer;
+    public LineRenderer lineRenderer { get; private set; }
 
     // GETTERS
     public bool IsMaxLevel => stats.lvl >= TOWER_MAX_LEVEL;
+
+    // EVENTS
+    public event Action<bool> OnTowerSelected;
 
     // INSPECTOR
     [Tab("STATS")]
@@ -39,12 +45,17 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
     {
         audioSource = GetComponent<AudioSource>();
         audioSource.playOnAwake = false;
+
+        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.useWorldSpace = true;
+        lineRenderer.loop = true;
     }
 
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        lineRenderer = GetComponent<LineRenderer>();
 
         stats = new(data);
 
@@ -52,6 +63,7 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
         kHSubsystems.AddRange(new IKHSubsystem[]
         {
             towerShootingSubSys = new(this),
+            towerAnimatorSubSys = new(this),
         });
     }
 
@@ -60,6 +72,13 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
         base.Start();
 
         RegisterBulletsToPool();
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+
+        kHSubsystems.OnDisableAll();
     }
 
     public void KHUpdate()
@@ -99,7 +118,7 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 
         void DrawTowerRange()
         {
-            float range = stats.range;
+            float range = stats.GetRange();
 
             if (range <= 0f)
                 return;
@@ -110,7 +129,7 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 
             Vector2 prevPoint = Helper.TileCircleToWorld(origin, range, 0);
 
-            for (int i = 1; i <= GameConsts.GIZMO_SEGMENTS; i++)
+            for (int i = 1; i <= GameConsts.TOWER_RANGE_SEGMENTS; i++)
             {
                 Vector2 nextPoint = Helper.TileCircleToWorld(origin, range, i);
                 Gizmos.DrawLine(prevPoint, nextPoint);
@@ -129,6 +148,15 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 
     #endregion
     #region PUBLIC
+
+    /// <summary>
+    /// Updates the tower's selection indicator when selected by the player,
+    /// allowing its upgrade and sell data to appear.
+    /// </summary>
+    public void OnSelected(bool selected)
+    {
+        OnTowerSelected?.Invoke(selected);
+    }
 
     public Tower ResetTower(List<Vector2Int> occupiedCells)
     {
@@ -158,11 +186,12 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 
         spriteRenderer.sprite = data.icons[stats.lvl];
         stats.sellPrice += data.price[stats.lvl] / 2;
+        stats.SetRange(data.range[stats.lvl]);
     }
 
     public void SellTower()
     {
-        PathSys.Ins.BlockCells(cells: stats.occupiedCells,
+        PathSys.Ins.BlockCells(cells: stats.GetOccupiedCells(),
                                block: false,
                                newTower: null);
 
@@ -177,50 +206,3 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 
     #endregion
 }
-
-
-
-
-#region TowerStats
-
-[Serializable]
-public class TowerStats
-{
-    [ReadOnly] public int lvl = 0;
-    public TargetSearchType targetSearchType = TargetSearchType.First;
-    public Enemy enemyTargeted = null;
-
-    // Requires Initialization
-    public int sellPrice;
-    public float shootCooldown;
-    [Min(0)] public float range;
-    public List<Vector2Int> occupiedCells;
-
-    // CONSTRUCTOR
-    public TowerStats(TowerData towerData)
-    {
-        Reset(towerData, new());
-    }
-
-    // METHODS
-    public void Reset(TowerData towerData, List<Vector2Int> occupiedCells)
-    {
-        shootCooldown = towerData.shootCooldown;
-        range = towerData.range[0];
-        sellPrice = towerData.price[0] / 2;
-        this.occupiedCells = occupiedCells;
-    }
-}
-
-#endregion
-#region TargetSearchType
-
-public enum TargetSearchType
-{
-    First,
-    Last = 50,
-    Strongest,
-    Weakest,
-}
-
-#endregion

@@ -1,10 +1,13 @@
 using KH;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using VInspector;
 
 public class CameraController : KHManagedBehaviour, IKHManagedUpdate
 {
     #region FIELDS
+
+    private const float MIN_ZOOM = 2f;
 
     private Camera camera;
 
@@ -24,13 +27,20 @@ public class CameraController : KHManagedBehaviour, IKHManagedUpdate
     [SerializeField] private Vector2 minConstraints;
     [SerializeField] private Vector2 maxConstraints;
 
+    [SerializeField] private Vector2 sizeConstraints;
+
     [Space(30), Header("Zoom Settings")]
+    [SerializeField] private bool canZoom = true;
+
+    [EnableIf(nameof(canZoom))]
     [SerializeField] private float zoomSpeed = 1f;
-    [SerializeField] private float minZoom = 2f;
-    [SerializeField] private float maxZoom = 20f;
+    [EndIf]
 
     [Space(30), Header("Other Settings")]
     [SerializeField] private float lerpSpeed = 1f;
+
+    [Tooltip("Move the camera to the center when you zoom to the maximum")]
+    [SerializeField] private bool centerCamPosOnMaxZoom = true;
 
     #endregion
     #region UNITY EVENTS
@@ -44,10 +54,14 @@ public class CameraController : KHManagedBehaviour, IKHManagedUpdate
     {
         DragCamera();
 
-        ScaleCamera();
+        if (canZoom)
+            ScaleCamera();
 
         if (IsCamSizeGreaterThanConstraintsSize)
-            CenterCameraPos();
+        {
+            if (centerCamPosOnMaxZoom)
+                CenterCameraPos();
+        }
         else
             ClampCamPos();
 
@@ -110,7 +124,7 @@ public class CameraController : KHManagedBehaviour, IKHManagedUpdate
         Vector3 mouseWorldPosBefore = Kh.GetMouseWorldPos();
 
         float newSize = camera.orthographicSize - scrollInput * zoomSpeed;
-        camera.orthographicSize = Mathf.Clamp(newSize, minZoom, maxZoom);
+        camera.orthographicSize = Mathf.Clamp(newSize, MIN_ZOOM, maxConstraints.y);
 
         if (!IsCamSizeGreaterThanConstraintsSize)
         {

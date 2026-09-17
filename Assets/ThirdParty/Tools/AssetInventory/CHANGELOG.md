@@ -5,13 +5,30 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [4.8.0]
+## [4.8.1] - 2026-09-08
+
+- Skipped automatic Asset Store refresh in batch mode and added session-scoped authentication rejection handling with one suppressible warning, preserving refresh timestamps and purchase snapshots after failed requests.
+- Improved automatic material conversion to preserve UI masking, sprite shaders, and unfamiliar custom materials, wait until imported assets are ready, and convert only the imported content while keeping previews available.
+- Prevented unnecessary LM Studio and Ollama connection checks when AI settings are collapsed or the corresponding features and backend are not selected.
+- Improved dialog spacing so scrollbars reach the window edge and command bars align consistently.
+- Improved render pipeline detection to respect Quality Settings overrides when converting materials and checking package compatibility.
+- Fixed automatic package imports on Unity 6.6 and recovery after script reloads.
+- Fixed database connection setup to report failed checks correctly, close test connections, refresh views only after a successful connection, and retain detailed errors in the Console.
+- Improved package import compatibility with Unity versions that no longer support custom import folders or package-content inspection, retaining the default import-location fallback.
+- Updated the optional Unity Pipeline integration for Pipeline 0.6.
+- Updated package and search detail tag pills to use theme-appropriate text contrast while preserving assigned tag colors.
+- Added six AI Skills to guide coding assistants through catalog discovery, organization, safe imports, audits, and automation with preview-based confirmation.
+- Aligned bulk package flags into consistent All/None rows and grouped immediate indexing with the other package commands.
+- Added transactional source-file renaming for indexed custom packages and archives, preserving catalog identity, nested locations, sidecars, metadata, indexed rows, and in-project Unity GUIDs.
+- Restored live progress for bulk Asset Store downloads across selection changes and script reloads, including total download progress and paused or interrupted status.
+
+## [4.8.0] - 2026-08-27
 
 - Reworked Additional Folder relocation to preserve filesystem roots, verify repeated path segments against the selected destination, update shared and nested sources safely, and roll back database and configuration changes on failure.
 - Added compatibility with Unity 6.7 while retaining support for Unity 2022.3.
-- Added experimental Synty Importer compatibility that discovers and indexes valid packages from its shared local cache as a dedicated Synty source without signing in or making online Synty requests.
+- Added experimental Synty Importer compatibility that discovers and indexes valid packages from its shared local cache as a dedicated Synty source.
 - Added optional Unity Asset Store metadata linking for locally downloaded Synty packages while preserving their cache identity, tags, indexed content, and user settings.
-- Added 31 Asset Inventory operations for Unity Pipeline and Unity AI Assistant, with automatic activation, preview-based confirmation for changes, and expanded CLI and MCP guidance with copyable dry-run examples.
+- Added 31 Asset Inventory operations for Unity Pipeline and Unity AI Assistant, with automatic activation, preview-based confirmation for changes, and expanded command-line and assistant guidance with copyable preview examples.
 - Added automatic and choose-first indexing setup paths with clear next-step guidance, resumable progress, saved-search-compatible maintenance filters, selected-only include and index actions, retained-content cleanup, and reversible exclusions.
 - Simplified the dependency explorer with a complete graph, one search field for graph and list views, and compact layout and framing controls.
 - Improved Search and Packages keyboard navigation with Ctrl/Cmd+F query focus and Ctrl/Cmd+Page Up/Page Down paging.

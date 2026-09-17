@@ -12,11 +12,11 @@
   <Project Path="VFolders.csproj" />
   <Project Path="AudioTool.JD.EditorAudioUtils.Editor.csproj" />
   <Project Path="Database.SQLite.csproj" />
+  <Project Path="ImpossibleRobert.Common.Geometry.csproj" />
   <Project Path="VInspector.csproj" />
   <Project Path="ImpossibleRobert.Common.csproj" />
   <Project Path="ImpossibleRobert.Common.Imaging.Editor.csproj" />
   <Project Path="HelperKH.Editor.csproj" />
-  <Project Path="VFavorites.csproj" />
   <Project Path="VTabs.csproj" />
   <Project Path="CodeStage.Package2Folder.csproj" />
   <Project Path="AssetInventory.Examples.csproj" />

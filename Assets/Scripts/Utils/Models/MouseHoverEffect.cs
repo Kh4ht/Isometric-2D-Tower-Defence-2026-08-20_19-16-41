@@ -66,15 +66,6 @@ public class MouseHoverEffect : KHManagedBehaviour
                                  useUnscaledTime: true);
     }
 
-    #endregion
-    #region STATIC
-
-    public static void SetColors(List<MouseHoverEffect> shadowColors, EffectColor shadowColor)
-    {
-        foreach (var shadow in shadowColors)
-            shadow.SetColor(shadowColor);
-    }
-
     public void Move(Vector2 targetPos)
     {
         if (currentTargetPos.HasValue && currentTargetPos.Value == targetPos)
@@ -87,6 +78,23 @@ public class MouseHoverEffect : KHManagedBehaviour
                                    endValue: targetPos,
                                    duration: MOVE_DURATION,
                                    useUnscaledTime: true);
+    }
+
+    #endregion
+    #region STATIC
+
+    public static void EnableSpriteRenderer(List<MouseHoverEffect> mouseHoverEffects, bool enable)
+    {
+        foreach (MouseHoverEffect m in mouseHoverEffects)
+        {
+            m.spriteRenderer.enabled = enable;
+        }
+    }
+
+    public static void SetColors(List<MouseHoverEffect> shadowColors, EffectColor shadowColor)
+    {
+        foreach (var shadow in shadowColors)
+            shadow.SetColor(shadowColor);
     }
 
     #endregion

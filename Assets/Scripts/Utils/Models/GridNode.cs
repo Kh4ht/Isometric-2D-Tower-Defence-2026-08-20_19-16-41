@@ -9,7 +9,6 @@ public class GridNode
     private readonly bool isWalkable;
     private readonly bool isTowerPlacable;
     private readonly bool isVillageArea;
-    public bool IsBlocked { get; private set; }
 
     /// <summary>
     /// Reference to the tower blocking this Node
@@ -23,6 +22,7 @@ public class GridNode
 
     public int FCost => GCost + HCost;
 
+    public bool IsBlocked => Tower != null;
     public bool IsDecoration => !isWalkable && !isTowerPlacable && !isVillageArea;
     public bool IsWalkable => isWalkable && !IsBlocked;
     public bool IsWalkableOnly => isWalkable && !isTowerPlacable;
@@ -51,8 +51,7 @@ public class GridNode
     {
         if (isTowerPlacable)
         {
-            IsBlocked = block;
-            Tower = IsBlocked ? towerBlockingNode : null;
+            Tower = block ? towerBlockingNode : null;
         }
         else
             Debug.Log($"Can't Block Because The Node Is NOT TowerPlacable");

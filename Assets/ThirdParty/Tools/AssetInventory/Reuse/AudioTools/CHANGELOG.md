@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [1.2.0]
 
+- Added four source-verified AI Skills for setup, audio preview and selection, non-destructive processing, and WAV export, with repository-only benchmark scenarios and package validation.
 - Added Unity 6.7 lifecycle ownership for audio preview state and editor registrations while retaining Unity 2022.3 support.
 - Standardized Tools and Project-window context-menu labels to omit ellipses.
 

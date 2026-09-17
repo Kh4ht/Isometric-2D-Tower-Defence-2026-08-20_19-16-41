@@ -20,7 +20,7 @@ public class EnemyMovementSubSys : IKHSubsystem
 
     public void IFixedUpdate()
     {
-        if (!owner.stats.canWalk || owner.HealthController.IsDead)
+        if (!owner.stats.GetCanMove() || owner.stats.healthController.IsDead)
             return;
 
         if (!owner.stats.reachedVillageArea)
@@ -43,7 +43,7 @@ public class EnemyMovementSubSys : IKHSubsystem
         }
 
         // Update Move Direction.
-        owner.stats.moveDir = Kh.GetDir(owner.transform.position, villager.transform.position);
+        owner.stats.SetMoveDir(Kh.GetDir(owner.transform.position, villager.transform.position));
 
         // Add Velocity.
         Move(villager.transform.position);
@@ -58,7 +58,7 @@ public class EnemyMovementSubSys : IKHSubsystem
         }
 
         // Update Move Direction.
-        owner.stats.moveDir = Kh.GetDir(owner.transform.position, owner.stats.path[owner.stats.nextPathPointIndex]);
+        owner.stats.SetMoveDir(Kh.GetDir(owner.transform.position, owner.stats.path[owner.stats.nextPathPointIndex]));
 
         // Add Velocity.
         Move(owner.stats.path[owner.stats.nextPathPointIndex]);

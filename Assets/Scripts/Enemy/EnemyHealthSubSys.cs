@@ -7,6 +7,8 @@ public class EnemyHealthSubSys : IKHSubsystem
 
     private readonly Enemy owner;
 
+    private const int AFTER_DEATH_DELAY = 10;
+
     #endregion
     #region CONSTRUCTOR
 
@@ -20,22 +22,22 @@ public class EnemyHealthSubSys : IKHSubsystem
 
     public void IOnEnable()
     {
-        owner.HealthController.AddOnHealthDecreaseListener(OnHealthDecreased);
-        owner.HealthController.AddOnMaxHealthReachedListener(OnMaxHealth);
-        owner.HealthController.AddOnDeathListener(OnDeath);
-        owner.HealthController.AddOnReviveListener(OnRevive);
-        owner.HealthController.AddOnHealthChangedListener(OnHealthChanged);
-        owner.HealthController.AddOnMaxHealthChangedListener(OnMaxHealthChanged);
+        owner.stats.healthController.AddOnHealthDecreaseListener(OnHealthDecreased);
+        owner.stats.healthController.AddOnMaxHealthReachedListener(OnMaxHealth);
+        owner.stats.healthController.AddOnDeathListener(OnDeath);
+        owner.stats.healthController.AddOnReviveListener(OnRevive);
+        owner.stats.healthController.AddOnHealthChangedListener(OnHealthChanged);
+        owner.stats.healthController.AddOnMaxHealthChangedListener(OnMaxHealthChanged);
     }
 
     public void IOnDisable()
     {
-        owner.HealthController.RemoveOnHealthDecreaseListener(OnHealthDecreased);
-        owner.HealthController.RemoveOnMaxHealthReachedListener(OnMaxHealth);
-        owner.HealthController.RemoveOnDeathListener(OnDeath);
-        owner.HealthController.RemoveOnReviveListener(OnRevive);
-        owner.HealthController.RemoveOnHealthChangedListener(OnHealthChanged);
-        owner.HealthController.RemoveOnMaxHealthChangedListener(OnMaxHealthChanged);
+        owner.stats.healthController.RemoveOnHealthDecreaseListener(OnHealthDecreased);
+        owner.stats.healthController.RemoveOnMaxHealthReachedListener(OnMaxHealth);
+        owner.stats.healthController.RemoveOnDeathListener(OnDeath);
+        owner.stats.healthController.RemoveOnReviveListener(OnRevive);
+        owner.stats.healthController.RemoveOnHealthChangedListener(OnHealthChanged);
+        owner.stats.healthController.RemoveOnMaxHealthChangedListener(OnMaxHealthChanged);
     }
 
     #endregion
@@ -54,22 +56,21 @@ public class EnemyHealthSubSys : IKHSubsystem
     private void OnMaxHealthChanged()
     {
         // Update the health slider's width
-        owner.healthSlider.IncreaseWidthBasedOnHealth(owner.HealthController.MaxHealth);
+        owner.healthSlider.IncreaseWidthBasedOnHealth(owner.stats.healthController.MaxHealth);
     }
 
     private void OnHealthChanged()
     {
         // Update the health slider's value
-        owner.healthSlider.ChangeValue(owner.HealthController.Health, owner.HealthController.MaxHealth);
+        owner.healthSlider.ChangeValue(owner.stats.healthController.Health, owner.stats.healthController.MaxHealth);
     }
 
     private void OnDeath()
     {
         owner.healthSlider.gameObject.SetActive(false);
 
-        // TODO: Add animations & effects.
-
-        Tween.Delay(4, () =>
+        // Delay despawning to allow death animations and effects to finish, and to show player how many enemies he/she killed.
+        Tween.Delay(AFTER_DEATH_DELAY, () =>
         {
             KHPoolManager.Ins.Despawn(owner.data.ID, owner);
         });

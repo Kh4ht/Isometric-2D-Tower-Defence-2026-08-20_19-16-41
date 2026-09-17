@@ -244,7 +244,7 @@ public class PathSys : KHManagedBehaviour
         }
 
         // Update The Alive Enemy path
-        foreach (Enemy enemy in KHPoolManager.Ins.GetAllActive<Enemy>())
+        foreach (Enemy enemy in Helper.GetAllAliveEnemies())
         {
             int reachedPathIndex = enemy.stats.nextPathPointIndex;
             List<Vector2> oldEnemyPath = enemy.stats.path;
@@ -399,10 +399,15 @@ public class PathSys : KHManagedBehaviour
     {
         List<GridNode> affectedNodes = new();
 
-        // 
         foreach (Vector2Int cell in cells)
         {
             GridNode node = gameGrid.GetNode(cell);
+
+            if (node == null)
+            {
+                Debug.Log($"{nameof(node)} is NULL");
+                return true;
+            }
 
             if (!node.IsTowerPlacable)
                 return false;

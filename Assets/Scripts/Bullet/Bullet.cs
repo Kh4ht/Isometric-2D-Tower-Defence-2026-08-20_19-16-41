@@ -103,7 +103,7 @@ public class BulletStats
 
     public void UpdateEnemyLastPos()
     {
-        if (target != null && !target.HealthController.IsDead)
+        if (target != null && !target.stats.healthController.IsDead)
         {
             targetLastPosBeforeDeath = target.transform.position;
         }

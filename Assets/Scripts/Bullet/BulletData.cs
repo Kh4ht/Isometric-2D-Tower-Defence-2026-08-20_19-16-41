@@ -15,6 +15,8 @@ public class BulletData : ScriptableObject
 
     public Bullet prefab;
 
+    public ElementType elementType = ElementType.None;
+
     [Space(20)]
 
     public float moveSpeed;

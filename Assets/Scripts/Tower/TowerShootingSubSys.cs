@@ -54,28 +54,28 @@ public class TowerShootingSubSys : IKHSubsystem
 
         List<Enemy> enemiesInRange = new();
 
-        foreach (Enemy enemy in KHPoolManager.Ins.GetAllActive<Enemy>())
+        foreach (Enemy enemy in Helper.GetAllAliveEnemies())
         {
-            if (enemy.IsWithinRange(owner.transform.position, owner.stats.range))
+            if (enemy.IsWithinRange(owner.transform.position, owner.stats.GetRange()))
                 enemiesInRange.Add(enemy);
         }
 
-        switch (owner.stats.targetSearchType)
+        switch (owner.stats.GetTargetSearchType())
         {
-            case TargetSearchType.First:
+            case TowerStats.TargetSearchType.First:
                 return enemiesInRange.GetFirstEnemy();
 
-            case TargetSearchType.Last:
+            case TowerStats.TargetSearchType.Last:
                 return enemiesInRange.GetLastEnemy();
 
-            case TargetSearchType.Strongest:
+            case TowerStats.TargetSearchType.Strongest:
                 return enemiesInRange.GetStrongestEnemy();
 
-            case TargetSearchType.Weakest:
+            case TowerStats.TargetSearchType.Weakest:
                 return enemiesInRange.GetWeakestEnemy();
 
             default:
-                Debug.LogWarning($"Unsupported {nameof(TargetSearchType)}: {owner.stats.targetSearchType}.");
+                Debug.LogWarning($"Unsupported {nameof(TowerStats.TargetSearchType)}: {owner.stats.GetTargetSearchType()}.");
                 return null;
         }
     }
@@ -95,7 +95,7 @@ public class TowerShootingSubSys : IKHSubsystem
     #endregion
     #region PUBLIC
 
-    public void Reset()
+    public void IReset()
     {
         if (!owner.data.haveShootingSubSys)
             return;

@@ -10,7 +10,6 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
 {
     #region FIELDS
 
-
     // SUBSYSTEMS
     private readonly List<IKHSubsystem> kHSubSystems = new();
     private EnemyMovementSubSys enemyMovementSubSys;
@@ -18,7 +17,6 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     private EnemyAnimatorSubSys enemyAnimatorSubSys;
 
     // COMPONENTS
-    public KHHealthController HealthController { get; private set; }
     public CapsuleCollider2D Coll2d { get; private set; }
     public Animator animator { get; private set; }
 
@@ -48,8 +46,6 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     {
         Coll2d = GetComponent<CapsuleCollider2D>();
         animator = GetComponent<Animator>();
-
-        HealthController = new(this, data.defaultMaxHealth, data.defaultMaxHealth);
 
         stats = new(data);
 
@@ -110,7 +106,7 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     [Button(color = "green")]
     private void DamageEnemy(int damageAmount)
     {
-        HealthController.RemoveHealth(damageAmount);
+        stats.healthController.RemoveHealth(damageAmount);
     }
 #endif
 
@@ -128,8 +124,6 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     {
         stats.Reset(data, path, selectedPathIndex);
 
-        HealthController?.Revive();
-
         kHSubSystems.ResetAll();
     }
 
@@ -139,47 +133,3 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
 
     #endregion
 }
-
-#region EnemyStats
-
-[Serializable]
-public class EnemyStats
-{
-    public bool reachedVillageArea = false;
-    public Vector2 moveDir = Vector2.zero;
-    public int nextPathPointIndex = 1; // Start from 1 because enemy spawns on path[pathIndex = 0]
-
-    // Requires Initialization
-    public float moveSpeed;
-    public List<Vector2> path = new();
-    public int pathIndex;
-    public bool canWalk;
-
-    // GETTERS
-    public Vector2 NextPathPointPos => path[nextPathPointIndex];
-    public int GlobalNextPathPointIndex => nextPathPointIndex - PathSys.Ins.GetDifferenceFromShortestPath(pathIndex);
-
-    // CONSTRUCTOR
-    public EnemyStats(EnemyData enemyData)
-    {
-        Reset(enemyData, new(), 0);
-    }
-
-    // METHODS
-
-    public void Reset(EnemyData enemyData, List<Vector2> newPath, int selectedPathIndex)
-    {
-        reachedVillageArea = false;
-        moveSpeed = enemyData.defaultMoveSpeed;
-        path = new(newPath);
-        pathIndex = selectedPathIndex;
-        nextPathPointIndex = 1;
-        canWalk = true;
-    }
-    public void ReachedVillagerArea()
-    {
-        reachedVillageArea = true;
-    }
-}
-
-#endregion

@@ -15,7 +15,13 @@ public class EnemyData : ScriptableObject
     public Enemy prefab;
     public Sprite icon;
 
-    [Space(2f)]
+    public ElementType elementType = ElementType.None;
+
+    [DisableIf(nameof(elementType), ElementType.None)]
+    public ElementStrength elementStrength = ElementStrength.Low;
+    [EndIf]
+
+    [Space(20)]
 
     [Min(1)] public int defaultMaxHealth = 100;
 

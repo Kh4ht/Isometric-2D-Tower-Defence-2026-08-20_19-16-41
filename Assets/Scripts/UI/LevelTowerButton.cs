@@ -126,7 +126,7 @@ public class LevelTowerButton : KHManagedBehaviour
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() =>
                 {
-                    tower.stats.targetSearchType = tower.stats.targetSearchType.KHCycle();
+                    tower.stats.SetTargetSearchType(tower.stats.GetTargetSearchType().KHCycle());
                     // TODO: change sprite of the button
                 });
 

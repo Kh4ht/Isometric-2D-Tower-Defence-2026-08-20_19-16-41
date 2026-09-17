@@ -21,7 +21,7 @@ public class BulletCollisionSubSys : IKHSubsystem
 
     public void IUpdate()
     {
-        CheckEnemyDead();
+        CheckTargetDead();
 
         switch (owner.data.type)
         {
@@ -64,21 +64,25 @@ public class BulletCollisionSubSys : IKHSubsystem
     {
         if (!targetIsDead)
         {
-            // Apply damage to the enemy
-            owner.stats.target.HealthController.Health -= owner.stats.damage;
+            DamageEnemy(owner.stats.target);
         }
 
         // Destroy the bullet after hitting the enemy
         KHPoolManager.Ins.Despawn(owner.data.ID, owner);
     }
 
-    private void CheckEnemyDead()
+    private void CheckTargetDead()
     {
-        if (!targetIsDead && (owner.stats.target == null || owner.stats.target.HealthController.IsDead))
+        if (!targetIsDead && (owner.stats.target == null || owner.stats.target.stats.healthController.IsDead))
         {
             owner.stats.target = null;
             targetIsDead = true;
         }
+    }
+
+    private void DamageEnemy(Enemy enemy)
+    {
+        enemy.stats.TakeDamage(owner.stats.damage, owner.data.elementType);
     }
 
     #endregion

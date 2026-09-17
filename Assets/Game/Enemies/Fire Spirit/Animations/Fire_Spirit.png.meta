@@ -938,7 +938,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fire_Spirit_32
+      name: Death_Fire_Spirit_32
       rect:
         serializedVersion: 2
         x: 0
@@ -960,7 +960,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fire_Spirit_33
+      name: Death_Fire_Spirit_33
       rect:
         serializedVersion: 2
         x: 32
@@ -982,7 +982,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fire_Spirit_34
+      name: Death_Fire_Spirit_34
       rect:
         serializedVersion: 2
         x: 64
@@ -1004,7 +1004,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fire_Spirit_35
+      name: Death_Fire_Spirit_35
       rect:
         serializedVersion: 2
         x: 96
@@ -1026,7 +1026,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fire_Spirit_36
+      name: Death_Fire_Spirit_36
       rect:
         serializedVersion: 2
         x: 128
@@ -1048,7 +1048,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fire_Spirit_37
+      name: Death_Fire_Spirit_37
       rect:
         serializedVersion: 2
         x: 160
@@ -1070,7 +1070,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fire_Spirit_38
+      name: Death_Fire_Spirit_38
       rect:
         serializedVersion: 2
         x: 192
@@ -1092,7 +1092,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fire_Spirit_39
+      name: Death_Fire_Spirit_39
       rect:
         serializedVersion: 2
         x: 224
@@ -1129,6 +1129,14 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
+      Death_Fire_Spirit_32: -1451319720
+      Death_Fire_Spirit_33: 747978906
+      Death_Fire_Spirit_34: -867511117
+      Death_Fire_Spirit_35: 489273657
+      Death_Fire_Spirit_36: 1629276125
+      Death_Fire_Spirit_37: -678774812
+      Death_Fire_Spirit_38: -1127641071
+      Death_Fire_Spirit_39: 1368900646
       Fire_Spirit_0: -4781564405865503225
       Fire_Spirit_1: -5652997843644823806
       Fire_Spirit_10: 5963410519437175611
@@ -1155,14 +1163,6 @@ TextureImporter:
       Fire_Spirit_3: -4028734294049754705
       Fire_Spirit_30: 4477397887178900433
       Fire_Spirit_31: -8129516921851000651
-      Fire_Spirit_32: -1451319720
-      Fire_Spirit_33: 747978906
-      Fire_Spirit_34: -867511117
-      Fire_Spirit_35: 489273657
-      Fire_Spirit_36: 1629276125
-      Fire_Spirit_37: -678774812
-      Fire_Spirit_38: -1127641071
-      Fire_Spirit_39: 1368900646
       Fire_Spirit_4: 1850579598563442975
       Fire_Spirit_5: -853675478951572660
       Fire_Spirit_6: -1915656899102098152

@@ -63,6 +63,11 @@ namespace MyHelper
             return PathSys.Ins.gameGrid.GetNode(Kh.GetMouseWorldPos());
         }
 
+        public static Vector2 GetCellCenterWorld(this Vector2Int vector2Int)
+        {
+            return PathSys.Ins.gameGrid.GetCellCenterWorld(vector2Int);
+        }
+
         public static IEnumerable<Vector2Int> GetHoveredCells()
         {
             Vector2Int currentCell = PathSys.Ins.gameGrid.WorldToCell(Kh.GetMouseWorldPos());
@@ -138,13 +143,47 @@ namespace MyHelper
         }
 
         #endregion
+        #region DAMAGE
+
+        private static float Filter(this ElementStrength receiverElementStrength, float damageAmount)
+        {
+            return receiverElementStrength switch
+            {
+                ElementStrength.Low => damageAmount * GameConsts.LOW_ELEMENT_MULTIPLIER,
+                ElementStrength.Medium => damageAmount * GameConsts.MEDIUM_ELEMENT_MULTIPLIER,
+                ElementStrength.High => damageAmount * GameConsts.HIGH_ELEMENT_MULTIPLIER,
+                ElementStrength.Immune => damageAmount * GameConsts.IMMUNE_ELEMENT_MULTIPLIER,
+                _ => damageAmount,
+            };
+        }
+
+        private static readonly Dictionary<ElementType, ElementType> ResistedBy = new()
+        {
+            { ElementType.Fire, ElementType.Water },   // Water resists Fire
+            { ElementType.Water, ElementType.Earth },  // Earth resists Water
+            { ElementType.Earth, ElementType.Fire },   // Fire resists Earth
+        };
+
+        public static float DamageFilter(this ElementStrength receiverElementStrength, ElementType attackerElementType, ElementType receiverElementType, float damageAmount)
+        {
+            if (attackerElementType == ElementType.None || receiverElementType == ElementType.None || attackerElementType == receiverElementType)
+                return damageAmount;
+
+            if (ResistedBy.TryGetValue(attackerElementType, out var resister) && resister == receiverElementType)
+                return receiverElementStrength.Filter(damageAmount);
+
+            // if attacker isn't resisted by receiver, receiver must be the "weak" side
+            return damageAmount * GameConsts.ELEMENT_BONUS_MULTIPLIER;
+        }
+
+        #endregion
         #region TileCircleToWorld
 
         /// Returns the world-space point for step "i" of a circle of radius "range"
         /// (in tile units), squashed back into isometric world space.
         public static Vector2 TileCircleToWorld(Vector2 origin, float range, int step)
         {
-            float angle = (step / (float)GameConsts.GIZMO_SEGMENTS) * Mathf.PI * 2f;
+            float angle = (step / (float)GameConsts.TOWER_RANGE_SEGMENTS) * Mathf.PI * 2f;
 
             // Point on a normal circle, in tile space
             Vector2 tileSpacePoint = new Vector2(
@@ -175,6 +214,17 @@ namespace MyHelper
         #endregion
         #region ENEMY QUERIES
 
+        public static IEnumerable<Enemy> GetAllAliveEnemies()
+        {
+            foreach (Enemy enemy in KHPoolManager.Ins.GetAllActive<Enemy>())
+            {
+                if (enemy.stats.healthController.IsDead)
+                    continue;
+
+                yield return enemy;
+            }
+        }
+
         /// <summary>
         /// Gets the enemy that has progressed the farthest along the path.
         /// </summary>
@@ -186,7 +236,7 @@ namespace MyHelper
 
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.HealthController.IsDead)
+                if (enemy.stats.healthController.IsDead)
                     continue;
 
                 if (firstEnemy == null || enemy.stats.GlobalNextPathPointIndex > firstEnemy.stats.GlobalNextPathPointIndex)
@@ -220,7 +270,7 @@ namespace MyHelper
 
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.HealthController.IsDead)
+                if (enemy.stats.healthController.IsDead)
                     continue;
 
                 if (lastEnemy == null || enemy.stats.GlobalNextPathPointIndex < lastEnemy.stats.GlobalNextPathPointIndex)
@@ -254,10 +304,10 @@ namespace MyHelper
 
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.HealthController.IsDead)
+                if (enemy.stats.healthController.IsDead)
                     continue;
 
-                if (weakestEnemy == null || enemy.HealthController.Health < weakestEnemy.HealthController.Health)
+                if (weakestEnemy == null || enemy.stats.healthController.Health < weakestEnemy.stats.healthController.Health)
                     weakestEnemy = enemy;
             }
 
@@ -275,10 +325,10 @@ namespace MyHelper
 
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.HealthController.IsDead)
+                if (enemy.stats.healthController.IsDead)
                     continue;
 
-                if (strongestEnemy == null || enemy.HealthController.Health > strongestEnemy.HealthController.Health)
+                if (strongestEnemy == null || enemy.stats.healthController.Health > strongestEnemy.stats.healthController.Health)
                     strongestEnemy = enemy;
             }
 
