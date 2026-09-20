@@ -38,7 +38,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         if (Ins == null)
             Ins = this;
         else
-            Debug.LogWarning("More Than One Instance");
+            Debug.LogError($"More Than One Instance of type {nameof(TowerPlacementSys)}".AddColorTag(KHUtils.XMLColors.Red));
     }
 
     protected override void Start()
@@ -117,7 +117,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         // If the node under the mouse is already blocked
         if (gridNodeMousePointingAt.IsBlocked)
         {
-            cells.Select(gridNodeMousePointingAt.Tower);
+            cells.Select(gridNodeMousePointingAt.GetTower());
             return;
         }
 
@@ -146,7 +146,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         {
             for (int i = 0; i < Mathf.Min(cells.hoveredCells.Count, mouseHoverEffect.Count); i++)
             {
-                mouseHoverEffect[i].Move(gridNodeMousePointingAt.Tower.stats.GetOccupiedCells()[i].GetCellCenterWorld());
+                mouseHoverEffect[i].Move(gridNodeMousePointingAt.GetTower().stats.GetOccupiedCells()[i].GetCellCenterWorld());
                 mouseHoverEffect[i].SetColor(MouseHoverEffect.EffectColor.Blue);
             }
 

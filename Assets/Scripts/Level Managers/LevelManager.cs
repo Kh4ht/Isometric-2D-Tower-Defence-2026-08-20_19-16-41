@@ -14,6 +14,7 @@ public class LevelManager : KHManagedBehaviour, IKHManagedUpdate
 
     private Tween timeScaleTween;
     private bool x2SpeedOn;
+    public bool LevelPaused { get; private set; }
 
     // INSPECTOR
 
@@ -26,7 +27,6 @@ public class LevelManager : KHManagedBehaviour, IKHManagedUpdate
     [SerializeField] private CanvasGroup pauseBlackBg;
 
     [Tab("STATS")]
-    public bool LevelPaused { get; private set; }
 
     [EndTab]
 
@@ -38,7 +38,7 @@ public class LevelManager : KHManagedBehaviour, IKHManagedUpdate
         if (Ins == null)
             Ins = this;
         else
-            Debug.LogWarning("More Than One Instance");
+            Debug.LogError($"More Than One Instance of type {nameof(LevelManager)}".AddColorTag(KHUtils.XMLColors.Red));
     }
 
     protected override void Start()

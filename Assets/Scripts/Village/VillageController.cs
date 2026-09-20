@@ -36,7 +36,7 @@ public class VillageManager : KHManagedBehaviour
         if (Ins == null)
             Ins = this;
         else
-            Debug.LogWarning("More Than One Instance");
+            Debug.LogError($"More Than One Instance of type {nameof(VillageManager)}".AddColorTag(KHUtils.XMLColors.Red));
     }
 
     protected override void Start()

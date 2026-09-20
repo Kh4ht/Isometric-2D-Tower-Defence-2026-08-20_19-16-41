@@ -68,7 +68,7 @@ public class PathSys : KHManagedBehaviour
         if (Ins == null)
             Ins = this;
         else
-            Debug.LogWarning("More Than One Instance");
+            Debug.LogError($"More Than One Instance of type {nameof(PathSys)}".AddColorTag(KHUtils.XMLColors.Red));
     }
 
     protected override void Start()
@@ -506,29 +506,38 @@ public class PathSys : KHManagedBehaviour
             affectedNodes.Add(node);
         }
 
+        // NOTE: GridNode.Block(true, null) can NOT be used here. IsBlocked is defined as (Tower != null),
+        // and Block() assigns the tower we pass in, so passing null blocks nothing and the search would
+        // always find the old path. A dedicated simulation flag makes the nodes unwalkable instead.
         foreach (GridNode node in affectedNodes)
-            node.Block(true, null);
+            node.IsSimulatedBlocked = true;
 
         bool willBlockPath = false;
 
-        foreach (Vector2Int startCell in pathStartCells)
+        try
         {
-            if (FindPathAlgorithm(startCell, pathTargetCell) == null)
+            foreach (Vector2Int startCell in pathStartCells)
             {
-                willBlockPath = true;
-                break;
+                if (FindPathAlgorithm(startCell, pathTargetCell) == null)
+                {
+                    willBlockPath = true;
+                    break;
+                }
             }
         }
-
-        foreach (GridNode node in affectedNodes)
-            node.Block(false, null);
+        finally
+        {
+            // Always undo the simulation, even if pathfinding throws.
+            foreach (GridNode node in affectedNodes)
+                node.IsSimulatedBlocked = false;
+        }
 
         return willBlockPath;
     }
 
-    public void BlockCells(List<Vector2Int> cells, bool block, Tower newTower)
+    public void BlockCells(List<Vector2Int> cells, Tower newTower)
     {
-        gameGrid.BlockNodes(cells, block, newTower);
+        gameGrid.BlockNodes(cells, newTower);
 
         UpdatePaths();
     }

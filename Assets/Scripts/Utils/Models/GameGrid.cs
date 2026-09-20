@@ -76,10 +76,10 @@ public class GameGrid
         }
     }
 
-    public void BlockNodes(List<Vector2Int> cells, bool block, Tower newTower)
+    public void BlockNodes(List<Vector2Int> cells, Tower newTower)
     {
         foreach (Vector2Int cell in cells)
-            GetNode(cell).Block(block, newTower);
+            GetNode(cell).SetTower(newTower);
     }
 
     public void EraseAllTiles(GameTilemap gameTilemap)

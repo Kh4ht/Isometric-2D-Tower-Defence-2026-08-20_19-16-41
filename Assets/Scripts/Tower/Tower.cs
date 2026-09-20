@@ -165,7 +165,6 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
         stats.Reset(data, occupiedCells);
 
         PathSys.Ins.BlockCells(cells: occupiedCells,
-                               block: true,
                                newTower: this);
 
         spriteRenderer.sprite = data.icons[0];
@@ -194,7 +193,6 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
     public void SellTower()
     {
         PathSys.Ins.BlockCells(cells: stats.GetOccupiedCells(),
-                               block: false,
                                newTower: null);
 
         // TODO: Get Money.

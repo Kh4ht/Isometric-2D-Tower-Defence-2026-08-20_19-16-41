@@ -78,6 +78,7 @@
         "KHUI",
         "Lerp",
         "Mathf",
+        "pathfinding",
         "Poolable",
         "Prefs",
         "Repath",
@@ -88,6 +89,7 @@
         "trackpad",
         "tweens",
         "UGUI",
+        "unwalkable",
         "Yoyo"
     ]
 }

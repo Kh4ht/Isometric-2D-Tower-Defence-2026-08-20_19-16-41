@@ -27,7 +27,7 @@ public class SceneTransitionManager : MonoBehaviour
         if (Ins == null)
             Ins = this;
         else
-            Debug.LogWarning("More Than One Instance");
+            Debug.LogError($"More Than One Instance of type {nameof(SceneTransitionManager)}".AddColorTag(KHUtils.XMLColors.Red));
 
         DontDestroyOnLoad(this);
     }
