@@ -19,14 +19,16 @@ public class TowerStats
     [SerializeField] private float range;
     [SerializeField] private List<Vector2Int> occupiedCells;
     [SerializeField] private TargetSearchType targetSearchType = TargetSearchType.First;
+    [SerializeField] private int sellPrice;
+    [SerializeField] private float shootCooldown;
 
-    public float shootCooldown;
     [ReadOnly] public int lvl = 0;
-    public int sellPrice;
     public Enemy enemyTargeted = null;
 
     // EVENTS
     public event Action<float> OnRangeChanged;
+    public event Action<float> OnShootCooldownChanged;
+    public event Action<int> OnSellPriceChanged;
     public event Action<TargetSearchType> OnTargetSearchTypeChanged;
     public event Action<List<Vector2Int>> OnOccupiedCellsChanged;
 
@@ -41,6 +43,7 @@ public class TowerStats
     #endregion
     #region PUBLIC
 
+    // ENCAPSULATION
     public float GetRange() => range;
     public void SetRange(float newValue)
     {
@@ -68,6 +71,27 @@ public class TowerStats
         OnTargetSearchTypeChanged?.Invoke(newValue);
     }
 
+    public int GetSellPrice() => sellPrice;
+    public void SetSellPrice(int newValue)
+    {
+        if (newValue == sellPrice)
+            return;
+
+        sellPrice = newValue;
+        OnSellPriceChanged?.Invoke(newValue);
+    }
+
+    public float GetShootCooldown() => shootCooldown;
+    public void SetShootCooldown(float newValue)
+    {
+        if (newValue == shootCooldown)
+            return;
+
+        shootCooldown = newValue;
+        OnShootCooldownChanged?.Invoke(newValue);
+    }
+
+    // PUBLIC API
     public void Reset(TowerData towerData, List<Vector2Int> occupiedCells)
     {
         shootCooldown = towerData.shootCooldown;

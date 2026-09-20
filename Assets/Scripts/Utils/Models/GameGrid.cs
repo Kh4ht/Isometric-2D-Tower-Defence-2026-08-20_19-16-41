@@ -22,7 +22,6 @@ public class GameGrid
     private Vector2Int gridOrigin;
 
     // INSPECTOR
-
     public Tilemap groundTilemap;
     public Tilemap towerPlacableTilemap;
     public Tilemap walkableTilemap;

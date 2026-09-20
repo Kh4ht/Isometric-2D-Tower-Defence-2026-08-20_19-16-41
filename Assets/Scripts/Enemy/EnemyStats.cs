@@ -9,40 +9,43 @@ public class EnemyStats
 {
     #region FIELDS
 
+    [SerializeField] private List<Vector2> path = new();
     [SerializeField] private Vector2 moveDir = Vector2.zero;
     [SerializeField] private bool canMove;
+    [SerializeField] private bool reachedVillageArea = false;
     [SerializeField] private ElementStrength elementStrength;
-    public readonly ElementType elementType;
-    public KHHealthController healthController;
-    public bool reachedVillageArea = false;
-    public int nextPathPointIndex = 1; // Start from 1 because enemy spawns on path[pathIndex = 0]
-
-    // Requires Initialization
-    public float moveSpeed;
-    public List<Vector2> path = new();
-    public int pathIndex;
-
-    // GETTERS
-    public Vector2 NextPathPointPos => path[nextPathPointIndex];
-    public int GlobalNextPathPointIndex => nextPathPointIndex - PathSys.Ins.GetDifferenceFromShortestPath(pathIndex);
+    [SerializeField] private ElementType elementType;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private KHHealthController healthController;
+    [SerializeField] private int nextPathPoint = 1; // Start from 1 because enemy spawns on path[pathIndex = 0]
 
     // EVENTS
     public event Action<Vector2> OnMoveDirChanged;
     public event Action<bool> OnCanMoveChanged;
+    public event Action<bool> OnReachedVillageAreaChanged;
     public event Action<ElementStrength> OnElementStrengthChanged;
+    public event Action<ElementType> OnElementTypeChanged;
+    public event Action<List<Vector2>> OnPathChanged;
+    public event Action<float> OnMoveSpeedChanged;
+    public event Action<int> OnNextPathPointChanged;
 
     #endregion
     #region CONSTRUCTOR
 
     public EnemyStats(EnemyData enemyData)
     {
-        Reset(enemyData, new(), 0);
         healthController = new(enemyData.defaultMaxHealth, enemyData.defaultMaxHealth);
         elementType = enemyData.elementType;
+
+        Reset(enemyData, new());
     }
 
     #endregion
     #region PUBLIC
+
+    // ENCAPSULATION
+
+    public KHHealthController GetHealthController() => healthController;
 
     public Vector2 GetMoveDir() => moveDir;
     public void SetMoveDir(Vector2 newValue)
@@ -85,29 +88,71 @@ public class EnemyStats
         OnElementStrengthChanged?.Invoke(newValue);
     }
 
+    public List<Vector2> GetPath() => path;
+    public void SetPath(List<Vector2> newValue)
+    {
+        if (healthController.IsDead)
+            return;
+
+        path = new(newValue);
+        OnPathChanged?.Invoke(newValue);
+    }
+
+    public bool GetReachedVillageArea() => reachedVillageArea;
+    public void SetReachedVillageArea(bool newValue)
+    {
+        if (healthController.IsDead)
+            return;
+
+        reachedVillageArea = newValue;
+        OnReachedVillageAreaChanged?.Invoke(newValue);
+    }
+
+    public ElementType GetElementType() => elementType;
+    public void SetElementType(ElementType newValue)
+    {
+        if (healthController.IsDead)
+            return;
+
+        elementType = newValue;
+        OnElementTypeChanged?.Invoke(newValue);
+    }
+
+    public float GetMoveSpeed() => moveSpeed;
+    public void SetMoveSpeed(float newValue)
+    {
+        if (healthController.IsDead)
+            return;
+
+        moveSpeed = newValue;
+        OnMoveSpeedChanged?.Invoke(newValue);
+    }
+
+    public int GetNextPathPoint() => nextPathPoint;
+    public void SetNextPathPoint(int newValue)
+    {
+        if (healthController.IsDead)
+            return;
+
+        nextPathPoint = newValue;
+        OnNextPathPointChanged?.Invoke(newValue);
+    }
+
+    // PUBLIC API
     public void TakeDamage(float damageAmount, ElementType attackerElementType)
     {
         healthController.Health -= elementStrength.DamageFilter(attackerElementType, elementType, damageAmount);
     }
 
-    public void Reset(EnemyData enemyData, List<Vector2> newPath, int selectedPathIndex)
+    public void Reset(EnemyData enemyData, List<Vector2> newPath)
     {
         reachedVillageArea = false;
         moveSpeed = enemyData.defaultMoveSpeed;
         path = new(newPath);
-        pathIndex = selectedPathIndex;
-        nextPathPointIndex = 1;
+        nextPathPoint = 1;
         canMove = true;
         elementStrength = enemyData.elementStrength;
         healthController?.Revive();
-    }
-
-    public void ReachedVillagerArea()
-    {
-        if (healthController.IsDead)
-            return;
-
-        reachedVillageArea = true;
     }
 
     #endregion

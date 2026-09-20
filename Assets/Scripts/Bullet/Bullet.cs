@@ -4,6 +4,7 @@ using KH;
 using UnityEngine;
 using VInspector;
 
+[RequireComponent(typeof(CapsuleCollider2D))]
 public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHManagedFixedUpdate, IKHPoolable
 {
     #region FIELDS
@@ -12,6 +13,9 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHManagedFixedUpdat
     private readonly List<IKHSubsystem> kHSubSystems = new();
     public BulletCollisionSubSys bulletCollisionSubSys { get; private set; }
     public BulletMovementSubSys bulletMovementSubSys { get; private set; }
+
+    // COMPONENTS
+    public CapsuleCollider2D Coll2d { get; private set; }
 
     // INSPECTOR
     [Tab("STATS")]
@@ -23,8 +27,16 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHManagedFixedUpdat
     #endregion
     #region UNITY EVENTS
 
+    private void Reset()
+    {
+        Coll2d = GetComponent<CapsuleCollider2D>();
+        Coll2d.isTrigger = true;
+    }
+
     private void Awake()
     {
+        Coll2d = GetComponent<CapsuleCollider2D>();
+
         stats = new(data);
 
         kHSubSystems.AddRange(new IKHSubsystem[]
@@ -67,47 +79,3 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHManagedFixedUpdat
 
     #endregion
 }
-
-
-
-
-
-#region BulletStats
-
-[Serializable]
-public class BulletStats
-{
-    public Vector2 targetFirstPos = Vector2.zero;
-    public Vector2 targetLastPosBeforeDeath;
-
-    // Requires Initialization
-    public float moveSpeed;
-    public Enemy target;
-    public float damage;
-
-    // CONSTRUCTOR
-    public BulletStats(BulletData data)
-    {
-        moveSpeed = data.moveSpeed;
-        damage = data.damage;
-    }
-
-    // METHODS
-    public void Reset(BulletData data, Enemy target)
-    {
-        this.target = target;
-        targetFirstPos = target.transform.position;
-        moveSpeed = data.moveSpeed;
-        damage = data.damage;
-    }
-
-    public void UpdateEnemyLastPos()
-    {
-        if (target != null && !target.stats.healthController.IsDead)
-        {
-            targetLastPosBeforeDeath = target.transform.position;
-        }
-    }
-}
-
-#endregion

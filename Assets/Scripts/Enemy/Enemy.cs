@@ -5,7 +5,7 @@ using MyHelper;
 using UnityEngine;
 using VInspector;
 
-[RequireComponent(typeof(CapsuleCollider2D), typeof(Animator))]
+[RequireComponent(typeof(CapsuleCollider2D), typeof(Animator), typeof(Rigidbody2D))]
 public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManagedFixedUpdate
 {
     #region FIELDS
@@ -18,7 +18,17 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
 
     // COMPONENTS
     public CapsuleCollider2D Coll2d { get; private set; }
+    public Rigidbody2D Rb2D { get; private set; }
     public Animator animator { get; private set; }
+
+    // GETTERS
+    public Vector2 NextPathPointPos => stats.GetPath()[stats.GetNextPathPoint()];
+    /// <summary>
+    /// How many path points are still ahead of this enemy (lower = closer to the goal).
+    /// Every route ends at the same target and every step costs the same, so this is comparable
+    /// between enemies even when they are on different (or per-enemy) paths.
+    /// </summary>
+    public int RemainingPathPoints => stats.GetPath().Count - stats.GetNextPathPoint();
 
     // INSPECTOR
 
@@ -38,6 +48,9 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
         Coll2d = GetComponent<CapsuleCollider2D>();
         Coll2d.isTrigger = true;
 
+        Rb2D = GetComponent<Rigidbody2D>();
+        Rb2D.bodyType = RigidbodyType2D.Kinematic;
+
         //Set Tag
         tag = GameTags.ENEMY;
     }
@@ -46,6 +59,7 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     {
         Coll2d = GetComponent<CapsuleCollider2D>();
         animator = GetComponent<Animator>();
+        Rb2D = GetComponent<Rigidbody2D>();
 
         stats = new(data);
 
@@ -106,7 +120,7 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     [Button(color = "green")]
     private void DamageEnemy(int damageAmount)
     {
-        stats.healthController.RemoveHealth(damageAmount);
+        stats.GetHealthController().RemoveHealth(damageAmount);
     }
 #endif
 
@@ -120,9 +134,9 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
     #endregion
     #region PUBLIC
 
-    public void ResetEnemy(List<Vector2> path, int selectedPathIndex)
+    public void ResetEnemy(List<Vector2> path)
     {
-        stats.Reset(data, path, selectedPathIndex);
+        stats.Reset(data, path);
 
         kHSubSystems.ResetAll();
     }

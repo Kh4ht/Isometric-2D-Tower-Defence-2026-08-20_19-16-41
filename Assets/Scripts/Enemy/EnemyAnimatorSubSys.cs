@@ -36,7 +36,7 @@ public class EnemyAnimatorSubSys : IKHSubsystem
     public void IOnDisable()
     {
         // REMOVE LISTENERS
-        owner.stats.healthController.RemoveOnDeathListener(OnDeath);
+        owner.stats.GetHealthController().RemoveOnDeathListener(OnDeath);
         owner.stats.OnMoveDirChanged -= OnMoveDirChanged;
         owner.stats.OnCanMoveChanged -= OnCanMoveChanged;
     }
@@ -66,7 +66,7 @@ public class EnemyAnimatorSubSys : IKHSubsystem
     public void IReset()
     {
         // ADD LISTENERS
-        owner.stats.healthController.AddOnDeathListener(OnDeath);
+        owner.stats.GetHealthController().AddOnDeathListener(OnDeath);
         owner.stats.OnMoveDirChanged += OnMoveDirChanged;
         owner.stats.OnCanMoveChanged += OnCanMoveChanged;
 

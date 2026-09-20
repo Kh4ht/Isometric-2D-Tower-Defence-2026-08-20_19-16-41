@@ -80,6 +80,7 @@
         "Mathf",
         "Poolable",
         "Prefs",
+        "Repath",
         "Rigidbody",
         "Scriptable",
         "Tilemap",

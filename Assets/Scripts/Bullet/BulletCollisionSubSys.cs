@@ -48,7 +48,7 @@ public class BulletCollisionSubSys : IKHSubsystem
 
     private void StraightBulletColl()
     {
-        if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.stats.targetFirstPos, GameConsts.COMPARISON_DIS_1))
+        if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.stats.GetTargetFirstPos(), GameConsts.COMPARISON_DIS_1))
         {
             OnBulletCollision();
         }
@@ -64,7 +64,7 @@ public class BulletCollisionSubSys : IKHSubsystem
     {
         if (!targetIsDead)
         {
-            DamageEnemy(owner.stats.target);
+            DamageEnemy(owner.stats.GetTarget());
         }
 
         // Destroy the bullet after hitting the enemy
@@ -73,16 +73,16 @@ public class BulletCollisionSubSys : IKHSubsystem
 
     private void CheckTargetDead()
     {
-        if (!targetIsDead && (owner.stats.target == null || owner.stats.target.stats.healthController.IsDead))
+        if (!targetIsDead && (owner.stats.GetTarget() == null || owner.stats.GetTarget().stats.GetHealthController().IsDead))
         {
-            owner.stats.target = null;
+            owner.stats.SetTarget(null);
             targetIsDead = true;
         }
     }
 
     private void DamageEnemy(Enemy enemy)
     {
-        enemy.stats.TakeDamage(owner.stats.damage, owner.data.elementType);
+        enemy.stats.TakeDamage(owner.stats.GetDamage(), owner.data.elementType);
     }
 
     #endregion

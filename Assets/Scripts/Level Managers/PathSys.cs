@@ -31,7 +31,7 @@ public class PathSys : KHManagedBehaviour
     public static PathSys Ins { get; private set; }
     private const int MOVE_COST = 10;
 
-    public readonly List<List<Vector2Int>> currentPaths = new();
+    private readonly List<List<Vector2Int>> currentPaths = new();
     private List<List<Vector2Int>> oldPaths = new();
 
     // GETTERS
@@ -231,53 +231,144 @@ public class PathSys : KHManagedBehaviour
         return null;
     }
 
+    // private void UpdatePaths()
+    // {
+    //     // Store the old paths       
+    //     oldPaths = new(currentPaths);
+
+    //     // Update Paths based on the updated GameGrid 
+    //     currentPaths.Clear();
+
+    //     foreach (Vector2Int startPos in pathStartCells)
+    //         currentPaths.Add(FindPathAlgorithm(startPos, pathTargetCell));
+
+    //     // Update The Alive Enemy path    
+    //     foreach (Enemy enemy in Helper.GetAllAliveEnemies())
+    //     {
+    //         int reachedPathIndex = enemy.stats.nextPathPointIndex;
+    //         List<Vector2> oldEnemyPath = enemy.stats.GetPath();
+    //         List<Vector2> newEnemyPath = GetPath(enemy.stats.pathIndex);
+    //         int oldRemainingCount = oldEnemyPath.Count - reachedPathIndex;
+    //         int newRemainingCount = newEnemyPath.Count - reachedPathIndex;
+    //         List<Vector2> oldSuffix = oldEnemyPath.GetRange(reachedPathIndex, oldRemainingCount);
+
+    //         bool unaffected = false;
+
+    //         if (newEnemyPath.Count >= oldRemainingCount)
+    //         {
+    //             List<Vector2> newSuffix = newEnemyPath.GetRange(newEnemyPath.Count - oldRemainingCount, oldRemainingCount);
+    //             unaffected = oldSuffix.SequenceEqual(newSuffix);
+    //         }
+
+    //         // Same remaining route, just shifted — realign the index, don't teleport progress.         
+    //         if (unaffected)
+    //             enemy.stats.nextPathPointIndex = newEnemyPath.Count - oldRemainingCount;
+    //         // else: Do not change nextPathPointIndex  
+
+    //         enemy.stats.SetPath(newEnemyPath);
+    //     }
+
+    //     DrawPaths();
+    // }
+
+
+    /// <summary>
+    /// Recomputes all spawn routes after the grid changes, then re-paths each alive enemy
+    /// from where it actually is. An enemy keeps its current route unless that route is
+    /// blocked or a strictly shorter one exists.
+    /// </summary>
     private void UpdatePaths()
     {
-        // Store the old path
+        // Store the old paths
         oldPaths = new(currentPaths);
 
+        // Update the shared spawn -> target paths (used for visuals and new spawns)
         currentPaths.Clear();
-
         foreach (Vector2Int startPos in pathStartCells)
-        {
             currentPaths.Add(FindPathAlgorithm(startPos, pathTargetCell));
-        }
 
-        // Update The Alive Enemy path
+        // Each enemy decides for itself
         foreach (Enemy enemy in Helper.GetAllAliveEnemies())
-        {
-            int reachedPathIndex = enemy.stats.nextPathPointIndex;
-            List<Vector2> oldEnemyPath = enemy.stats.path;
-            int selectedPath = enemy.stats.pathIndex;
-            List<Vector2> newPath = GetPath(selectedPath);
-
-            int oldRemainingCount = oldEnemyPath.Count - reachedPathIndex;
-            List<Vector2> oldSuffix = oldEnemyPath.GetRange(reachedPathIndex, oldRemainingCount);
-
-            bool unaffected = false;
-
-            if (newPath.Count >= oldRemainingCount)
-            {
-                List<Vector2> newSuffix = newPath.GetRange(newPath.Count - oldRemainingCount, oldRemainingCount);
-                unaffected = oldSuffix.SequenceEqual(newSuffix);
-            }
-
-            if (unaffected)
-            {
-                // Same remaining route, just shifted — realign the index, don't teleport progress.
-                enemy.stats.nextPathPointIndex = newPath.Count - oldRemainingCount;
-            }
-            else
-            {
-                // The tower changed the route the enemy still has to walk.
-                // Decide your desired behavior here (e.g. re-path from current world position,
-                // snap to nearest cell on newPath, etc.) — this is a design decision, not a bug fix.
-            }
-
-            enemy.stats.path = newPath;
-        }
+            RepathEnemy(enemy);
 
         DrawPaths();
+    }
+
+    private void RepathEnemy(Enemy enemy)
+    {
+        List<Vector2> oldPath = enemy.stats.GetPath();
+        int nextIndex = enemy.stats.GetNextPathPoint();
+        int oldRemaining = oldPath.Count - nextIndex;
+
+        // Best route from the enemy's current position
+        List<Vector2Int> bestCells = FindPathFromEnemy(enemy, oldPath, nextIndex);
+
+        // Enemy is completely cut off (shouldn't happen: placement is validated). Keep what it has.
+        if (bestCells == null)
+            return;
+
+        // Keep the current route if it is still walkable and not longer than the new best.
+        // "<=" is intentional: on ties we keep the old route so enemies don't jitter between equal paths.
+        if (IsRouteWalkable(oldPath, nextIndex) && oldRemaining <= bestCells.Count)
+            return;
+
+        List<Vector2> newPath = gameGrid.GetCellsCenterWorld(bestCells);
+
+        enemy.stats.SetPath(newPath);
+
+        // Set the index AFTER SetPath in case SetPath resets it.
+        // Skip the first waypoint if the enemy is already past its center, so it doesn't step backwards.
+        enemy.stats.SetNextPathPoint(ShouldSkipFirstPoint(enemy.transform.position, newPath) ? 1 : 0);
+    }
+
+    /// <summary>
+    /// A* from the enemy's current cell. If that cell just became blocked (a tower was placed
+    /// on/under the enemy), fall back to the last waypoint the enemy already passed.
+    /// </summary>
+    private List<Vector2Int> FindPathFromEnemy(Enemy enemy, List<Vector2> oldPath, int nextIndex)
+    {
+        Vector2Int cell = enemy.transform.position.WorldToCell();
+
+        List<Vector2Int> path = FindPathAlgorithm(cell, pathTargetCell);
+        if (path != null)
+            return path;
+
+        if (nextIndex > 0 && nextIndex - 1 < oldPath.Count)
+        {
+            Vector2Int previousCell = (Vector2Int)walkableTilemap.WorldToCell(oldPath[nextIndex - 1]);
+            return FindPathAlgorithm(previousCell, pathTargetCell);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// True if every remaining waypoint of the route is still on a walkable node.
+    /// </summary>
+    private bool IsRouteWalkable(List<Vector2> route, int fromIndex)
+    {
+        for (int i = fromIndex; i < route.Count; i++)
+        {
+            Vector2Int cell = (Vector2Int)walkableTilemap.WorldToCell(route[i]);
+            GridNode node = gameGrid.GetNode(cell);
+
+            if (node == null || !node.IsWalkable)
+                return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// The first waypoint is the center of the enemy's own cell. If the enemy is already closer to
+    /// the second waypoint than the first one is, walking to the first would be a step backwards.
+    /// </summary>
+    private static bool ShouldSkipFirstPoint(Vector2 enemyPos, List<Vector2> path)
+    {
+        if (path.Count < 2)
+            return false;
+
+        return Kh.GetSqrDistance(enemyPos, path[1]) < Kh.GetSqrDistance(path[0], path[1]);
     }
 
     // PATH VISUALIZER

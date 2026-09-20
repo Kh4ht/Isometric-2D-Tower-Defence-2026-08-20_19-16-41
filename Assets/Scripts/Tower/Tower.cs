@@ -185,7 +185,7 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
         stats.lvl++;
 
         spriteRenderer.sprite = data.icons[stats.lvl];
-        stats.sellPrice += data.price[stats.lvl] / 2;
+        stats.SetSellPrice(stats.GetSellPrice() + (data.price[stats.lvl] / 2));
         stats.SetRange(data.range[stats.lvl]);
     }
 

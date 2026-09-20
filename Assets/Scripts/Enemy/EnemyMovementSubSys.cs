@@ -20,10 +20,10 @@ public class EnemyMovementSubSys : IKHSubsystem
 
     public void IFixedUpdate()
     {
-        if (!owner.stats.GetCanMove() || owner.stats.healthController.IsDead)
+        if (!owner.stats.GetCanMove() || owner.stats.GetHealthController().IsDead)
             return;
 
-        if (!owner.stats.reachedVillageArea)
+        if (!owner.stats.GetReachedVillageArea())
             FollowPath();
         else
             FollowNearestVillager();
@@ -51,22 +51,22 @@ public class EnemyMovementSubSys : IKHSubsystem
 
     private void FollowPath()
     {
-        if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.stats.NextPathPointPos, 0.1f))
+        if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.NextPathPointPos, 0.1f))
         {
-            if (owner.stats.nextPathPointIndex + 1 < owner.stats.path.Count)
-                owner.stats.nextPathPointIndex++;
+            if (owner.stats.GetNextPathPoint() + 1 < owner.stats.GetPath().Count)
+                owner.stats.SetNextPathPoint(owner.stats.GetNextPathPoint() + 1);
         }
 
         // Update Move Direction.
-        owner.stats.SetMoveDir(Kh.GetDir(owner.transform.position, owner.stats.path[owner.stats.nextPathPointIndex]));
+        owner.stats.SetMoveDir(Kh.GetDir(owner.transform.position, owner.stats.GetPath()[owner.stats.GetNextPathPoint()]));
 
         // Add Velocity.
-        Move(owner.stats.path[owner.stats.nextPathPointIndex]);
+        Move(owner.stats.GetPath()[owner.stats.GetNextPathPoint()]);
     }
 
     private void Move(Vector2 targetPos)
     {
-        owner.KHMoveTowards(targetPos, owner.stats.moveSpeed * Time.fixedDeltaTime);
+        owner.KHMoveTowards(targetPos, owner.stats.GetMoveSpeed() * Time.fixedDeltaTime);
     }
 
     #endregion

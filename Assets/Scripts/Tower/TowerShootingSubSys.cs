@@ -37,7 +37,7 @@ public class TowerShootingSubSys : IKHSubsystem
 
         shootCooldownTimer.Run();
 
-        if (shootCooldownTimer.DidExceed(owner.stats.shootCooldown))
+        if (shootCooldownTimer.DidExceed(owner.stats.GetShootCooldown()))
         {
             if ((owner.stats.enemyTargeted = GetTarget()) != null)
             {

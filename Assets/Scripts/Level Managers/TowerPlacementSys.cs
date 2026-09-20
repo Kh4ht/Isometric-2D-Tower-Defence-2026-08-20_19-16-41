@@ -5,7 +5,6 @@ using KH;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VInspector;
-using UnityEngine.Rendering;
 
 /// <summary>
 /// Manages the tower placement workflow, including hover previews, selection,

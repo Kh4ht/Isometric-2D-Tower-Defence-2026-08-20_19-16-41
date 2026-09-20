@@ -58,6 +58,16 @@ namespace MyHelper
         #endregion
         #region GRID
 
+        public static Vector2Int WorldToCell(this Vector2 vector2)
+        {
+            return PathSys.Ins.gameGrid.WorldToCell(vector2);
+        }
+
+        public static Vector2Int WorldToCell(this Vector3 vector3)
+        {
+            return PathSys.Ins.gameGrid.WorldToCell(vector3);
+        }
+
         public static GridNode GetNodeMouseIsPointingAt()
         {
             return PathSys.Ins.gameGrid.GetNode(Kh.GetMouseWorldPos());
@@ -66,6 +76,11 @@ namespace MyHelper
         public static Vector2 GetCellCenterWorld(this Vector2Int vector2Int)
         {
             return PathSys.Ins.gameGrid.GetCellCenterWorld(vector2Int);
+        }
+
+        public static List<Vector2> GetCellsCenterWorld(this List<Vector2Int> vector2Ints)
+        {
+            return PathSys.Ins.gameGrid.GetCellsCenterWorld(vector2Ints);
         }
 
         public static IEnumerable<Vector2Int> GetHoveredCells()
@@ -218,7 +233,7 @@ namespace MyHelper
         {
             foreach (Enemy enemy in KHPoolManager.Ins.GetAllActive<Enemy>())
             {
-                if (enemy.stats.healthController.IsDead)
+                if (enemy.stats.GetHealthController().IsDead)
                     continue;
 
                 yield return enemy;
@@ -226,30 +241,30 @@ namespace MyHelper
         }
 
         /// <summary>
-        /// Gets the enemy that has progressed the farthest along the path.
+        /// Gets the enemy that is closest to the goal (fewest path points remaining).
         /// </summary>
         /// <param name="enemies">The enemies to search.</param>
-        /// <returns>The enemy with the highest path index, or <see langword="null"/> if the collection is empty.</returns>
+        /// <returns>The enemy closest to the goal, or <see langword="null"/> if the collection is empty.</returns>
         public static Enemy GetFirstEnemy(this IEnumerable<Enemy> enemies)
         {
             Enemy firstEnemy = null;
 
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.stats.healthController.IsDead)
+                if (enemy.stats.GetHealthController().IsDead)
                     continue;
 
-                if (firstEnemy == null || enemy.stats.GlobalNextPathPointIndex > firstEnemy.stats.GlobalNextPathPointIndex)
+                if (firstEnemy == null || enemy.RemainingPathPoints < firstEnemy.RemainingPathPoints)
                 {
                     firstEnemy = enemy;
 
                     continue;
                 }
 
-                if (enemy.stats.GlobalNextPathPointIndex == firstEnemy.stats.GlobalNextPathPointIndex)
+                if (enemy.RemainingPathPoints == firstEnemy.RemainingPathPoints)
                 {
-                    if (Kh.GetSqrDistance(enemy.transform.position, enemy.stats.NextPathPointPos)
-                        < Kh.GetSqrDistance(firstEnemy.transform.position, firstEnemy.stats.NextPathPointPos))
+                    if (Kh.GetSqrDistance(enemy.transform.position, enemy.NextPathPointPos)
+                        < Kh.GetSqrDistance(firstEnemy.transform.position, firstEnemy.NextPathPointPos))
                     {
                         firstEnemy = enemy;
                     }
@@ -260,30 +275,30 @@ namespace MyHelper
         }
 
         /// <summary>
-        /// Gets the enemy that has progressed the least along the path.
+        /// Gets the enemy that is farthest from the goal (most path points remaining).
         /// </summary>
         /// <param name="enemies">The enemies to search.</param>
-        /// <returns>The enemy with the lowest path index, or <see langword="null"/> if the collection is empty.</returns>
+        /// <returns>The enemy farthest from the goal, or <see langword="null"/> if the collection is empty.</returns>
         public static Enemy GetLastEnemy(this IEnumerable<Enemy> enemies)
         {
             Enemy lastEnemy = null;
 
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.stats.healthController.IsDead)
+                if (enemy.stats.GetHealthController().IsDead)
                     continue;
 
-                if (lastEnemy == null || enemy.stats.GlobalNextPathPointIndex < lastEnemy.stats.GlobalNextPathPointIndex)
+                if (lastEnemy == null || enemy.RemainingPathPoints > lastEnemy.RemainingPathPoints)
                 {
                     lastEnemy = enemy;
 
                     continue;
                 }
 
-                if (enemy.stats.GlobalNextPathPointIndex == lastEnemy.stats.GlobalNextPathPointIndex)
+                if (enemy.RemainingPathPoints == lastEnemy.RemainingPathPoints)
                 {
-                    if (Kh.GetSqrDistance(enemy.transform.position, enemy.stats.NextPathPointPos)
-                        > Kh.GetSqrDistance(lastEnemy.transform.position, lastEnemy.stats.NextPathPointPos))
+                    if (Kh.GetSqrDistance(enemy.transform.position, enemy.NextPathPointPos)
+                        > Kh.GetSqrDistance(lastEnemy.transform.position, lastEnemy.NextPathPointPos))
                     {
                         lastEnemy = enemy;
                     }
@@ -304,10 +319,10 @@ namespace MyHelper
 
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.stats.healthController.IsDead)
+                if (enemy.stats.GetHealthController().IsDead)
                     continue;
 
-                if (weakestEnemy == null || enemy.stats.healthController.Health < weakestEnemy.stats.healthController.Health)
+                if (weakestEnemy == null || enemy.stats.GetHealthController().Health < weakestEnemy.stats.GetHealthController().Health)
                     weakestEnemy = enemy;
             }
 
@@ -325,10 +340,10 @@ namespace MyHelper
 
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.stats.healthController.IsDead)
+                if (enemy.stats.GetHealthController().IsDead)
                     continue;
 
-                if (strongestEnemy == null || enemy.stats.healthController.Health > strongestEnemy.stats.healthController.Health)
+                if (strongestEnemy == null || enemy.stats.GetHealthController().Health > strongestEnemy.stats.GetHealthController().Health)
                     strongestEnemy = enemy;
             }
 

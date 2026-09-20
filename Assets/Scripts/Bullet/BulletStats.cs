@@ -1,0 +1,99 @@
+using System;
+using UnityEngine;
+
+[Serializable]
+public class BulletStats
+{
+    #region FIELDS
+
+    [SerializeField] private Vector2 targetFirstPos;
+    [SerializeField] private Vector2 targetLastPosBeforeDeath;
+    [SerializeField] private Enemy target;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float damage;
+
+    // EVENTS
+    public event Action<Vector2> OnTargetFirstPosChanged;
+    public event Action<Enemy> OnTargetChanged;
+
+    #endregion
+    #region CONSTRUCTOR
+
+    public BulletStats(BulletData data)
+    {
+        moveSpeed = data.moveSpeed;
+        damage = data.damage;
+
+        Reset(data, null);
+    }
+
+    #endregion
+    #region PUBLIC
+
+    // ENCAPSULATION
+    public Vector2 GetTargetFirstPos() => targetFirstPos;
+    public void SetCanMove(Vector2 newValue)
+    {
+        if (newValue == targetFirstPos)
+            return;
+
+        targetFirstPos = newValue;
+        OnTargetFirstPosChanged?.Invoke(newValue);
+    }
+
+    public Vector2 GetTargetLastPosBeforeDeath() => targetLastPosBeforeDeath;
+    public void SetTargetLastPosBeforeDeath(Vector2 newValue)
+    {
+        if (newValue == targetLastPosBeforeDeath)
+            return;
+
+        targetLastPosBeforeDeath = newValue;
+    }
+
+    public Enemy GetTarget() => target;
+    public void SetTarget(Enemy newValue)
+    {
+        if (newValue == target)
+            return;
+
+        target = newValue;
+        OnTargetChanged?.Invoke(newValue);
+    }
+
+    public float GetMoveSpeed() => moveSpeed;
+    public void SetMoveSpeed(float newValue)
+    {
+        if (newValue == moveSpeed)
+            return;
+
+        moveSpeed = newValue;
+    }
+
+    public float GetDamage() => damage;
+    public void SetDamage(float newValue)
+    {
+        if (newValue == damage)
+            return;
+
+        damage = newValue;
+    }
+
+    // PUBLIC API
+    public void Reset(BulletData data, Enemy target)
+    {
+        this.target = target;
+        targetFirstPos = target.transform.position;
+        moveSpeed = data.moveSpeed;
+        damage = data.damage;
+    }
+
+    public void UpdateEnemyLastPos()
+    {
+        if (target != null && !target.stats.GetHealthController().IsDead)
+        {
+            targetLastPosBeforeDeath = target.transform.position;
+        }
+    }
+
+    #endregion
+}

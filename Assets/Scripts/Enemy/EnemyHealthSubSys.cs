@@ -22,22 +22,22 @@ public class EnemyHealthSubSys : IKHSubsystem
 
     public void IOnEnable()
     {
-        owner.stats.healthController.AddOnHealthDecreaseListener(OnHealthDecreased);
-        owner.stats.healthController.AddOnMaxHealthReachedListener(OnMaxHealth);
-        owner.stats.healthController.AddOnDeathListener(OnDeath);
-        owner.stats.healthController.AddOnReviveListener(OnRevive);
-        owner.stats.healthController.AddOnHealthChangedListener(OnHealthChanged);
-        owner.stats.healthController.AddOnMaxHealthChangedListener(OnMaxHealthChanged);
+        owner.stats.GetHealthController().AddOnHealthDecreaseListener(OnHealthDecreased);
+        owner.stats.GetHealthController().AddOnMaxHealthReachedListener(OnMaxHealth);
+        owner.stats.GetHealthController().AddOnDeathListener(OnDeath);
+        owner.stats.GetHealthController().AddOnReviveListener(OnRevive);
+        owner.stats.GetHealthController().AddOnHealthChangedListener(OnHealthChanged);
+        owner.stats.GetHealthController().AddOnMaxHealthChangedListener(OnMaxHealthChanged);
     }
 
     public void IOnDisable()
     {
-        owner.stats.healthController.RemoveOnHealthDecreaseListener(OnHealthDecreased);
-        owner.stats.healthController.RemoveOnMaxHealthReachedListener(OnMaxHealth);
-        owner.stats.healthController.RemoveOnDeathListener(OnDeath);
-        owner.stats.healthController.RemoveOnReviveListener(OnRevive);
-        owner.stats.healthController.RemoveOnHealthChangedListener(OnHealthChanged);
-        owner.stats.healthController.RemoveOnMaxHealthChangedListener(OnMaxHealthChanged);
+        owner.stats.GetHealthController().RemoveOnHealthDecreaseListener(OnHealthDecreased);
+        owner.stats.GetHealthController().RemoveOnMaxHealthReachedListener(OnMaxHealth);
+        owner.stats.GetHealthController().RemoveOnDeathListener(OnDeath);
+        owner.stats.GetHealthController().RemoveOnReviveListener(OnRevive);
+        owner.stats.GetHealthController().RemoveOnHealthChangedListener(OnHealthChanged);
+        owner.stats.GetHealthController().RemoveOnMaxHealthChangedListener(OnMaxHealthChanged);
     }
 
     #endregion
@@ -56,13 +56,13 @@ public class EnemyHealthSubSys : IKHSubsystem
     private void OnMaxHealthChanged()
     {
         // Update the health slider's width
-        owner.healthSlider.IncreaseWidthBasedOnHealth(owner.stats.healthController.MaxHealth);
+        owner.healthSlider.IncreaseWidthBasedOnHealth(owner.stats.GetHealthController().MaxHealth);
     }
 
     private void OnHealthChanged()
     {
         // Update the health slider's value
-        owner.healthSlider.ChangeValue(owner.stats.healthController.Health, owner.stats.healthController.MaxHealth);
+        owner.healthSlider.ChangeValue(owner.stats.GetHealthController().Health, owner.stats.GetHealthController().MaxHealth);
     }
 
     private void OnDeath()

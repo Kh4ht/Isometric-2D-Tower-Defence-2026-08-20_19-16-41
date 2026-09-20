@@ -150,7 +150,7 @@ public class EnemySpawningSys : KHManagedBehaviour
 
         Vector2 spawnPos = path[0];
 
-        KHPoolManager.Ins.Spawn<Enemy>(enemyData.ID, spawnPos).ResetEnemy(path, pathIndex);
+        KHPoolManager.Ins.Spawn<Enemy>(enemyData.ID, spawnPos).ResetEnemy(path);
     }
 
     private void RegisterEnemiesToPool()
