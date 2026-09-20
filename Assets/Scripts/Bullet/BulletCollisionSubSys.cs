@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using KH;
+using MyHelper;
+using UnityEngine;
 
 public class BulletCollisionSubSys : IKHSubsystem
 {
@@ -19,14 +22,40 @@ public class BulletCollisionSubSys : IKHSubsystem
     #endregion
     #region UNITY EVENTS
 
+    public void IOnDisable()
+    {
+        if (owner.stats.GetTarget() != null)
+            owner.stats.GetTarget().stats.GetHealthController().RemoveOnDeathListener(OnTargetDeath);
+    }
+
     public void IUpdate()
     {
-        CheckTargetDead();
-
         switch (owner.data.type)
         {
             case BulletMoveType.Straight:
-                StraightBulletColl();
+                OnTargetDeadCollision();
+                break;
+
+            case BulletMoveType.Parabolic:
+                ParabolicBulletColl();
+                break;
+
+            case BulletMoveType.Laser:
+                LaserBulletColl();
+                break;
+
+            case BulletMoveType.Follow:
+                FollowBulletColl();
+                break;
+        }
+    }
+
+    public void IOnTriggerEnter2D(Collider2D collision)
+    {
+        switch (owner.data.type)
+        {
+            case BulletMoveType.Straight:
+                StraightBulletColl(collision);
                 break;
 
             case BulletMoveType.Parabolic:
@@ -46,12 +75,23 @@ public class BulletCollisionSubSys : IKHSubsystem
     #endregion
     #region PRIVATE
 
-    private void StraightBulletColl()
+    private void OnTargetDeath()
     {
-        if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.stats.GetTargetFirstPos(), GameConsts.COMPARISON_DIS_1))
-        {
-            OnBulletCollision();
-        }
+        owner.stats.GetTarget().stats.GetHealthController().RemoveOnDeathListener(OnTargetDeath);
+
+        owner.stats.SetTarget(null);
+        targetIsDead = true;
+    }
+
+    private void StraightBulletColl(Collider2D collision)
+    {
+        if (targetIsDead)
+            return;
+
+        if (collision.TryGetComponent(out Enemy enemy) && enemy != owner.stats.GetTarget())
+            return;
+
+        OnBulletCollisionWithTarget();
     }
 
     private void ParabolicBulletColl() { }
@@ -60,7 +100,7 @@ public class BulletCollisionSubSys : IKHSubsystem
 
     private void FollowBulletColl() { }
 
-    private void OnBulletCollision()
+    private void OnBulletCollisionWithTarget()
     {
         if (!targetIsDead)
         {
@@ -71,12 +111,27 @@ public class BulletCollisionSubSys : IKHSubsystem
         KHPoolManager.Ins.Despawn(owner.data.ID, owner);
     }
 
-    private void CheckTargetDead()
+    private void OnTargetDeadCollision()
     {
-        if (!targetIsDead && (owner.stats.GetTarget() == null || owner.stats.GetTarget().stats.GetHealthController().IsDead))
+        if (!targetIsDead)
+            return;
+
+        if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.stats.GetTargetPos(), GameConsts.COMPARISON_DIS_1))
         {
-            owner.stats.SetTarget(null);
-            targetIsDead = true;
+            IEnumerable<Enemy> enemiesInRange = Helper.GetAllAliveEnemiesInRange(owner.stats.GetTargetPos(), GameConsts.COMPARISON_DIS_1 + 0.75f);
+
+            foreach (Enemy enemy in enemiesInRange)
+            {
+                if (owner.Coll2d.IsTouching(enemy.Coll2d))
+                {
+                    DamageEnemy(enemy);
+
+                    KHPoolManager.Ins.Despawn(owner.data.ID, owner);
+                    return;
+                }
+            }
+
+            KHPoolManager.Ins.Despawn(owner.data.ID, owner);
         }
     }
 
@@ -91,6 +146,7 @@ public class BulletCollisionSubSys : IKHSubsystem
     public void IReset()
     {
         targetIsDead = false;
+        owner.stats.GetTarget().stats.GetHealthController().AddOnDeathListener(OnTargetDeath);
     }
 
     #endregion

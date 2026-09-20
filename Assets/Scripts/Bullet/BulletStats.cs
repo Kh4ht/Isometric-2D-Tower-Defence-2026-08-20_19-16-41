@@ -8,6 +8,7 @@ public class BulletStats
 
     [SerializeField] private Vector2 targetFirstPos;
     [SerializeField] private Vector2 targetLastPosBeforeDeath;
+    [SerializeField] private Vector2 targetPos;
     [SerializeField] private Enemy target;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float damage;
@@ -32,7 +33,7 @@ public class BulletStats
 
     // ENCAPSULATION
     public Vector2 GetTargetFirstPos() => targetFirstPos;
-    public void SetCanMove(Vector2 newValue)
+    public void SetTargetFirstPos(Vector2 newValue)
     {
         if (newValue == targetFirstPos)
             return;
@@ -78,11 +79,23 @@ public class BulletStats
         damage = newValue;
     }
 
+    public Vector2 GetTargetPos() => targetPos;
+    public void SetTargetPos(Vector2 newValue)
+    {
+        if (newValue == targetPos)
+            return;
+
+        targetPos = newValue;
+    }
+
     // PUBLIC API
     public void Reset(BulletData data, Enemy target)
     {
         this.target = target;
-        targetFirstPos = target.transform.position;
+
+        if (target != null)
+            targetFirstPos = target.transform.position;
+
         moveSpeed = data.moveSpeed;
         damage = data.damage;
     }

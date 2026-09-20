@@ -107,7 +107,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         if (!Mouse.current.leftButton.wasPressedThisFrame)
             return;
 
-        if ((gridNodeMousePointingAt.IsDecoration || gridNodeMousePointingAt == null) && cells.IsSelected)
+        if ((gridNodeMousePointingAt == null || gridNodeMousePointingAt.IsDecoration) && cells.IsSelected)
         {
             cells.Deselect();
             return;
@@ -121,7 +121,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
             return;
         }
 
-        if (!PathSys.Ins.ValidateTowerPlacementCells(cells.hoveredCells)
+        if (!PathSys.Ins.CanPlaceTowerOnCells(cells.hoveredCells)
             || PathSys.Ins.WillBlockEnemyPath(cells.hoveredCells))
         {
             // TODO: little feedback or rejection sound effect.

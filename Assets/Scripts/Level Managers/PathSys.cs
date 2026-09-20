@@ -443,7 +443,7 @@ public class PathSys : KHManagedBehaviour
 
     public bool CanPlaceTower(List<Vector2Int> cells)
     {
-        if (!ValidateTowerPlacementCells(cells))
+        if (!CanPlaceTowerOnCells(cells))
             return false;
 
         if (WillBlockEnemyPath(cells))
@@ -468,7 +468,7 @@ public class PathSys : KHManagedBehaviour
         return node.IsTowerPlacable;
     }
 
-    public bool ValidateTowerPlacementCells(List<Vector2Int> hoveredCells)
+    public bool CanPlaceTowerOnCells(List<Vector2Int> hoveredCells)
     {
         foreach (var hoveredCell in hoveredCells)
         {
@@ -501,7 +501,7 @@ public class PathSys : KHManagedBehaviour
             }
 
             if (!node.IsTowerPlacable)
-                return false;
+                return true;
 
             affectedNodes.Add(node);
         }

@@ -45,7 +45,7 @@ public class BulletMovementSubSys : IKHSubsystem
 
     private void StraightMove()
     {
-        owner.KHMoveTowards(owner.stats.GetTargetFirstPos(), owner.stats.GetMoveSpeed() * Time.fixedDeltaTime);
+        owner.KHMoveTowards(owner.stats.GetTargetPos(), owner.stats.GetMoveSpeed() * Time.fixedDeltaTime);
     }
 
     private void ParabolicMove() { }
@@ -59,7 +59,24 @@ public class BulletMovementSubSys : IKHSubsystem
 
     public void IReset()
     {
-        // Nothing to reset.
+        switch (owner.data.type)
+        {
+            case BulletMoveType.Straight:
+                owner.stats.SetTargetPos(owner.stats.GetTargetFirstPos());
+                break;
+
+            case BulletMoveType.Parabolic:
+
+                break;
+
+            case BulletMoveType.Laser:
+
+                break;
+
+            case BulletMoveType.Follow:
+
+                break;
+        }
     }
 
     #endregion

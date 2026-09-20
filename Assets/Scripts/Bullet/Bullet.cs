@@ -58,10 +58,10 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHManagedFixedUpdat
         kHSubSystems.FixedUpdateAll();
     }
 
-    #endregion
-    #region PRIVATE
-
-
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        kHSubSystems.OnTriggerEnter2DAll(collision);
+    }
 
     #endregion
     #region PUBLIC

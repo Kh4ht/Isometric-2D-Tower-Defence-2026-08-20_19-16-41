@@ -143,7 +143,9 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 
     private void RegisterBulletsToPool()
     {
-        KHPoolManager.Ins.Register(data.bulletData.ID, data.bulletData.prefab);
+        KHPoolManager.Ins.Register(data.bulletData.ID,
+                                   data.bulletData.prefab,
+                                   showLogMessage: false);
     }
 
     #endregion

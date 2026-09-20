@@ -229,11 +229,35 @@ namespace MyHelper
         #endregion
         #region ENEMY QUERIES
 
+        /// <summary>
+        /// Gets all currently active enemies that are still alive.
+        /// </summary>
+        /// <returns>An enumeration of living enemies.</returns>
         public static IEnumerable<Enemy> GetAllAliveEnemies()
         {
             foreach (Enemy enemy in KHPoolManager.Ins.GetAllActive<Enemy>())
             {
                 if (enemy.stats.GetHealthController().IsDead)
+                    continue;
+
+                yield return enemy;
+            }
+        }
+
+        /// <summary>
+        /// Gets all currently active enemies that are still alive and within the specified range of the given center point.
+        /// </summary>
+        /// <param name="center">The center point to check from.</param>
+        /// <param name="range">The maximum allowed distance, from the center point.</param>
+        /// <returns>An enumeration of living enemies within range.</returns>
+        public static IEnumerable<Enemy> GetAllAliveEnemiesInRange(Vector2 center, float range)
+        {
+            foreach (Enemy enemy in KHPoolManager.Ins.GetAllActive<Enemy>())
+            {
+                if (enemy.stats.GetHealthController().IsDead)
+                    continue;
+
+                if (!Kh.SqrDistanceIsLessThan(enemy.transform.position, center, range))
                     continue;
 
                 yield return enemy;
