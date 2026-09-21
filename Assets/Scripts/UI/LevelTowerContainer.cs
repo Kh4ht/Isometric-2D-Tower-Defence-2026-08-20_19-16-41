@@ -6,10 +6,10 @@ public class LevelTowerContainer : UIController
 {
     #region FIELDS
 
-    private readonly List<LevelTowerButton> levelTowerButtons = new();
+    private readonly List<TowerOptionBtn> levelTowerButtons = new();
 
     // Inspector
-    [SerializeField] private LevelTowerButton levelTowerButtonPrefab;
+    [SerializeField] private TowerOptionBtn towerOptionBtn;
 
     #endregion
     #region UNITY EVENTS
@@ -22,23 +22,23 @@ public class LevelTowerContainer : UIController
 
         foreach (TowerData td in saveData.GetSelectedTowerDatas())
         {
-            LevelTowerButton levelTowerButton = Instantiate(levelTowerButtonPrefab, transform);
+            TowerOptionBtn levelTowerButton = Instantiate(towerOptionBtn, transform);
 
             levelTowerButton.towerData = td;
 
             levelTowerButtons.Add(levelTowerButton);
         }
 
-        LevelTowerButton upgradeTowerButton = Instantiate(levelTowerButtonPrefab, transform);
-        upgradeTowerButton.type = LevelTowerButton.Type.Upgrade;
+        TowerOptionBtn upgradeTowerButton = Instantiate(towerOptionBtn, transform);
+        upgradeTowerButton.type = TowerOptionBtn.Type.Upgrade;
         levelTowerButtons.Add(upgradeTowerButton);
 
-        LevelTowerButton sellTowerButton = Instantiate(levelTowerButtonPrefab, transform);
-        sellTowerButton.type = LevelTowerButton.Type.Sell;
+        TowerOptionBtn sellTowerButton = Instantiate(towerOptionBtn, transform);
+        sellTowerButton.type = TowerOptionBtn.Type.Sell;
         levelTowerButtons.Add(sellTowerButton);
 
-        LevelTowerButton targetOptionsTowerButton = Instantiate(levelTowerButtonPrefab, transform);
-        targetOptionsTowerButton.type = LevelTowerButton.Type.TargetOption;
+        TowerOptionBtn targetOptionsTowerButton = Instantiate(towerOptionBtn, transform);
+        targetOptionsTowerButton.type = TowerOptionBtn.Type.TargetOption;
         levelTowerButtons.Add(targetOptionsTowerButton);
 
         gameObject.SetActive(false);
@@ -49,20 +49,22 @@ public class LevelTowerContainer : UIController
 
     public void ShowBuyOptions()
     {
-        foreach (LevelTowerButton b in levelTowerButtons)
+        foreach (TowerOptionBtn b in levelTowerButtons)
         {
-            if (b.type == LevelTowerButton.Type.Buy)
-                b.gameObject.SetActive(true);
-            else
-                b.gameObject.SetActive(false);
+            bool isBuy = b.type == TowerOptionBtn.Type.Buy;
+
+            b.gameObject.SetActive(isBuy);
+
+            if (isBuy)
+                b.UpdateTextColor();
         }
     }
 
     public void ShowSellUpgradeOptions(Tower tower)
     {
-        foreach (LevelTowerButton b in levelTowerButtons)
+        foreach (TowerOptionBtn b in levelTowerButtons)
         {
-            if (b.type == LevelTowerButton.Type.Buy)
+            if (b.type == TowerOptionBtn.Type.Buy)
             {
                 b.gameObject.SetActive(false);
             }

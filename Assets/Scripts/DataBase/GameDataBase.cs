@@ -10,6 +10,10 @@ public class GameDataBase : ScriptableObject
     public Sprite upgradeTowerImage, sellTowerImage, targetOptionsImage;
 
     [Space(20)]
+    public Color coinAcceptanceColor;
+    public Color coinRejectionColor;
+
+    [Space(20)]
     public List<TowerData> towerDatas;
     public List<EnemyData> enemyDatas;
 

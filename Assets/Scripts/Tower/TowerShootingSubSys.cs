@@ -39,7 +39,9 @@ public class TowerShootingSubSys : IKHSubsystem
 
         if (shootCooldownTimer.DidExceed(owner.stats.GetShootCooldown()))
         {
-            if ((owner.stats.enemyTargeted = GetTarget()) != null)
+            owner.stats.SetEnemyTargeted(GetTarget());
+
+            if (owner.stats.GetEnemyTargeted() != null)
             {
                 shootCooldownTimer.Reset();
                 SpawnBullet();
@@ -89,7 +91,7 @@ public class TowerShootingSubSys : IKHSubsystem
 
         KHPoolManager.Ins.Spawn<Bullet>(owner.data.bulletData.ID,
                                         spawnPos).ResetBullet(owner.data.bulletData,
-                                                              owner.stats.enemyTargeted);
+                                                              owner.stats.GetEnemyTargeted());
     }
 
     #endregion

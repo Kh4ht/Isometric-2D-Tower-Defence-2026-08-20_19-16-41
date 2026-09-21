@@ -13,7 +13,8 @@ public class LevelCoinManager : KHManagedBehaviour
 
     // INSPECTOR
     [Tab("STATS")]
-    public KHCoin Aether = new(nameof(Aether), 10000);
+    public KHCoin Aether = new(name: nameof(Aether),
+                               startAmount: 10000);
 
     [Tab("UI")]
     [SerializeField] private TextMeshProUGUI aetherTxt;

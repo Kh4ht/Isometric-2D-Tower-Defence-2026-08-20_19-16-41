@@ -11,8 +11,6 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 {
     #region FIELDS
 
-    public const int TOWER_MAX_LEVEL = 5;
-
     // SUBSYSTEMS
     private readonly List<IKHSubsystem> kHSubsystems = new();
     public TowerShootingSubSys towerShootingSubSys { get; private set; }
@@ -24,7 +22,7 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
     public LineRenderer lineRenderer { get; private set; }
 
     // GETTERS
-    public bool IsMaxLevel => stats.lvl >= TOWER_MAX_LEVEL;
+    public bool IsMaxLevel => stats.GetLvl() >= GameConsts.TOWER_MAX_LEVEL;
 
     // EVENTS
     public event Action<bool> OnTowerSelected;
@@ -108,11 +106,11 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
             if (data == null || !data.haveShootingSubSys)
                 return;
 
-            if (stats.enemyTargeted != null)
+            if (stats.GetEnemyTargeted() != null)
             {
                 Gizmos.color = Color.red;
                 // draw a line at the target
-                Gizmos.DrawLine(transform.position, stats.enemyTargeted.transform.position);
+                Gizmos.DrawLine(transform.position, stats.GetEnemyTargeted().transform.position);
             }
         }
 
@@ -183,11 +181,12 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
             return;
         }
 
-        stats.lvl++;
+        stats.SetLvl(stats.GetLvl() + 1);
 
-        spriteRenderer.sprite = data.icons[stats.lvl];
-        stats.SetSellPrice(stats.GetSellPrice() + (data.price[stats.lvl] / 2));
-        stats.SetRange(data.range[stats.lvl]);
+        spriteRenderer.sprite = data.icons[stats.GetLvl()];
+        stats.SetSellPrice(stats.GetSellPrice() + (data.price[stats.GetLvl()] / 2));
+        stats.SetNextUpgradePrice(data.price[stats.GetLvl() + 1]);
+        stats.SetRange(data.range[stats.GetLvl()]);
     }
 
     public void SellTower()

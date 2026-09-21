@@ -104,10 +104,10 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 
     private void OnMouseClick()
     {
-        if (!Mouse.current.leftButton.wasPressedThisFrame)
+        if (!Mouse.current.leftButton.wasPressedThisFrame || gridNodeMousePointingAt == null)
             return;
 
-        if ((gridNodeMousePointingAt == null || gridNodeMousePointingAt.IsDecoration) && cells.IsSelected)
+        if (gridNodeMousePointingAt.IsDecoration && cells.IsSelected)
         {
             cells.Deselect();
             return;

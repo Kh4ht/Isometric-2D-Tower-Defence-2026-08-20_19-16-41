@@ -62,6 +62,9 @@ public class TowerData : ScriptableObject
     [Space(20)]
     [SerializeField] private bool enableListCountEditingButton;
 
+    // GETTERS
+    public int PurchasePrice => price[0];
+
     #endregion
     #region UNITY EVENTS
 
@@ -79,7 +82,7 @@ public class TowerData : ScriptableObject
     [Button(color = "green")]
     private void AutoSetPriceUpgrades()
     {
-        for (int i = 1; i < Tower.TOWER_MAX_LEVEL; i++)
+        for (int i = 1; i < GameConsts.TOWER_MAX_LEVEL; i++)
             price[i] = Mathf.RoundToInt(price[i - 1] * priceMultiplier);
     }
 
@@ -87,17 +90,17 @@ public class TowerData : ScriptableObject
     [Button(color = "green")]
     private void AutoSetRangeUpgrades()
     {
-        for (int i = 1; i < Tower.TOWER_MAX_LEVEL; i++)
+        for (int i = 1; i < GameConsts.TOWER_MAX_LEVEL; i++)
             range[i] = (range[i - 1] * rangeMultiplier).KHRoundToDecimalPlaces();
     }
 
     [EnableIf(nameof(enableListCountEditingButton))]
     [Button(color = "green")]
-    private void EditAllListsCount(int count)
+    private void EditAllListsCount()
     {
-        icons.KHMatchCount(count);
-        range.KHMatchCount(count);
-        price.KHMatchCount(count);
+        icons.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
+        range.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
+        price.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
     }
 #endif
 
