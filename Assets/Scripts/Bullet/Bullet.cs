@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using KH;
 using UnityEngine;
@@ -66,9 +65,9 @@ public class Bullet : KHManagedBehaviour, IKHManagedUpdate, IKHManagedFixedUpdat
     #endregion
     #region PUBLIC
 
-    public void ResetBullet(BulletData bulletData, Enemy target)
+    public void ResetBullet(BulletData bulletData, int mainTowerLvl, Enemy target)
     {
-        stats.Reset(bulletData, target);
+        stats.Reset(bulletData, mainTowerLvl, target);
 
         kHSubSystems.ResetAll();
     }

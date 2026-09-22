@@ -113,7 +113,7 @@ public class TowerStats
     // PUBLIC API
     public void Reset(TowerData towerData, List<Vector2Int> occupiedCells)
     {
-        shootCooldown = towerData.shootCooldown;
+        shootCooldown = towerData.shootCooldown[0];
         range = towerData.range[0];
         sellPrice = towerData.PurchasePrice / 2;
         this.occupiedCells = new(occupiedCells);

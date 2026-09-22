@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using KH;
-using MyHelper;
+using Assets.Scripts.Utils;
 using UnityEngine;
 using VInspector;
 [RequireComponent(typeof(AudioSource), typeof(SpriteRenderer))]
@@ -185,8 +185,9 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 
         spriteRenderer.sprite = data.icons[stats.GetLvl()];
         stats.SetSellPrice(stats.GetSellPrice() + (data.price[stats.GetLvl()] / 2));
-        stats.SetNextUpgradePrice(data.price[stats.GetLvl() + 1]);
+        stats.SetNextUpgradePrice(data.price[Mathf.Clamp(stats.GetLvl() + 1, 1, GameConsts.TOWER_MAX_LEVEL)]);
         stats.SetRange(data.range[stats.GetLvl()]);
+        stats.SetShootCooldown(data.shootCooldown[stats.GetLvl()]);
     }
 
     public void SellTower()

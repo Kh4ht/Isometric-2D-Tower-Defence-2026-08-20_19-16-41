@@ -22,10 +22,7 @@ public class BulletStats
 
     public BulletStats(BulletData data)
     {
-        moveSpeed = data.moveSpeed;
-        damage = data.damage;
-
-        Reset(data, null);
+        Reset(data, 0, null);
     }
 
     #endregion
@@ -89,15 +86,15 @@ public class BulletStats
     }
 
     // PUBLIC API
-    public void Reset(BulletData data, Enemy target)
+    public void Reset(BulletData data, int mainTowerLvl, Enemy target)
     {
         this.target = target;
 
         if (target != null)
             targetFirstPos = target.transform.position;
 
-        moveSpeed = data.moveSpeed;
-        damage = data.damage;
+        moveSpeed = data.moveSpeed[mainTowerLvl];
+        damage = data.damage[mainTowerLvl];
     }
 
     public void UpdateEnemyLastPos()

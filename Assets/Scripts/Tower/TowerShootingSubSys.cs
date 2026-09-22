@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using KH;
-using MyHelper;
+using Assets.Scripts.Utils;
 using UnityEngine;
 
 public class TowerShootingSubSys : IKHSubsystem
@@ -91,6 +91,7 @@ public class TowerShootingSubSys : IKHSubsystem
 
         KHPoolManager.Ins.Spawn<Bullet>(owner.data.bulletData.ID,
                                         spawnPos).ResetBullet(owner.data.bulletData,
+                                                              owner.stats.GetLvl(),
                                                               owner.stats.GetEnemyTargeted());
     }
 

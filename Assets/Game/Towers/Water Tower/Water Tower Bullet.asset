@@ -15,6 +15,19 @@ MonoBehaviour:
   id: StraightBullet_1__uL7#x^qq
   prefab: {fileID: 3740725963369276305, guid: c4352b816185545459f20fb83205021e, type: 3}
   elementType: 2
-  moveSpeed: 10
-  damage: 50
+  moveSpeed:
+  - 10
+  - 12
+  - 14.4
+  - 17.28
+  - 20.74
+  - 24.89
+  damage:
+  - 10
+  - 11
+  - 12.1
+  - 13.31
+  - 14.64
+  - 16.1
   type: 0
+  enableListCountEditingButton: 0

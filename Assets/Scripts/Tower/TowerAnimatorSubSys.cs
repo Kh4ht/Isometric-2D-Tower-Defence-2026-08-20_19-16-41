@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using MyHelper;
+using Assets.Scripts.Utils;
 using PrimeTween;
 using UnityEngine;
 

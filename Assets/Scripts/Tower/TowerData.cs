@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Assets.Scripts.Utils;
 using KH;
 using UnityEngine;
 using VInspector;
@@ -18,49 +19,22 @@ public class TowerData : ScriptableObject
     [Space(20)]
     public List<Sprite> icons;
 
-    // PRICE
-    [Foldout("Price")]
-#if UNITY_EDITOR
-    [Min(1)]
-    [SerializeField] private float priceMultiplier = 1.2f;
-#endif
+    [Foldout("Price")][Min(0)] public List<int> price = new(6); [EndFoldout]
 
-    [Min(0)]
-    public List<int> price = new(6);
-    [EndFoldout]
-
-    // RANGE
-    [Foldout("Range")]
-#if UNITY_EDITOR
-    [Min(1)]
-    [SerializeField] private float rangeMultiplier = 1.2f;
-#endif
-
-    [Min(0)]
-    public List<float> range = new(6);
-    [EndFoldout]
+    [Foldout("Range")][Min(0)] public List<float> range = new(6); [EndFoldout]
 
     [Space(20)]
 
-    // SHOOTING
     public bool haveShootingSubSys = true;
 
     [EnableIf("haveShootingSubSys")]
     [Foldout("Shooting")]
     public Vector2 bulletSpawnOffset = new(0f, 0.5f);
     public BulletData bulletData;
-    public float shootCooldown = 1f;
+
+    [Foldout("Shooting/ShootCooldown")][Min(0)] public List<float> shootCooldown = new(6); [EndFoldout]
 
     [EndIf]
-    [EndFoldout]
-
-
-    [Space(20)]
-
-    public int test65;
-
-    [Space(20)]
-    [SerializeField] private bool enableListCountEditingButton;
 
     // GETTERS
     public int PurchasePrice => price[0];
@@ -80,20 +54,33 @@ public class TowerData : ScriptableObject
 #if UNITY_EDITOR
     [Foldout("Price")]
     [Button(color = "green")]
-    private void AutoSetPriceUpgrades()
+    private void AutoSetPriceUpgrades(float multiplier)
     {
-        for (int i = 1; i < GameConsts.TOWER_MAX_LEVEL; i++)
-            price[i] = Mathf.RoundToInt(price[i - 1] * priceMultiplier);
+        price.AutoSetListBasedOnFirstElement(multiplier);
     }
+
+    [EndFoldout]
 
     [Foldout("Range")]
     [Button(color = "green")]
-    private void AutoSetRangeUpgrades()
+    private void AutoSetRangeUpgrades(float multiplier)
     {
-        for (int i = 1; i < GameConsts.TOWER_MAX_LEVEL; i++)
-            range[i] = (range[i - 1] * rangeMultiplier).KHRoundToDecimalPlaces();
+        range.AutoSetListBasedOnFirstElement(multiplier);
     }
 
+    [EndFoldout]
+
+    [Foldout("Shooting/ShootCooldown")]
+    [Button(color = "green")]
+    private void AutoShootCooldownUpgrades(float multiplier)
+    {
+        shootCooldown.AutoSetListBasedOnFirstElement(multiplier);
+    }
+
+    [EndFoldout]
+
+    [Space(100)]
+    [SerializeField] private bool enableListCountEditingButton;
     [EnableIf(nameof(enableListCountEditingButton))]
     [Button(color = "green")]
     private void EditAllListsCount()
@@ -101,6 +88,7 @@ public class TowerData : ScriptableObject
         icons.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
         range.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
         price.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
+        shootCooldown.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
     }
 #endif
 

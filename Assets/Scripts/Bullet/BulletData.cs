@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Assets.Scripts.Utils;
 using KH;
 using UnityEngine;
 using VInspector;
@@ -19,8 +21,8 @@ public class BulletData : ScriptableObject
 
     [Space(20)]
 
-    public float moveSpeed;
-    public float damage;
+    [Foldout("MoveSpeed"), Min(0)] public List<float> moveSpeed = new(6); [EndFoldout]
+    [Foldout("Damage"), Min(0)] public List<float> damage = new(6); [EndFoldout]
 
     [Space(10)]
 
@@ -47,18 +49,34 @@ public class BulletData : ScriptableObject
     }
 
     #endregion
+    #region PRIVATE
+
+#if UNITY_EDITOR
+    [Foldout("Damage")]
+    [Button(color = "green")]
+    private void AutoSetDamageUpgrades(float multiplier)
+    {
+        damage.AutoSetListBasedOnFirstElement(multiplier);
+    }
+    [EndFoldout]
+
+    [Foldout("MoveSpeed")]
+    [Button(color = "green")]
+    private void AutoSetMoveSpeedUpgrades(float multiplier)
+    {
+        moveSpeed.AutoSetListBasedOnFirstElement(multiplier);
+    }
+    [EndFoldout]
+
+    [Space(100), SerializeField] private bool enableListCountEditingButton = false;
+    [EnableIf(nameof(enableListCountEditingButton))]
+    [Button(color = "green")]
+    private void EditAllListsCount()
+    {
+        damage.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
+        moveSpeed.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
+    }
+#endif
+
+    #endregion
 }
-
-
-
-#region Bullet Type
-
-public enum BulletMoveType
-{
-    Straight,
-    Parabolic,
-    Laser,
-    Follow,
-}
-
-#endregion

@@ -39,6 +39,14 @@ public static class GameScenes
 #endregion
 #region ENUMS
 
+public enum BulletMoveType
+{
+    Straight,
+    Parabolic,
+    Laser,
+    Follow,
+}
+
 public enum ElementType
 {
     None,

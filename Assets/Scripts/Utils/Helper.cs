@@ -3,7 +3,7 @@ using KH;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace MyHelper
+namespace Assets.Scripts.Utils
 {
     public static class Helper
     {

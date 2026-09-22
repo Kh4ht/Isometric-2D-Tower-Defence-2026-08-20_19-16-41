@@ -21,19 +21,22 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5fc2fd8d4b115430eb163502233f85da, type: 3}
   - {fileID: 21300000, guid: 5fc2fd8d4b115430eb163502233f85da, type: 3}
   - {fileID: 21300000, guid: 5fc2fd8d4b115430eb163502233f85da, type: 3}
-  priceMultiplier: 1.14
-  price: 46000000500000005b000000680000007700000077000000i
-  rangeMultiplier: 1.2
+  price: 46000000500000005b000000680000007700000088000000i
   range:
   - 2
   - 2.4
   - 2.88
   - 3.46
   - 4.15
-  - 4.5
+  - 4.98
   haveShootingSubSys: 1
   bulletSpawnOffset: {x: 0, y: 0.75}
   bulletData: {fileID: 11400000, guid: ea2b2342b12f647298d16412920e10c6, type: 2}
-  shootCooldown: 1
-  test65: 158
-  enableListCountEditingButton: 0
+  shootCooldown:
+  - 1
+  - 0.9
+  - 0.81
+  - 0.73
+  - 0.66
+  - 0.59
+  enableListCountEditingButton: 1
