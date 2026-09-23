@@ -21,6 +21,8 @@ public class EnemyData : ScriptableObject
     public ElementStrength elementStrength = ElementStrength.Low;
     [EndIf]
 
+    public int DeathAetherPrize;
+
     [Space(20)]
 
     [Min(1)] public int defaultMaxHealth = 100;

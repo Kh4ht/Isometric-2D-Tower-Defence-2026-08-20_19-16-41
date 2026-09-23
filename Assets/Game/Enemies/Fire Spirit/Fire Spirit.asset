@@ -17,5 +17,6 @@ MonoBehaviour:
   icon: {fileID: -4781564405865503225, guid: 5526c89977dc2416d8329e2d91ba1476, type: 3}
   elementType: 1
   elementStrength: 0
+  DeathAetherPrize: 5
   defaultMaxHealth: 20
   defaultMoveSpeed: 0.6

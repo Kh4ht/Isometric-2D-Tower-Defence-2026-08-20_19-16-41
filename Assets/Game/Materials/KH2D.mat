@@ -47,7 +47,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaCutoff: 0.1
-    - _Brightness: 0
+    - _Brightness: 1
     - _ChromaticAmount: 1
     - _Contrast: 1
     - _Cull: 0

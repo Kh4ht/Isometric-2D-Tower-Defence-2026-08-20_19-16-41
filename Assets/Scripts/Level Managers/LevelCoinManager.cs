@@ -13,6 +13,7 @@ public class LevelCoinManager : KHManagedBehaviour
 
     // INSPECTOR
     [Tab("STATS")]
+    [SerializeField]
     public KHCoin Aether = new(name: nameof(Aether),
                                startAmount: 10000);
 

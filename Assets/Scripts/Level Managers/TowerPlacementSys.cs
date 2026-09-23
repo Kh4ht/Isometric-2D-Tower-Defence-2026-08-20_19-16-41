@@ -21,8 +21,8 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
     private GridNode gridNodeMousePointingAt;
 
     // INSPECTOR
-
-    [Tab("UI Controller")]
+    [SerializeField] private LineRenderer secondaryTowerRangeIndicator;
+    [SerializeField] private SpriteRenderer secondaryTowerSpriteIndicator;
 
     public SelectedCells cells = new();
 
@@ -39,6 +39,10 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
             Ins = this;
         else
             Debug.LogError($"More Than One Instance of type {nameof(TowerPlacementSys)}".AddColorTag(KHUtils.XMLColors.Red));
+
+        secondaryTowerRangeIndicator.useWorldSpace = true;
+        secondaryTowerRangeIndicator.loop = true;
+        DisableSecondaryTowerRangeIndicator();
     }
 
     protected override void Start()
@@ -172,8 +176,56 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         }
     }
 
+    private void DrawSecondaryRangeCircle(Vector2 origin, float radius, ElementType elementType)
+    {
+        if (radius <= 0f)
+        {
+            DisableSecondaryTowerRangeIndicator();
+            return;
+        }
+
+        secondaryTowerRangeIndicator.enabled = true;
+        secondaryTowerRangeIndicator.colorGradient = DB.GetTowerRangeIndicatorGradient(elementType);
+        secondaryTowerRangeIndicator.positionCount = GameConsts.TOWER_RANGE_SEGMENTS;
+
+        for (int i = 0; i < GameConsts.TOWER_RANGE_SEGMENTS; i++)
+            secondaryTowerRangeIndicator.SetPosition(i, Helper.TileCircleToWorld(origin, radius, i));
+    }
+
     #endregion
     #region PUBLIC
+
+    /// <summary>Preview an already-placed tower's range at its NEXT level (used while hovering the Upgrade button).</summary>
+    public void EnableSecondaryTowerRangeIndicator(Tower tower)
+    {
+        if (tower == null)
+        {
+            DisableSecondaryTowerRangeIndicator();
+            return;
+        }
+
+        int nextLvl = Mathf.Min(tower.stats.GetLvl() + 1, tower.data.range.Count - 1);
+
+        DrawSecondaryRangeCircle(tower.transform.position, tower.data.range[nextLvl], tower.data.elementType);
+    }
+
+    /// <summary>Preview a not-yet-placed tower's range at the currently selected cell (used while hovering a Buy button).</summary>
+    public void EnableSecondaryTowerRangeIndicator(TowerData towerData)
+    {
+        if (towerData == null || !cells.IsSelected)
+        {
+            DisableSecondaryTowerRangeIndicator();
+            return;
+        }
+
+        DrawSecondaryRangeCircle(cells.GetCenterWorld(), towerData.range[0], towerData.elementType);
+    }
+
+    public void DisableSecondaryTowerRangeIndicator()
+    {
+        secondaryTowerRangeIndicator.positionCount = 0;
+        secondaryTowerRangeIndicator.enabled = false;
+    }
 
     public void PlaceTowerOnSelectedPos(TowerData towerData)
     {

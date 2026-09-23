@@ -54,13 +54,17 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
         audioSource = GetComponent<AudioSource>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.colorGradient = DB.GetTowerRangeIndicatorGradient(data.elementType);
 
         stats = new(data);
 
         kHSubsystems.Clear();
+
+        if (data.haveShootingSubSys)
+            kHSubsystems.Add(towerShootingSubSys = new(this));
+
         kHSubsystems.AddRange(new IKHSubsystem[]
         {
-            towerShootingSubSys = new(this),
             towerAnimatorSubSys = new(this),
         });
     }

@@ -32,9 +32,6 @@ public class TowerShootingSubSys : IKHSubsystem
 
     private void Shoot()
     {
-        if (!owner.data.haveShootingSubSys)
-            return;
-
         shootCooldownTimer.Run();
 
         if (shootCooldownTimer.DidExceed(owner.stats.GetShootCooldown()))
@@ -51,9 +48,6 @@ public class TowerShootingSubSys : IKHSubsystem
 
     private Enemy GetTarget()
     {
-        if (!owner.data.haveShootingSubSys)
-            return null;
-
         List<Enemy> enemiesInRange = new();
 
         foreach (Enemy enemy in Helper.GetAllAliveEnemies())
@@ -84,9 +78,6 @@ public class TowerShootingSubSys : IKHSubsystem
 
     private void SpawnBullet()
     {
-        if (!owner.data.haveShootingSubSys)
-            return;
-
         Vector2 spawnPos = (Vector2)owner.transform.position + owner.data.bulletSpawnOffset;
 
         KHPoolManager.Ins.Spawn<Bullet>(owner.data.bulletData.ID,
@@ -100,9 +91,6 @@ public class TowerShootingSubSys : IKHSubsystem
 
     public void IReset()
     {
-        if (!owner.data.haveShootingSubSys)
-            return;
-
         shootCooldownTimer.Reset();
     }
 

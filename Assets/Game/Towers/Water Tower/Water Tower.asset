@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
   id: Water_Tower__zvCThDH5
   prefab: {fileID: 8735440232499466857, guid: 1ef7ac6a3c021485eb0740fe290fb54d, type: 3}
+  elementType: 2
   icons:
   - {fileID: 21300000, guid: a46e3386a97414321abf7de14d57bf30, type: 3}
   - {fileID: 21300000, guid: 7bdb77c24f83b4bd484454aa8e7d52fe, type: 3}

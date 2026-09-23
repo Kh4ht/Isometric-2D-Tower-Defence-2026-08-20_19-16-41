@@ -15,6 +15,7 @@ public class TowerData : ScriptableObject
 
     [Space(20)]
     public Tower prefab;
+    public ElementType elementType;
 
     [Space(20)]
     public List<Sprite> icons;

@@ -65,9 +65,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelTowerButton
   towerData: {fileID: 0}
+  levelTowerContainer: {fileID: 0}
   type: 0
-  buttonTxt: {fileID: 316305837553425888}
-  image: {fileID: 8421050758110346325}
+  optionTxt: {fileID: 316305837553425888}
+  optionImage: {fileID: 8421050758110346325}
 --- !u!114 &3177312423619484574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -117,12 +118,12 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 0.18823531, g: 0.27058825, b: 0.34117648, a: 0.5019608}
     m_HighlightedColor: {r: 0.22352941, g: 0.32156864, b: 0.40392157, a: 1}
     m_PressedColor: {r: 0.1254902, g: 0.17254902, b: 0.2392157, a: 1}
-    m_SelectedColor: {r: 0.18823531, g: 0.27058825, b: 0.34117648, a: 1}
+    m_SelectedColor: {r: 0.1882353, g: 0.27058825, b: 0.34117648, a: 0.5019608}
     m_DisabledColor: {r: 1, g: 0.7028302, b: 0.7028302, a: 0.101960786}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -244,7 +245,7 @@ GameObject:
   - component: {fileID: 7422114235784402683}
   - component: {fileID: 8421050758110346325}
   m_Layer: 5
-  m_Name: button img
+  m_Name: option img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -394,7 +395,7 @@ GameObject:
   - component: {fileID: 2410952659133664006}
   - component: {fileID: 316305837553425888}
   m_Layer: 5
-  m_Name: button txt
+  m_Name: option txt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

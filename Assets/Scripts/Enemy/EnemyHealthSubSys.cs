@@ -69,6 +69,8 @@ public class EnemyHealthSubSys : IKHSubsystem
     {
         owner.healthSlider.gameObject.SetActive(false);
 
+        LevelCoinManager.Ins.Aether.Add(owner.data.DeathAetherPrize);
+
         // Delay despawning to allow death animations and effects to finish, and to show player how many enemies he/she killed.
         Tween.Delay(AFTER_DEATH_DELAY, () =>
         {

@@ -72,16 +72,11 @@ public class SelectedCells
 
         horizontalTowersContainer.KH_UpShow();
 
-        if (tower == null)
-        {
-            horizontalTowersContainer.ShowBuyOptions();
-        }
-        else
-        {
-            selectedTower = tower;
-            horizontalTowersContainer.ShowSellUpgradeOptions(tower);
+        selectedTower = tower;
+        horizontalTowersContainer.OnCellsSelected(tower);
+
+        if (tower != null)
             tower.OnSelected(true);
-        }
     }
 
     public void UpdateHoveredCells(List<Vector2Int> newHoveredCells, Action onHoverCellsUpdated)

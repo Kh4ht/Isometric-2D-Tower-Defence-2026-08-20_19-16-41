@@ -14,6 +14,17 @@ public class GameDataBase : ScriptableObject
     public Color coinRejectionColor;
 
     [Space(20)]
+    public Color towerOptionNormalColor;
+    public Color towerOptionHighlightedColor;
+    public Color towerOptionSelectedColor;
+    public Color towerOptionDisabledColor;
+
+    [Space(20)]
+    public Gradient fireTowerRangeIndicator;
+    public Gradient WaterTowerRangeIndicator;
+    public Gradient EarthTowerRangeIndicator;
+
+    [Space(20)]
     public List<TowerData> towerDatas;
     public List<EnemyData> enemyDatas;
 
@@ -27,63 +38,4 @@ public class GameDataBase : ScriptableObject
     }
 
     #endregion
-}
-
-
-
-
-public static class DB
-{
-    private static GameDataBase _db;
-
-    public static GameDataBase Db
-    {
-        get
-        {
-            if (_db != null)
-                return _db;
-
-            // Load from Resources folder (recommended)
-            _db = Resources.Load<GameDataBase>(nameof(GameDataBase));
-
-            if (_db == null)
-                Debug.LogError($"DB: Could not load {nameof(GameDataBase)} from Resources!");
-
-            return _db;
-        }
-    }
-
-    public static List<TowerData> TowersDB => Db.towerDatas;
-    public static List<EnemyData> EnemiesDB => Db.enemyDatas;
-
-    public static TowerData GetTowerDataById(string id)
-    {
-        return TowersDB.Find(t => id == t.ID);
-    }
-
-    public static int GetHighestEnemyMaxHealth()
-    {
-        int highestMaxHealth = 0;
-
-        foreach (EnemyData enemyData in EnemiesDB)
-        {
-            if (enemyData.defaultMaxHealth > highestMaxHealth)
-                highestMaxHealth = enemyData.defaultMaxHealth;
-        }
-
-        return highestMaxHealth;
-    }
-
-    public static int GetLowestEnemyMaxHealth()
-    {
-        int lowestMaxHealth = int.MaxValue;
-
-        foreach (EnemyData enemyData in EnemiesDB)
-        {
-            if (enemyData.defaultMaxHealth < lowestMaxHealth)
-                lowestMaxHealth = enemyData.defaultMaxHealth;
-        }
-
-        return lowestMaxHealth;
-    }
 }
