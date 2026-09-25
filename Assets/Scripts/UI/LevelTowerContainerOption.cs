@@ -89,10 +89,12 @@ public class LevelTowerContainerOption : KHManagedBehaviour, IPointerEnterHandle
         {
             case Type.Buy:
                 TowerPlacementSys.Ins.EnableSecondaryTowerRangeIndicator(towerData);
+                TowerPlacementSys.Ins.EnableSecondaryTowerSpriteIndicator(towerData);
                 break;
 
             case Type.Upgrade:
                 TowerPlacementSys.Ins.EnableSecondaryTowerRangeIndicator(selectedTower);
+                TowerPlacementSys.Ins.EnableSecondaryTowerSpriteIndicator(selectedTower);
                 break;
         }
     }
@@ -103,7 +105,10 @@ public class LevelTowerContainerOption : KHManagedBehaviour, IPointerEnterHandle
         RefreshBackgroundColor();
 
         if (type == Type.Buy || type == Type.Upgrade)
+        {
             TowerPlacementSys.Ins.DisableSecondaryTowerRangeIndicator();
+            TowerPlacementSys.Ins.DisableSecondaryTowerSpriteIndicator();
+        }
     }
 
     #endregion

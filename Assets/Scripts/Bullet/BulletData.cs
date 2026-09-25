@@ -21,7 +21,7 @@ public class BulletData : ScriptableObject
 
     [Space(20)]
 
-    [Foldout("MoveSpeed"), Min(0)] public List<float> moveSpeed = new(6); [EndFoldout]
+    [Foldout("MoveSpeed"), Range(0f, 30f)] public List<float> moveSpeed = new(6); [EndFoldout]
     [Foldout("Damage"), Min(0)] public List<float> damage = new(6); [EndFoldout]
 
     [Space(10)]

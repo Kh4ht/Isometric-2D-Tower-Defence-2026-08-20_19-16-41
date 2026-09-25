@@ -6,9 +6,11 @@ using VInspector;
 
 public enum GameTilemap
 {
-    Ground,
     TowerPlacable,
-    Walkable,
+    EnemyWalkable,
+    Ground,
+    Path,
+    SecondaryPath,
     Decoration,
 }
 
@@ -22,9 +24,11 @@ public class GameGrid
     private Vector2Int gridOrigin;
 
     // INSPECTOR
-    public Tilemap groundTilemap;
     public Tilemap towerPlacableTilemap;
     public Tilemap walkableTilemap;
+    public Tilemap groundTilemap;
+    public Tilemap PathTilemap;
+    public Tilemap SecondaryPathTilemap;
     public Tilemap decorationTilemap;
     public Tilemap villageAreaTilemap;
 
@@ -36,8 +40,10 @@ public class GameGrid
         return gameTilemap switch
         {
             GameTilemap.Ground => groundTilemap,
+            GameTilemap.Path => PathTilemap,
+            GameTilemap.SecondaryPath => SecondaryPathTilemap,
             GameTilemap.TowerPlacable => towerPlacableTilemap,
-            GameTilemap.Walkable => walkableTilemap,
+            GameTilemap.EnemyWalkable => walkableTilemap,
             GameTilemap.Decoration => decorationTilemap,
             _ => null
         };

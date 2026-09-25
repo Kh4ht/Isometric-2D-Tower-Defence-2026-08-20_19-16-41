@@ -4,6 +4,8 @@ using UnityEngine;
 using KH;
 using VInspector;
 using UnityEngine.Tilemaps;
+using System.Linq;
+using PrimeTween;
 
 [DisallowMultipleComponent]
 public class PathSys : KHManagedBehaviour
@@ -28,9 +30,11 @@ public class PathSys : KHManagedBehaviour
     [KHResetStatic]
     public static PathSys Ins { get; private set; }
     private const int MOVE_COST = 10;
+    private const float ALPHA_YOYO_DURATION = 0.4f;
 
+
+    private Tween secondaryPathAlphaTween;
     private readonly List<List<Vector2Int>> currentPaths = new();
-    private List<List<Vector2Int>> oldPaths = new();
 
     // GETTERS
 
@@ -50,6 +54,7 @@ public class PathSys : KHManagedBehaviour
     public GameGrid gameGrid;
 
     public TileBase groundRuleTile;
+    public TileBase pathRuleTile;
     public TileBase towerPlacableOnlyTile;
     public TileBase groundNormalTile;
     public TileBase decorationTile;
@@ -119,6 +124,10 @@ public class PathSys : KHManagedBehaviour
 
 #if UNITY_EDITOR
     private bool NotPlayMode => !Application.isPlaying;
+
+    /// <summary>
+    /// Automatically redraws the ground and decoration tiles based on the current grid metadata.
+    /// </summary>
     [EnableIf(nameof(NotPlayMode))]
     [Button(color = "green")]
     private void AutoDrawTiles()
@@ -229,47 +238,6 @@ public class PathSys : KHManagedBehaviour
         return null;
     }
 
-    // private void UpdatePaths()
-    // {
-    //     // Store the old paths       
-    //     oldPaths = new(currentPaths);
-
-    //     // Update Paths based on the updated GameGrid 
-    //     currentPaths.Clear();
-
-    //     foreach (Vector2Int startPos in pathStartCells)
-    //         currentPaths.Add(FindPathAlgorithm(startPos, pathTargetCell));
-
-    //     // Update The Alive Enemy path    
-    //     foreach (Enemy enemy in Helper.GetAllAliveEnemies())
-    //     {
-    //         int reachedPathIndex = enemy.stats.nextPathPointIndex;
-    //         List<Vector2> oldEnemyPath = enemy.stats.GetPath();
-    //         List<Vector2> newEnemyPath = GetPath(enemy.stats.pathIndex);
-    //         int oldRemainingCount = oldEnemyPath.Count - reachedPathIndex;
-    //         int newRemainingCount = newEnemyPath.Count - reachedPathIndex;
-    //         List<Vector2> oldSuffix = oldEnemyPath.GetRange(reachedPathIndex, oldRemainingCount);
-
-    //         bool unaffected = false;
-
-    //         if (newEnemyPath.Count >= oldRemainingCount)
-    //         {
-    //             List<Vector2> newSuffix = newEnemyPath.GetRange(newEnemyPath.Count - oldRemainingCount, oldRemainingCount);
-    //             unaffected = oldSuffix.SequenceEqual(newSuffix);
-    //         }
-
-    //         // Same remaining route, just shifted — realign the index, don't teleport progress.         
-    //         if (unaffected)
-    //             enemy.stats.nextPathPointIndex = newEnemyPath.Count - oldRemainingCount;
-    //         // else: Do not change nextPathPointIndex  
-
-    //         enemy.stats.SetPath(newEnemyPath);
-    //     }
-
-    //     DrawPaths();
-    // }
-
-
     /// <summary>
     /// Recomputes all spawn routes after the grid changes, then re-paths each alive enemy
     /// from where it actually is. An enemy keeps its current route unless that route is
@@ -277,9 +245,6 @@ public class PathSys : KHManagedBehaviour
     /// </summary>
     private void UpdatePaths()
     {
-        // Store the old paths
-        oldPaths = new(currentPaths);
-
         // Update the shared spawn -> target paths (used for visuals and new spawns)
         currentPaths.Clear();
         foreach (Vector2Int startPos in pathStartCells)
@@ -373,21 +338,14 @@ public class PathSys : KHManagedBehaviour
     // Clear the previous route visuals before repainting the current valid paths.
     private void DrawPaths()
     {
-        // Restore any previously drawn path tiles to their default floor appearance.
-        foreach (List<Vector2Int> path in oldPaths)
-        {
-            foreach (Vector2Int cell in path)
-            {
-                gameGrid.SetTile(GameTilemap.Ground, gameGrid.GetNode(cell).GetPos, groundNormalTile);
-            }
-        }
+        gameGrid.EraseAllTiles(GameTilemap.Path);
 
         // Draw each newly computed route using the path indicator tile.
         foreach (List<Vector2Int> path in currentPaths)
         {
             foreach (Vector2Int cell in path)
             {
-                gameGrid.SetTile(GameTilemap.Ground, cell, groundRuleTile);
+                gameGrid.SetTile(GameTilemap.Path, cell, pathRuleTile);
             }
         }
     }
@@ -426,17 +384,73 @@ public class PathSys : KHManagedBehaviour
     #endregion
     #region PUBLIC
 
-    public int GetDifferenceFromShortestPath(int pathIndex)
+    /// <summary>
+    /// Draw a temporary path visuals to show new path, when a player selects a spot to place a new tower
+    /// </summary>
+    /// <param name="cellsThatWillBeBlocked"></param>
+    public void DrawSecondaryPath(IEnumerable<Vector2Int> cellsThatWillBeBlocked)
     {
-        int shortestPathCount = int.MaxValue;
+        List<GridNode> affectedNodes = new();
 
-        foreach (List<Vector2Int> path in currentPaths)
+        foreach (Vector2Int cell in cellsThatWillBeBlocked)
         {
-            if (path.Count < shortestPathCount)
-                shortestPathCount = path.Count;
+            affectedNodes.Add(gameGrid.GetNode(cell));
         }
 
-        return currentPaths[pathIndex].Count - shortestPathCount;
+        foreach (GridNode node in affectedNodes)
+            node.IsSimulatedBlocked = true;
+
+        List<List<Vector2Int>> newPaths = new();
+
+        foreach (Vector2Int startCell in pathStartCells)
+        {
+            newPaths.Add(FindPathAlgorithm(startCell, pathTargetCell));
+        }
+
+        bool drawSecondaryPath = false;
+
+        for (int i = 0; i < newPaths.Count; i++)
+        {
+            if (!newPaths[i].SequenceEqual(currentPaths[i]))
+                drawSecondaryPath = true;
+        }
+
+        if (drawSecondaryPath)
+        {
+            foreach (List<Vector2Int> path in newPaths)
+            {
+                foreach (Vector2Int cell in path)
+                {
+                    gameGrid.SetTile(GameTilemap.SecondaryPath, cell, pathRuleTile);
+                }
+            }
+
+            // Animate the tilemap plath
+            gameGrid.SecondaryPathTilemap.color = new Color(1f, 1f, 1f, 0.1f);
+
+            secondaryPathAlphaTween = Tween.Custom(
+                startValue: 0.1f,
+                endValue: 0.3f,
+                duration: ALPHA_YOYO_DURATION,
+                onValueChange: alpha =>
+                {
+                    Color color = gameGrid.SecondaryPathTilemap.color;
+                    color.a = alpha;
+                    gameGrid.SecondaryPathTilemap.color = color;
+                },
+                cycles: -1,
+                cycleMode: CycleMode.Yoyo
+            );
+        }
+
+        foreach (GridNode node in affectedNodes)
+            node.IsSimulatedBlocked = false;
+    }
+
+    public void EraseSecondaryPath()
+    {
+        secondaryPathAlphaTween.Stop();
+        gameGrid.EraseAllTiles(GameTilemap.SecondaryPath);
     }
 
     public bool CanPlaceTower(List<Vector2Int> cells)

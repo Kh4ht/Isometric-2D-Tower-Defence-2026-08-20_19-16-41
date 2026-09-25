@@ -50,6 +50,8 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         base.Start();
 
         RegisterSelectedTowersToPool();
+
+        secondaryTowerSpriteIndicator.GetComponent<KH2DSpriteEffects>().SetHSBC(0, 1, 1, 1);
     }
 
     public void KHUpdate()
@@ -221,10 +223,41 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         DrawSecondaryRangeCircle(cells.GetCenterWorld(), towerData.range[0], towerData.elementType);
     }
 
+    public void EnableSecondaryTowerSpriteIndicator(TowerData towerData)
+    {
+        if (towerData == null || !cells.IsSelected)
+        {
+            DisableSecondaryTowerSpriteIndicator();
+            return;
+        }
+
+        secondaryTowerSpriteIndicator.enabled = true;
+        secondaryTowerSpriteIndicator.sprite = towerData.icons[0];
+        secondaryTowerSpriteIndicator.transform.position = cells.GetCenterWorld();
+    }
+
+    public void EnableSecondaryTowerSpriteIndicator(Tower tower)
+    {
+        if (tower == null || !cells.IsSelected)
+        {
+            DisableSecondaryTowerSpriteIndicator();
+            return;
+        }
+
+        secondaryTowerSpriteIndicator.enabled = true;
+        secondaryTowerSpriteIndicator.sprite = tower.data.icons[tower.stats.GetNextLvl];
+        secondaryTowerSpriteIndicator.transform.position = tower.transform.position;
+    }
+
     public void DisableSecondaryTowerRangeIndicator()
     {
         secondaryTowerRangeIndicator.positionCount = 0;
         secondaryTowerRangeIndicator.enabled = false;
+    }
+
+    public void DisableSecondaryTowerSpriteIndicator()
+    {
+        secondaryTowerSpriteIndicator.enabled = false;
     }
 
     public void PlaceTowerOnSelectedPos(TowerData towerData)

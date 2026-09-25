@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1823698803666926096}
   - component: {fileID: 7272312759945149698}
   - component: {fileID: 1149071796948572502}
+  - component: {fileID: 3536504536226951381}
   m_Layer: 0
   m_Name: Water Tower
   m_TagString: Untagged
@@ -83,7 +84,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: fd27f76dd74d54ad78ee3de68a75510f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -322,3 +323,23 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &3536504536226951381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3624856084399517176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 569397402aa264e578df644653a745da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HelperKH::KHShadowGenerator
+  shadowColor: {r: 0, g: 0, b: 0, a: 0.4}
+  shadowScale: {x: 1, y: 0.5}
+  shadowOffset: {x: 0, y: 0}
+  shadowMaterial: {fileID: 0}
+  inheritSourceAlpha: 1
+  sortingOrderOffset: -1
+  syncSortingEveryFrame: 1
+  shadowRenderer: {fileID: 0}

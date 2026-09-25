@@ -25,6 +25,8 @@ public class SelectedCells
 
         horizontalTowersContainer.KH_UpHide();
 
+        PathSys.Ins.EraseSecondaryPath();
+
         if (selectedTower != null)
         {
             selectedTower.OnSelected(false);
@@ -76,7 +78,13 @@ public class SelectedCells
         horizontalTowersContainer.OnCellsSelected(tower);
 
         if (tower != null)
+        {
             tower.OnSelected(true);
+        }
+        else
+        {
+            PathSys.Ins.DrawSecondaryPath(selectedCells);
+        }
     }
 
     public void UpdateHoveredCells(List<Vector2Int> newHoveredCells, Action onHoverCellsUpdated)

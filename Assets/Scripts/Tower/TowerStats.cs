@@ -83,6 +83,7 @@ public class TowerStats
         shootCooldown = newValue;
     }
 
+    public int GetNextLvl => lvl + 1;
     public int GetLvl() => lvl;
     public void SetLvl(int newValue)
     {
