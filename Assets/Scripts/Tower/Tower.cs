@@ -145,8 +145,8 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 
     private void RegisterBulletsToPool()
     {
-        KHPoolManager.Ins.Register(data.bulletData.ID,
-                                   data.bulletData.prefab,
+        KHPoolManager.Ins.Register(data.projectilePrefab.ID,
+                                   data.projectilePrefab,
                                    showLogMessage: false);
     }
 
@@ -192,6 +192,8 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
         stats.SetNextUpgradePrice(data.price[Mathf.Clamp(stats.GetLvl() + 1, 1, GameConsts.TOWER_MAX_LEVEL)]);
         stats.SetRange(data.range[stats.GetLvl()]);
         stats.SetShootCooldown(data.shootCooldown[stats.GetLvl()]);
+        stats.SetProjectileDamage(data.projectileDamage[stats.GetLvl()]);
+        stats.SetProjectileMoveSpeed(data.projectileMoveSpeed[stats.GetLvl()]);
     }
 
     public void SellTower()

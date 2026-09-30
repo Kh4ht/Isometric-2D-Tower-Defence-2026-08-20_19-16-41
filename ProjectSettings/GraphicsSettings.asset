@@ -47,8 +47,8 @@ GraphicsSettings:
   m_CacheMissCollectionPath: CacheMissCollection
   m_SpritesDefaultMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_CustomRenderPipeline: {fileID: 11400000, guid: cbc16d9e0b91347a7b9a6f4e12ae55a1, type: 2}
-  m_TransparencySortMode: 0
-  m_TransparencySortAxis: {x: 0, y: 0, z: 1}
+  m_TransparencySortMode: 3
+  m_TransparencySortAxis: {x: 0, y: 1, z: 0}
   m_DefaultRenderingPath: 1
   m_DefaultMobileRenderingPath: 1
   m_TierSettings: []
@@ -56,6 +56,7 @@ GraphicsSettings:
   m_FogStripping: 0
   m_InstancingStripping: 0
   m_BrgStripping: 0
+  m_DefaultLightBaker: 0
   m_LightmapKeepPlain: 1
   m_LightmapKeepDirCombined: 1
   m_LightmapKeepDynamicPlain: 1
@@ -72,6 +73,7 @@ GraphicsSettings:
     keywordDeclarationOverrides: []
     numInternalDefines: 0
     defines: []
+    compilerSettings: []
   m_LightsUseLinearIntensity: 1
   m_LightsUseColorTemperature: 1
   m_LogWhenShaderIsCompiled: 0

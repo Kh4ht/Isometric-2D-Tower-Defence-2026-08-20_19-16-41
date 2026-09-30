@@ -38,6 +38,8 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-8c9cfa26abfee488c85f1582747f6a02-2138875865-0
         - globalObjectIdString: GlobalObjectId_V1-2-8c9cfa26abfee488c85f1582747f6a02-156331153-0
         - globalObjectIdString: GlobalObjectId_V1-2-8c9cfa26abfee488c85f1582747f6a02-1070666318-0
+        - globalObjectIdString: GlobalObjectId_V1-2-8c9cfa26abfee488c85f1582747f6a02-897444220-0
+        - globalObjectIdString: GlobalObjectId_V1-2-8c9cfa26abfee488c85f1582747f6a02-1753187961-0
         values:
         - colorIndex: 0
           iconNameOrGuid: Camera Icon
@@ -115,6 +117,14 @@ MonoBehaviour:
           iconNameOrGuid: Settings Icon
           isIconRecursive: 0
           isColorRecursive: 0
+        - colorIndex: 0
+          iconNameOrGuid: Settings Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 0
+          iconNameOrGuid: Settings Icon
+          isIconRecursive: 1
+          isColorRecursive: 0
     - goDatas_byGlobalId:
         keys:
         - globalObjectIdString: GlobalObjectId_V1-2-7ec377844faff47cbbbbe265429489f1-632658442-0
@@ -151,3 +161,4 @@ MonoBehaviour:
   - Assets/Scenes/Start Screen.unity
   - Assets/Scenes/Main Menu.unity
   - Assets/Scenes/Level 1.unity
+  - Assets/Scenes/Test.unity

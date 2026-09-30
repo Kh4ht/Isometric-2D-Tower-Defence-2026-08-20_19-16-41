@@ -18,5 +18,5 @@ MonoBehaviour:
   elementType: 1
   elementStrength: 0
   DeathAetherPrize: 5
-  defaultMaxHealth: 20
+  defaultMaxHealth: 10
   defaultMoveSpeed: 0.6

@@ -28,14 +28,33 @@ public class TowerData : ScriptableObject
 
     public bool haveShootingSubSys = true;
 
-    [EnableIf("haveShootingSubSys")]
+    [EnableIf(nameof(haveShootingSubSys))]
     [Foldout("Shooting")]
     public Vector2 bulletSpawnOffset = new(0f, 0.5f);
-    public BulletData bulletData;
+    public Projectile projectilePrefab;
 
-    [Foldout("Shooting/ShootCooldown")][Min(0)] public List<float> shootCooldown = new(6); [EndFoldout]
+    public BulletMoveType projectileMoveType = BulletMoveType.StraightOrParabolic;
 
-    [EndIf]
+    [Tooltip("X = flight progress (0 = launch, 1 = arrival). Y = speed multiplier. Flat 1 = constant speed.")]
+    public AnimationCurve projectileSpeedMultiplierCurve = AnimationCurve.Constant(0f, 1f, 1f);
+
+    public BulletTargetPosition projectileTargetPosType = BulletTargetPosition.FirstTargetPos;
+    [Min(0f)] public float projectileParabolicArcHeightMultiplier = 0.5f;
+
+    // TODO: public bool HasChainDamage;
+    // TODO: public bool HasAreaDamage;
+
+    [Foldout("Shooting/Projectile ShootCooldown")]
+    [Min(0)] public List<float> shootCooldown = new(6);
+
+    [Foldout("Shooting/Projectile Damage")]
+    [Min(0)] public List<float> projectileDamage = new(6);
+
+    [Foldout("Shooting/Projectile MoveSpeed")]
+    [Range(0f, 30f)] public List<float> projectileMoveSpeed = new(6);
+
+    [EndFoldout]
+
 
     // GETTERS
     public int PurchasePrice => price[0];
@@ -71,13 +90,27 @@ public class TowerData : ScriptableObject
 
     [EndFoldout]
 
-    [Foldout("Shooting/ShootCooldown")]
+    [Foldout("Shooting/Projectile ShootCooldown")]
     [Button(color = "green")]
     private void AutoShootCooldownUpgrades(float multiplier)
     {
         shootCooldown.AutoSetListBasedOnFirstElement(multiplier);
     }
 
+    [EndFoldout]
+    [Foldout("Shooting/Projectile Damage")]
+    [Button(color = "green")]
+    private void AutoSetDamageUpgrades(float multiplier)
+    {
+        projectileDamage.AutoSetListBasedOnFirstElement(multiplier);
+    }
+    [EndFoldout]
+    [Foldout("Shooting/Projectile MoveSpeed")]
+    [Button(color = "green")]
+    private void AutoSetMoveSpeedUpgrades(float multiplier)
+    {
+        projectileMoveSpeed.AutoSetListBasedOnFirstElement(multiplier);
+    }
     [EndFoldout]
 
     [Space(100)]
@@ -87,8 +120,10 @@ public class TowerData : ScriptableObject
     private void EditAllListsCount()
     {
         icons.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
+        projectileDamage.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
         range.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
         price.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
+        projectileMoveSpeed.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
         shootCooldown.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
     }
 #endif

@@ -89,38 +89,5 @@ public class LevelTowerContainer : UIController
         }
     }
 
-    // public void ShowBuyOptions()
-    // {
-    //     foreach (LevelTowerContainerOption b in levelTowerButtons)
-    //     {
-    //         b.SetButtonClickedOnce(false);
-
-    //         bool isBuy = b.type == LevelTowerContainerOption.Type.Buy;
-
-    //         b.gameObject.SetActive(isBuy);
-
-    //         if (isBuy)
-    //             b.UpdateTextColor();
-    //     }
-    // }
-
-    // public void ShowSellUpgradeOptions(Tower tower)
-    // {
-    //     foreach (LevelTowerContainerOption b in levelTowerButtons)
-    //     {
-    //         b.SetButtonClickedOnce(false);
-
-    //         if (b.type == LevelTowerContainerOption.Type.Buy)
-    //         {
-    //             b.gameObject.SetActive(false);
-    //         }
-    //         else
-    //         {
-    //             b.gameObject.SetActive(true);
-    //             b.EditButton(tower);
-    //         }
-    //     }
-    // }
-
     #endregion
 }

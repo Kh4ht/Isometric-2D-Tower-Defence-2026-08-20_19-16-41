@@ -80,9 +80,8 @@ public class TowerShootingSubSys : IKHSubsystem
     {
         Vector2 spawnPos = (Vector2)owner.transform.position + owner.data.bulletSpawnOffset;
 
-        KHPoolManager.Ins.Spawn<Bullet>(owner.data.bulletData.ID,
-                                        spawnPos).ResetBullet(owner.data.bulletData,
-                                                              owner.stats.GetLvl(),
+        KHPoolManager.Ins.Spawn<Projectile>(owner.data.projectilePrefab.ID,
+                                        spawnPos).ResetBullet(owner.stats,
                                                               owner.stats.GetEnemyTargeted());
     }
 

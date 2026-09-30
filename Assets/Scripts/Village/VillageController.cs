@@ -147,6 +147,8 @@ public class VillageManager : KHManagedBehaviour
     {
         villagers.Remove(villager);
 
+        LevelManager.Ins.OnVillagerKidnapped();
+
         OnVillagerKidnapped?.Invoke();
 
         villager.gameObject.SetActive(false);

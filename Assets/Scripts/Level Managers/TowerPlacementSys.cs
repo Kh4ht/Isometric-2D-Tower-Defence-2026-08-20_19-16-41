@@ -208,7 +208,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
 
         int nextLvl = Mathf.Min(tower.stats.GetLvl() + 1, tower.data.range.Count - 1);
 
-        DrawSecondaryRangeCircle(tower.transform.position, tower.data.range[nextLvl], tower.data.elementType);
+        DrawSecondaryRangeCircle(tower.transform.position, tower.data.range[nextLvl], tower.stats.GetElementType());
     }
 
     /// <summary>Preview a not-yet-placed tower's range at the currently selected cell (used while hovering a Buy button).</summary>

@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Utils;
 using KH;
+using PrimeTween;
 using UnityEngine;
 using VInspector;
 
@@ -13,16 +15,30 @@ public class EnemySpawningSys : KHManagedBehaviour
     [KHResetStatic]
     public static EnemySpawningSys Ins { get; private set; }
 
-    public event Action OnFinishedSpawning;
+    // EVENTS
+    public event Action<bool> OnFinishedSpawningAllWaves;
+    public event Action<bool> OnFinishedSpawningCurrentWave;
+    public event Action<int> OnCurrentWaveIndexChange;
 
-    private bool startedSpawning;
+    // GETTERS
+    public bool ReachedLastWave => currentWaveIndex >= waves.Count - 1;
+    public float RestBetweenWavesDuration => restBetweenWavesDuration;
+    public int WavesCount => waves.Count;
+    public int CurrentWaveIndex => currentWaveIndex;
 
     // INSPECTOR
-
     [Tab("Stats")]
-    public bool doneSpawning = false;
+    [SerializeField] private bool finishedSpawningAllWaves = false;
+    [SerializeField] private bool finishedSpawningCurrentWave = true;
+    [SerializeField] private int currentWaveIndex;
+    [SerializeField, Min(1)] private float restBetweenWavesDuration;
+
     [Tab("Waves")]
     [SerializeField] private List<WaveData> waves;
+    [Tab("Data")]
+    [SerializeField] private EnemyWavesStarterButton wavesStarterButton;
+
+    [EndTab]
 
     #endregion
     #region UNITY EVENTS
@@ -39,6 +55,13 @@ public class EnemySpawningSys : KHManagedBehaviour
         base.Start();
 
         RegisterEnemiesToPool();
+
+        for (int i = 0; i < PathSys.Ins.pathStartCells.Count; i++)
+        {
+            Vector2Int cell = PathSys.Ins.pathStartCells[i];
+
+            Instantiate(wavesStarterButton, cell.GetCellCenterWorld(), Quaternion.identity, transform).Init(i);
+        }
     }
 
     private void OnValidate()
@@ -74,13 +97,12 @@ public class EnemySpawningSys : KHManagedBehaviour
     private bool NotPlayMode => !Application.isPlaying;
     [DisableIf(nameof(NotPlayMode))]
     [Button(color = "green")]
-    private void StartSpawningEnemies()
+    public void StartSpawningEnemies()
     {
-        if (startedSpawning)
+        if (GetFinishedSpawningAllWaves() || !GetFinishedSpawningCurrentWave())
             return;
 
-        startedSpawning = true;
-        StartCoroutine(SpawnWavesCoroutine());
+        StartCoroutine(SpawnWaveCoroutine());
     }
 
     private void CheckEnemyPathsCount(int i)
@@ -93,31 +115,41 @@ public class EnemySpawningSys : KHManagedBehaviour
             Debug.LogError($"There Are Less {nameof(wave.enemyPaths)} Than The {nameof(PathSys.InsEditor.pathStartCells)} in {wave.name}".AddColorTag(KHUtils.XMLColors.Red));
     }
 
-    private IEnumerator SpawnWavesCoroutine()
+    private IEnumerator SpawnWaveCoroutine()
     {
-        foreach (WaveData wave in waves)
+        SetFinishedSpawningCurrentWave(false);
+
+        WaveData wave = waves[GetCurrentWaveIndex()];
+
+        if (wave.startDelay > 0f)
+            yield return new WaitForSeconds(wave.startDelay);
+
+        int remainingPaths = wave.enemyPaths.Count;
+
+        for (int pathIndex = 0; pathIndex < wave.enemyPaths.Count; pathIndex++)
         {
-            if (wave.startDelay > 0f)
-                yield return new WaitForSeconds(wave.startDelay);
+            EnemyPathData enemyPath = wave.enemyPaths[pathIndex];
 
-            int remainingPaths = wave.enemyPaths.Count;
-
-            for (int pathIndex = 0; pathIndex < wave.enemyPaths.Count; pathIndex++)
-            {
-                EnemyPathData enemyPath = wave.enemyPaths[pathIndex];
-
-                StartCoroutine(SpawnPathCoroutine(enemyPath,
-                                                  pathIndex,
-                                                  () => remainingPaths--)
-                );
-            }
-
-            // Wait until every path has finished.
-            yield return new WaitUntil(() => remainingPaths <= 0);
+            StartCoroutine(SpawnPathCoroutine(enemyPath: enemyPath,
+                                              pathIndex: pathIndex,
+                                              onFinished: () => remainingPaths--)
+            );
         }
 
-        OnFinishedSpawning?.Invoke();
-        doneSpawning = true;
+        // Wait until every path in current has finished.
+        yield return new WaitUntil(() => remainingPaths <= 0);
+
+        SetFinishedSpawningCurrentWave(true);
+
+        if (ReachedLastWave)
+        {
+            SetFinishedSpawningAllWaves(true);
+        }
+        else
+        {
+            SetCurrentWaveIndex(GetCurrentWaveIndex() + 1);
+            Tween.Delay(restBetweenWavesDuration, StartSpawningEnemies);
+        }
     }
 
     private IEnumerator SpawnPathCoroutine(EnemyPathData enemyPath,
@@ -170,79 +202,37 @@ public class EnemySpawningSys : KHManagedBehaviour
     }
 
     #endregion
+    #region PUBLIC
+
+    public bool GetFinishedSpawningAllWaves() => finishedSpawningAllWaves;
+    public void SetFinishedSpawningAllWaves(bool newValue)
+    {
+        if (newValue == finishedSpawningAllWaves)
+            return;
+
+        finishedSpawningAllWaves = newValue;
+        OnFinishedSpawningAllWaves?.Invoke(newValue);
+    }
+
+    public bool GetFinishedSpawningCurrentWave() => finishedSpawningCurrentWave;
+    public void SetFinishedSpawningCurrentWave(bool newValue)
+    {
+        if (newValue == finishedSpawningCurrentWave)
+            return;
+
+        finishedSpawningCurrentWave = newValue;
+        OnFinishedSpawningCurrentWave?.Invoke(newValue);
+    }
+
+    public int GetCurrentWaveIndex() => currentWaveIndex;
+    public void SetCurrentWaveIndex(int newValue)
+    {
+        if (newValue == currentWaveIndex)
+            return;
+
+        currentWaveIndex = newValue;
+        OnCurrentWaveIndexChange?.Invoke(newValue);
+    }
+
+    #endregion
 }
-
-
-
-#region WaveData
-
-[Serializable]
-public class WaveData
-{
-#if UNITY_EDITOR
-    [HideInInspector] public string name;
-
-    [SerializeField, TextArea(2, 10)]
-    private string description;
-#endif
-
-    [Space, Space]
-
-    [Tooltip("Amount of time before this wave starts.")]
-    [Range(0.5f, 10f)]
-    public float startDelay;
-
-    [Space, Space]
-
-    [Tooltip("Amount Of Paths Is Automatically Changed Based On Path System's Start Cells Count.")]
-    public List<EnemyPathData> enemyPaths = new();
-}
-
-#endregion
-#region EntryData
-
-[Serializable]
-public class EntryData
-{
-#if UNITY_EDITOR
-    [HideInInspector] public string name;
-
-    [SerializeField, TextArea(2, 10)]
-    private string description;
-#endif
-
-    [Space, Space]
-
-    public EnemyData enemyData;
-
-    [Space, Space]
-
-    [Tooltip("Amount of time before this entry starts.")]
-    [Range(0.5f, 10f)]
-    public float startDelay;
-
-    [Tooltip("Repeats The Same Entry, Instead Of Duplicates")]
-    [Min(1)] public int repeatCount = 1;
-
-    [Tooltip("Delay between each repetition.")]
-    [Range(0.5f, 10f)]
-    public float repeatDelay = 1f;
-
-
-
-}
-
-#endregion
-#region EnemyPathData
-
-[Serializable]
-public class EnemyPathData
-{
-#if UNITY_EDITOR
-    [HideInInspector] public string name;
-#endif
-
-    public List<EntryData> entries = new();
-}
-
-#endregion

@@ -32,7 +32,34 @@ MonoBehaviour:
   - 4.98
   haveShootingSubSys: 1
   bulletSpawnOffset: {x: 0, y: 0.75}
-  bulletData: {fileID: 11400000, guid: ea2b2342b12f647298d16412920e10c6, type: 2}
+  projectilePrefab: {fileID: 3740725963369276305, guid: c4352b816185545459f20fb83205021e, type: 3}
+  projectileMoveType: 0
+  projectileSpeedMultiplierCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  projectileTargetPosType: 0
+  projectileParabolicArcHeightMultiplier: 0.2
   shootCooldown:
   - 1
   - 0.9
@@ -40,4 +67,18 @@ MonoBehaviour:
   - 0.73
   - 0.66
   - 0.59
+  projectileDamage:
+  - 4
+  - 6
+  - 9
+  - 13.5
+  - 20.25
+  - 30.38
+  projectileMoveSpeed:
+  - 11
+  - 11.55
+  - 12.13
+  - 12.74
+  - 13.38
+  - 14.05
   enableListCountEditingButton: 1

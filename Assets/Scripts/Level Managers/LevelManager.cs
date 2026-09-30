@@ -1,3 +1,4 @@
+using System;
 using KH;
 using PrimeTween;
 using UnityEngine;
@@ -16,14 +17,10 @@ public class LevelManager : KHManagedBehaviour, IKHManagedUpdate
     private bool x2SpeedOn;
     public bool LevelPaused { get; private set; }
 
+    public event Action OnWon;
+    public event Action OnLost;
+
     // INSPECTOR
-
-    [Tab("UI")]
-    [SerializeField] private GameObject wonMenu;
-    [SerializeField] private GameObject lostMenu;
-
-    [Space]
-
     [SerializeField] private CanvasGroup pauseBlackBg;
 
     [Tab("STATS")]
@@ -41,20 +38,6 @@ public class LevelManager : KHManagedBehaviour, IKHManagedUpdate
             Debug.LogError($"More Than One Instance of type {nameof(LevelManager)}".AddColorTag(KHUtils.XMLColors.Red));
     }
 
-    protected override void Start()
-    {
-        base.Start();
-
-        VillageManager.Ins.OnVillagerKidnapped += OnVillagerKidnapped;
-    }
-
-    protected override void OnDisable()
-    {
-        base.OnDisable();
-
-        VillageManager.Ins.OnVillagerKidnapped -= OnVillagerKidnapped;
-    }
-
     public void KHUpdate()
     {
         CheckIfWon();
@@ -65,7 +48,7 @@ public class LevelManager : KHManagedBehaviour, IKHManagedUpdate
 
     private void CheckIfWon()
     {
-        if (EnemySpawningSys.Ins.doneSpawning)
+        if (EnemySpawningSys.Ins.GetFinishedSpawningAllWaves())
         {
             if (!KHPoolManager.Ins.GetAnyActive<Enemy>())
             {
@@ -74,24 +57,14 @@ public class LevelManager : KHManagedBehaviour, IKHManagedUpdate
         }
     }
 
-    private void OnVillagerKidnapped()
+    #endregion
+    #region PUBLIC
+
+    public void OnVillagerKidnapped()
     {
         if (VillageManager.Ins.villagers.Count <= 0)
             OnLost();
     }
-
-    private void OnLost()
-    {
-        lostMenu.SetActive(true);
-    }
-
-    private void OnWon()
-    {
-        wonMenu.SetActive(true);
-    }
-
-    #endregion
-    #region PUBLIC
 
     public void TogglePauseLevel()
     {

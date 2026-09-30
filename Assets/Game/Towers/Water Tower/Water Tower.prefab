@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1823698803666926096}
   - component: {fileID: 7272312759945149698}
   - component: {fileID: 1149071796948572502}
-  - component: {fileID: 3536504536226951381}
+  - component: {fileID: 1912907879284297239}
   m_Layer: 0
   m_Name: Water Tower
   m_TagString: Untagged
@@ -323,7 +323,7 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 1
   m_ApplyActiveColorSpace: 1
---- !u!114 &3536504536226951381
+--- !u!114 &1912907879284297239
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -332,14 +332,41 @@ MonoBehaviour:
   m_GameObject: {fileID: 3624856084399517176}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 569397402aa264e578df644653a745da, type: 3}
+  m_Script: {fileID: 11500000, guid: 1f1112e8bb3154f48b8349da28ebb4ce, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: HelperKH::KHShadowGenerator
-  shadowColor: {r: 0, g: 0, b: 0, a: 0.4}
-  shadowScale: {x: 1, y: 0.5}
-  shadowOffset: {x: 0, y: 0}
-  shadowMaterial: {fileID: 0}
-  inheritSourceAlpha: 1
-  sortingOrderOffset: -1
-  syncSortingEveryFrame: 1
-  shadowRenderer: {fileID: 0}
+  m_EditorClassIdentifier: HelperKH::KH2DSpriteEffects
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  alphaCutoff: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 0
+  outlineOnly: 0
+  innerOutlineColor: {r: 1, g: 1, b: 1, a: 1}
+  innerOutlineWidth: 0
+  dissolveEdgeColor: {r: 1, g: 0.5, b: 0, a: 1}
+  dissolveEdgeWidth: 0.05
+  dissolveInvert: 0
+  dissolveAmount: 0
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  flashAmount: 0
+  fillColor: {r: 1, g: 1, b: 1, a: 1}
+  fillAmount: 0
+  hue: 0
+  saturation: 1
+  brightness: 0
+  contrast: 1
+  grayscaleAmount: 0
+  rimColor: {r: 1, g: 1, b: 1, a: 1}
+  rimWidth: 4
+  rimIntensity: 0
+  shineColor: {r: 1, g: 1, b: 1, a: 1}
+  shineWidth: 0.15
+  shineAngle: 30
+  shineSpeed: 1
+  shineIntensity: 0
+  shineLoop: 1
+  chromaticAmount: 0
+  pixelSize: 1
+  waveAmplitude: 0
+  waveFrequency: 10
+  waveSpeed: 2
+  waveVertical: 0

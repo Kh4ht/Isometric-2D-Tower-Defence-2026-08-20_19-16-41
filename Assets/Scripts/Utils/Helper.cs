@@ -281,11 +281,9 @@ namespace Assets.Scripts.Utils
                 if (firstEnemy == null || enemy.RemainingPathPoints < firstEnemy.RemainingPathPoints)
                 {
                     firstEnemy = enemy;
-
-                    continue;
                 }
 
-                if (enemy.RemainingPathPoints == firstEnemy.RemainingPathPoints)
+                else if (enemy.RemainingPathPoints == firstEnemy.RemainingPathPoints)
                 {
                     if (Kh.GetSqrDistance(enemy.transform.position, enemy.NextPathPointPos)
                         < Kh.GetSqrDistance(firstEnemy.transform.position, firstEnemy.NextPathPointPos))
@@ -347,7 +345,26 @@ namespace Assets.Scripts.Utils
                     continue;
 
                 if (weakestEnemy == null || enemy.stats.GetHealthController().Health < weakestEnemy.stats.GetHealthController().Health)
+                {
                     weakestEnemy = enemy;
+                }
+
+                else if (enemy.stats.GetHealthController().Health == weakestEnemy.stats.GetHealthController().Health)
+                {
+                    if (enemy.RemainingPathPoints < weakestEnemy.RemainingPathPoints)
+                    {
+                        weakestEnemy = enemy;
+                    }
+
+                    else if (enemy.RemainingPathPoints == weakestEnemy.RemainingPathPoints)
+                    {
+                        if (Kh.GetSqrDistance(enemy.transform.position, enemy.NextPathPointPos)
+                            < Kh.GetSqrDistance(weakestEnemy.transform.position, weakestEnemy.NextPathPointPos))
+                        {
+                            weakestEnemy = enemy;
+                        }
+                    }
+                }
             }
 
             return weakestEnemy;
@@ -368,10 +385,45 @@ namespace Assets.Scripts.Utils
                     continue;
 
                 if (strongestEnemy == null || enemy.stats.GetHealthController().Health > strongestEnemy.stats.GetHealthController().Health)
+                {
                     strongestEnemy = enemy;
+                }
+                else if (enemy.stats.GetHealthController().Health == strongestEnemy.stats.GetHealthController().Health)
+                {
+                    if (enemy.RemainingPathPoints < strongestEnemy.RemainingPathPoints)
+                    {
+                        strongestEnemy = enemy;
+                    }
+
+                    else if (enemy.RemainingPathPoints == strongestEnemy.RemainingPathPoints)
+                    {
+                        if (Kh.GetSqrDistance(enemy.transform.position, enemy.NextPathPointPos)
+                            < Kh.GetSqrDistance(strongestEnemy.transform.position, strongestEnemy.NextPathPointPos))
+                        {
+                            strongestEnemy = enemy;
+                        }
+                    }
+                }
             }
 
             return strongestEnemy;
+        }
+
+        #endregion
+        #region HELPERS
+
+        public static AnimationCurve CopyCurve(this AnimationCurve curve)
+        {
+            if (curve == null)
+                return null;
+
+            AnimationCurve copy = new(curve.keys)
+            {
+                preWrapMode = curve.preWrapMode,
+                postWrapMode = curve.postWrapMode
+            };
+
+            return copy;
         }
 
         #endregion

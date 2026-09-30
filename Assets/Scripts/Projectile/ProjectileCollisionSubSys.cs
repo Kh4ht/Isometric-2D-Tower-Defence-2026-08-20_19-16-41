@@ -3,18 +3,18 @@ using KH;
 using Assets.Scripts.Utils;
 using UnityEngine;
 
-public class BulletCollisionSubSys : IKHSubsystem
+public class ProjectileCollisionSubSys : IKHSubsystem
 {
     #region FIELDS
 
-    private readonly Bullet owner;
+    private readonly Projectile owner;
 
     private bool targetIsDead = false;
 
     #endregion
     #region CONSTRUCTOR
 
-    public BulletCollisionSubSys(Bullet owner)
+    public ProjectileCollisionSubSys(Projectile owner)
     {
         this.owner = owner;
     }
@@ -30,44 +30,28 @@ public class BulletCollisionSubSys : IKHSubsystem
 
     public void IUpdate()
     {
-        switch (owner.data.type)
+        switch (owner.stats.GetMoveType())
         {
-            case BulletMoveType.Straight:
-                OnTargetDeadCollision();
-                break;
-
-            case BulletMoveType.Parabolic:
-                ParabolicBulletColl();
+            case BulletMoveType.StraightOrParabolic:
+                CollideWhenReachingTargetPos();
                 break;
 
             case BulletMoveType.Laser:
                 LaserBulletColl();
-                break;
-
-            case BulletMoveType.Follow:
-                FollowBulletColl();
                 break;
         }
     }
 
     public void IOnTriggerEnter2D(Collider2D collision)
     {
-        switch (owner.data.type)
+        switch (owner.stats.GetMoveType())
         {
-            case BulletMoveType.Straight:
+            case BulletMoveType.StraightOrParabolic:
                 StraightBulletColl(collision);
-                break;
-
-            case BulletMoveType.Parabolic:
-                ParabolicBulletColl();
                 break;
 
             case BulletMoveType.Laser:
                 LaserBulletColl();
-                break;
-
-            case BulletMoveType.Follow:
-                FollowBulletColl();
                 break;
         }
     }
@@ -91,34 +75,16 @@ public class BulletCollisionSubSys : IKHSubsystem
         if (collision.TryGetComponent(out Enemy enemy) && enemy != owner.stats.GetTarget())
             return;
 
-        OnBulletCollisionWithTarget();
+        DamageEnemy(owner.stats.GetTarget());
     }
-
-    private void ParabolicBulletColl() { }
 
     private void LaserBulletColl() { }
 
-    private void FollowBulletColl() { }
-
-    private void OnBulletCollisionWithTarget()
+    private void CollideWhenReachingTargetPos()
     {
-        if (!targetIsDead)
-        {
-            DamageEnemy(owner.stats.GetTarget());
-        }
-
-        // Destroy the bullet after hitting the enemy
-        KHPoolManager.Ins.Despawn(owner.data.ID, owner);
-    }
-
-    private void OnTargetDeadCollision()
-    {
-        if (!targetIsDead)
-            return;
-
         if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.stats.GetTargetPos(), GameConsts.COMPARISON_DIS_1))
         {
-            IEnumerable<Enemy> enemiesInRange = Helper.GetAllAliveEnemiesInRange(owner.stats.GetTargetPos(), GameConsts.COMPARISON_DIS_1 + 0.75f);
+            IEnumerable<Enemy> enemiesInRange = Helper.GetAllAliveEnemiesInRange(owner.stats.GetTargetPos(), GameConsts.COMPARISON_DIS_1 + 1f);
 
             foreach (Enemy enemy in enemiesInRange)
             {
@@ -126,18 +92,21 @@ public class BulletCollisionSubSys : IKHSubsystem
                 {
                     DamageEnemy(enemy);
 
-                    KHPoolManager.Ins.Despawn(owner.data.ID, owner);
+                    KHPoolManager.Ins.Despawn(owner.ID, owner);
                     return;
                 }
             }
 
-            KHPoolManager.Ins.Despawn(owner.data.ID, owner);
+            KHPoolManager.Ins.Despawn(owner.ID, owner);
         }
     }
 
     private void DamageEnemy(Enemy enemy)
     {
-        enemy.stats.TakeDamage(owner.stats.GetDamage(), owner.data.elementType);
+        enemy.stats.TakeDamage(owner.stats.GetDamage(), owner.stats.GetElementType());
+
+        // Destroy the bullet after damaging the enemy
+        KHPoolManager.Ins.Despawn(owner.ID, owner);
     }
 
     #endregion
