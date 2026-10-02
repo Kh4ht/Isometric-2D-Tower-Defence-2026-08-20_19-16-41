@@ -15,7 +15,7 @@ public class TowerData : ScriptableObject
 
     [Space(20)]
     public Tower prefab;
-    public ElementType elementType;
+    public Enums.ElementType elementType;
 
     [Space(20)]
     public List<Sprite> icons;
@@ -26,6 +26,7 @@ public class TowerData : ScriptableObject
 
     [Space(20)]
 
+    public bool canTargetFlying = true;
     public bool haveShootingSubSys = true;
 
     [EnableIf(nameof(haveShootingSubSys))]
@@ -33,12 +34,12 @@ public class TowerData : ScriptableObject
     public Vector2 bulletSpawnOffset = new(0f, 0.5f);
     public Projectile projectilePrefab;
 
-    public BulletMoveType projectileMoveType = BulletMoveType.StraightOrParabolic;
+    public Enums.ProjectileMoveType projectileMoveType = Enums.ProjectileMoveType.StraightOrParabolic;
 
     [Tooltip("X = flight progress (0 = launch, 1 = arrival). Y = speed multiplier. Flat 1 = constant speed.")]
     public AnimationCurve projectileSpeedMultiplierCurve = AnimationCurve.Constant(0f, 1f, 1f);
 
-    public BulletTargetPosition projectileTargetPosType = BulletTargetPosition.FirstTargetPos;
+    public Enums.ProjectileTargetPosition projectileTargetPosType = Enums.ProjectileTargetPosition.FirstTargetPos;
     [Min(0f)] public float projectileParabolicArcHeightMultiplier = 0.5f;
 
     // TODO: public bool HasChainDamage;
@@ -119,12 +120,12 @@ public class TowerData : ScriptableObject
     [Button(color = "green")]
     private void EditAllListsCount()
     {
-        icons.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
-        projectileDamage.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
-        range.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
-        price.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
-        projectileMoveSpeed.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
-        shootCooldown.KHMatchCount(GameConsts.TOWER_MAX_LEVEL + 1);
+        icons.KHMatchCount(Consts.TOWER_MAX_LEVEL + 1);
+        projectileDamage.KHMatchCount(Consts.TOWER_MAX_LEVEL + 1);
+        range.KHMatchCount(Consts.TOWER_MAX_LEVEL + 1);
+        price.KHMatchCount(Consts.TOWER_MAX_LEVEL + 1);
+        projectileMoveSpeed.KHMatchCount(Consts.TOWER_MAX_LEVEL + 1);
+        shootCooldown.KHMatchCount(Consts.TOWER_MAX_LEVEL + 1);
     }
 #endif
 

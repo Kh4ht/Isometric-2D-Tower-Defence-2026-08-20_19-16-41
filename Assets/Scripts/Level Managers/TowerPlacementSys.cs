@@ -178,7 +178,7 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         }
     }
 
-    private void DrawSecondaryRangeCircle(Vector2 origin, float radius, ElementType elementType)
+    private void DrawSecondaryRangeCircle(Vector2 origin, float radius, Enums.ElementType elementType)
     {
         if (radius <= 0f)
         {
@@ -187,10 +187,10 @@ public class TowerPlacementSys : KHManagedBehaviour, IKHManagedUpdate
         }
 
         secondaryTowerRangeIndicator.enabled = true;
-        secondaryTowerRangeIndicator.colorGradient = DB.GetTowerRangeIndicatorGradient(elementType);
-        secondaryTowerRangeIndicator.positionCount = GameConsts.TOWER_RANGE_SEGMENTS;
+        secondaryTowerRangeIndicator.colorGradient = elementType.GetTowerRangeIndicatorGradient();
+        secondaryTowerRangeIndicator.positionCount = Consts.TOWER_RANGE_SEGMENTS;
 
-        for (int i = 0; i < GameConsts.TOWER_RANGE_SEGMENTS; i++)
+        for (int i = 0; i < Consts.TOWER_RANGE_SEGMENTS; i++)
             secondaryTowerRangeIndicator.SetPosition(i, Helper.TileCircleToWorld(origin, radius, i));
     }
 

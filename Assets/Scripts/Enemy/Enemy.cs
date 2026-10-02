@@ -50,7 +50,7 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
         Rb2D.bodyType = RigidbodyType2D.Kinematic;
 
         //Set Tag
-        tag = GameTags.ENEMY;
+        tag = Consts.TAG_ENEMY;
     }
 
     private void Awake()
@@ -103,7 +103,7 @@ public class Enemy : KHManagedBehaviour, IKHPoolable, IKHManagedUpdate, IKHManag
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag(GameTags.VILLAGER))
+        if (collision.CompareTag(Consts.TAG_VILLAGER))
         {
             KidnapVillagerAndEndMission(collision.GetComponent<Villager>());
         }

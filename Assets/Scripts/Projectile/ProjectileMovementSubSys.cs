@@ -33,11 +33,11 @@ public class ProjectileMovementSubSys : IKHSubsystem
     {
         switch (owner.stats.GetMoveType())
         {
-            case BulletMoveType.StraightOrParabolic:
+            case Enums.ProjectileMoveType.StraightOrParabolic:
                 StraightOrParabolicMove();
                 break;
 
-            case BulletMoveType.Laser:
+            case Enums.ProjectileMoveType.Laser:
                 LaserMove();
                 break;
         }
@@ -109,7 +109,7 @@ public class ProjectileMovementSubSys : IKHSubsystem
     {
         switch (owner.stats.GetMoveType())
         {
-            case BulletMoveType.StraightOrParabolic:
+            case Enums.ProjectileMoveType.StraightOrParabolic:
                 owner.VisualRoot.transform.localPosition = Vector2.zero;
 
                 launchPos = owner.transform.position;
@@ -128,7 +128,7 @@ public class ProjectileMovementSubSys : IKHSubsystem
                     : 0f;
                 break;
 
-            case BulletMoveType.Laser:
+            case Enums.ProjectileMoveType.Laser:
 
                 break;
         }

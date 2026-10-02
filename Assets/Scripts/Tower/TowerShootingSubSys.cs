@@ -50,7 +50,7 @@ public class TowerShootingSubSys : IKHSubsystem
     {
         List<Enemy> enemiesInRange = new();
 
-        foreach (Enemy enemy in Helper.GetAllAliveEnemies())
+        foreach (Enemy enemy in Helper.GetAllAliveEnemies(owner.stats.GetCanTargetFlying()))
         {
             if (enemy.IsWithinRange(owner.transform.position, owner.stats.GetRange()))
                 enemiesInRange.Add(enemy);
@@ -59,16 +59,16 @@ public class TowerShootingSubSys : IKHSubsystem
         switch (owner.stats.GetTargetSearchType())
         {
             case TowerStats.TargetSearchType.First:
-                return enemiesInRange.GetFirstEnemy();
+                return enemiesInRange.GetFirstEnemy(owner.stats.GetCanTargetFlying());
 
             case TowerStats.TargetSearchType.Last:
-                return enemiesInRange.GetLastEnemy();
+                return enemiesInRange.GetLastEnemy(owner.stats.GetCanTargetFlying());
 
             case TowerStats.TargetSearchType.Strongest:
-                return enemiesInRange.GetStrongestEnemy();
+                return enemiesInRange.GetStrongestEnemy(owner.stats.GetCanTargetFlying());
 
             case TowerStats.TargetSearchType.Weakest:
-                return enemiesInRange.GetWeakestEnemy();
+                return enemiesInRange.GetWeakestEnemy(owner.stats.GetCanTargetFlying());
 
             default:
                 Debug.LogWarning($"Unsupported {nameof(TowerStats.TargetSearchType)}: {owner.stats.GetTargetSearchType()}.");

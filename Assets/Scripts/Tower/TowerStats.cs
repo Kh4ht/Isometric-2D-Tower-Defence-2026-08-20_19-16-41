@@ -16,6 +16,7 @@ public class TowerStats
         Weakest,
     }
 
+    [SerializeField] private bool canTargetFlying;
     [SerializeField] private float range;
     [SerializeField] private float shootCooldown;
     [SerializeField] private float projectileDamage;
@@ -23,9 +24,9 @@ public class TowerStats
     [SerializeField] private float projectileParabolicArcHeightMultiplier;
     [SerializeField] private List<Vector2Int> occupiedCells;
     [SerializeField] private TargetSearchType targetSearchType;
-    [SerializeField] private BulletTargetPosition projectileTargetPosType;
-    [SerializeField] private BulletMoveType projectileMoveType;
-    [SerializeField] private ElementType elementType;
+    [SerializeField] private Enums.ProjectileTargetPosition projectileTargetPosType;
+    [SerializeField] private Enums.ProjectileMoveType projectileMoveType;
+    [SerializeField] private Enums.ElementType elementType;
     [SerializeField] private int sellPrice;
     [SerializeField] private int lvl;
     [SerializeField] private int nextUpgradePrice;
@@ -47,6 +48,16 @@ public class TowerStats
     #region PUBLIC
 
     // ENCAPSULATION
+
+    public bool GetCanTargetFlying() => canTargetFlying;
+    public void SetCanTargetFlying(bool newValue)
+    {
+        if (newValue == canTargetFlying)
+            return;
+
+        canTargetFlying = newValue;
+    }
+
     public float GetRange() => range;
     public void SetRange(float newValue)
     {
@@ -72,8 +83,8 @@ public class TowerStats
         targetSearchType = newValue;
     }
 
-    public BulletTargetPosition GetProjectileTargetPosType() => projectileTargetPosType;
-    public void SetProjectileTargetPosType(BulletTargetPosition newValue)
+    public Enums.ProjectileTargetPosition GetProjectileTargetPosType() => projectileTargetPosType;
+    public void SetProjectileTargetPosType(Enums.ProjectileTargetPosition newValue)
     {
         if (newValue == projectileTargetPosType)
             return;
@@ -81,8 +92,8 @@ public class TowerStats
         projectileTargetPosType = newValue;
     }
 
-    public BulletMoveType GetProjectileMoveType() => projectileMoveType;
-    public void SetProjectileMoveType(BulletMoveType newValue)
+    public Enums.ProjectileMoveType GetProjectileMoveType() => projectileMoveType;
+    public void SetProjectileMoveType(Enums.ProjectileMoveType newValue)
     {
         if (newValue == projectileMoveType)
             return;
@@ -172,8 +183,8 @@ public class TowerStats
         nextUpgradePrice = newValue;
     }
 
-    public ElementType GetElementType() => elementType;
-    public void SetElementType(ElementType newValue)
+    public Enums.ElementType GetElementType() => elementType;
+    public void SetElementType(Enums.ElementType newValue)
     {
         if (newValue == elementType)
             return;
@@ -182,23 +193,24 @@ public class TowerStats
     }
 
     // PUBLIC API
-    public void Reset(TowerData towerData, List<Vector2Int> occupiedCells)
+    public void Reset(TowerData td, List<Vector2Int> occupiedCells)
     {
         lvl = 0;
         enemyTargeted = null;
-        shootCooldown = towerData.shootCooldown[0];
-        range = towerData.range[0];
-        sellPrice = towerData.PurchasePrice / 2;
+        shootCooldown = td.shootCooldown[0];
+        range = td.range[0];
+        sellPrice = td.PurchasePrice / 2;
         this.occupiedCells = new(occupiedCells);
         targetSearchType = TargetSearchType.First;
-        nextUpgradePrice = towerData.price[1];
-        projectileDamage = towerData.projectileDamage[0];
-        projectileMoveSpeed = towerData.projectileMoveSpeed[0];
-        elementType = towerData.elementType;
-        projectileParabolicArcHeightMultiplier = towerData.projectileParabolicArcHeightMultiplier;
-        projectileTargetPosType = towerData.projectileTargetPosType;
-        projectileMoveType = towerData.projectileMoveType;
-        projectileSpeedMultiplierCurve = towerData.projectileSpeedMultiplierCurve.CopyCurve();
+        nextUpgradePrice = td.price[1];
+        projectileDamage = td.projectileDamage[0];
+        projectileMoveSpeed = td.projectileMoveSpeed[0];
+        elementType = td.elementType;
+        projectileParabolicArcHeightMultiplier = td.projectileParabolicArcHeightMultiplier;
+        projectileTargetPosType = td.projectileTargetPosType;
+        projectileMoveType = td.projectileMoveType;
+        projectileSpeedMultiplierCurve = td.projectileSpeedMultiplierCurve.CopyCurve();
+        canTargetFlying = td.canTargetFlying;
     }
 
     #endregion

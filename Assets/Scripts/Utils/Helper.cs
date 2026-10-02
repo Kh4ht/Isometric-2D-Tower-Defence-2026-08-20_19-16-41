@@ -158,37 +158,18 @@ namespace Assets.Scripts.Utils
         }
 
         #endregion
-        #region DAMAGE
+        #region DAMAGE & ELEMENTS
 
-        private static float Filter(this ElementStrength receiverElementStrength, float damageAmount)
+        public static float DamageFilter(this Enums.ElementStrength receiverElementStrength, Enums.ElementType attackerElementType, Enums.ElementType receiverElementType, float damageAmount)
         {
-            return receiverElementStrength switch
-            {
-                ElementStrength.Low => damageAmount * GameConsts.LOW_ELEMENT_MULTIPLIER,
-                ElementStrength.Medium => damageAmount * GameConsts.MEDIUM_ELEMENT_MULTIPLIER,
-                ElementStrength.High => damageAmount * GameConsts.HIGH_ELEMENT_MULTIPLIER,
-                ElementStrength.Immune => damageAmount * GameConsts.IMMUNE_ELEMENT_MULTIPLIER,
-                _ => damageAmount,
-            };
-        }
-
-        private static readonly Dictionary<ElementType, ElementType> ResistedBy = new()
-        {
-            { ElementType.Fire, ElementType.Water },   // Water resists Fire
-            { ElementType.Water, ElementType.Earth },  // Earth resists Water
-            { ElementType.Earth, ElementType.Fire },   // Fire resists Earth
-        };
-
-        public static float DamageFilter(this ElementStrength receiverElementStrength, ElementType attackerElementType, ElementType receiverElementType, float damageAmount)
-        {
-            if (attackerElementType == ElementType.None || receiverElementType == ElementType.None || attackerElementType == receiverElementType)
+            if (attackerElementType == Enums.ElementType.None || receiverElementType == Enums.ElementType.None || attackerElementType == receiverElementType)
                 return damageAmount;
 
-            if (ResistedBy.TryGetValue(attackerElementType, out var resister) && resister == receiverElementType)
-                return receiverElementStrength.Filter(damageAmount);
+            if (Enums.ElementTypeResistedBy.TryGetValue(attackerElementType, out var resister) && resister == receiverElementType)
+                return receiverElementStrength.ReduceDamage(damageAmount);
 
             // if attacker isn't resisted by receiver, receiver must be the "weak" side
-            return damageAmount * GameConsts.ELEMENT_BONUS_MULTIPLIER;
+            return damageAmount * Consts.ELEMENT_BONUS_MULTIPLIER;
         }
 
         #endregion
@@ -198,7 +179,7 @@ namespace Assets.Scripts.Utils
         /// (in tile units), squashed back into isometric world space.
         public static Vector2 TileCircleToWorld(Vector2 origin, float range, int step)
         {
-            float angle = (step / (float)GameConsts.TOWER_RANGE_SEGMENTS) * Mathf.PI * 2f;
+            float angle = (step / (float)Consts.TOWER_RANGE_SEGMENTS) * Mathf.PI * 2f;
 
             // Point on a normal circle, in tile space
             Vector2 tileSpacePoint = new Vector2(
@@ -207,23 +188,9 @@ namespace Assets.Scripts.Utils
             );
 
             // Re-apply the isometric squash to get back to world space
-            tileSpacePoint.y *= GameConsts.ISO_Y_SCALE;
+            tileSpacePoint.y *= Consts.ISO_Y_SCALE;
 
             return origin + tileSpacePoint;
-        }
-
-        #endregion
-        #region IsWithinRange
-
-        public static bool IsWithinRange(this MonoBehaviour target, Vector2 origin, float range)
-        {
-            Vector2 delta = (Vector2)target.transform.position - origin;
-
-            // Undo the isometric squash so distance is measured in tile units
-            delta.y /= GameConsts.ISO_Y_SCALE;
-
-            float distanceInTiles = delta.magnitude;
-            return distanceInTiles <= range;
         }
 
         #endregion
@@ -233,11 +200,14 @@ namespace Assets.Scripts.Utils
         /// Gets all currently active enemies that are still alive.
         /// </summary>
         /// <returns>An enumeration of living enemies.</returns>
-        public static IEnumerable<Enemy> GetAllAliveEnemies()
+        public static IEnumerable<Enemy> GetAllAliveEnemies(bool includeFlying)
         {
             foreach (Enemy enemy in KHPoolManager.Ins.GetAllActive<Enemy>())
             {
                 if (enemy.stats.GetHealthController().IsDead)
+                    continue;
+
+                if (!includeFlying && enemy.stats.GetIsFlying())
                     continue;
 
                 yield return enemy;
@@ -250,13 +220,10 @@ namespace Assets.Scripts.Utils
         /// <param name="center">The center point to check from.</param>
         /// <param name="range">The maximum allowed distance, from the center point.</param>
         /// <returns>An enumeration of living enemies within range.</returns>
-        public static IEnumerable<Enemy> GetAllAliveEnemiesInRange(Vector2 center, float range)
+        public static IEnumerable<Enemy> GetAllAliveEnemiesInRange(Vector2 center, float range, bool includeFlying)
         {
-            foreach (Enemy enemy in KHPoolManager.Ins.GetAllActive<Enemy>())
+            foreach (Enemy enemy in GetAllAliveEnemies(includeFlying))
             {
-                if (enemy.stats.GetHealthController().IsDead)
-                    continue;
-
                 if (!Kh.SqrDistanceIsLessThan(enemy.transform.position, center, range))
                     continue;
 
@@ -269,13 +236,16 @@ namespace Assets.Scripts.Utils
         /// </summary>
         /// <param name="enemies">The enemies to search.</param>
         /// <returns>The enemy closest to the goal, or <see langword="null"/> if the collection is empty.</returns>
-        public static Enemy GetFirstEnemy(this IEnumerable<Enemy> enemies)
+        public static Enemy GetFirstEnemy(this IEnumerable<Enemy> enemies, bool includeFlying)
         {
             Enemy firstEnemy = null;
 
             foreach (Enemy enemy in enemies)
             {
                 if (enemy.stats.GetHealthController().IsDead)
+                    continue;
+
+                if (!includeFlying && enemy.stats.GetIsFlying())
                     continue;
 
                 if (firstEnemy == null || enemy.RemainingPathPoints < firstEnemy.RemainingPathPoints)
@@ -301,13 +271,16 @@ namespace Assets.Scripts.Utils
         /// </summary>
         /// <param name="enemies">The enemies to search.</param>
         /// <returns>The enemy farthest from the goal, or <see langword="null"/> if the collection is empty.</returns>
-        public static Enemy GetLastEnemy(this IEnumerable<Enemy> enemies)
+        public static Enemy GetLastEnemy(this IEnumerable<Enemy> enemies, bool includeFlying)
         {
             Enemy lastEnemy = null;
 
             foreach (Enemy enemy in enemies)
             {
                 if (enemy.stats.GetHealthController().IsDead)
+                    continue;
+
+                if (!includeFlying && enemy.stats.GetIsFlying())
                     continue;
 
                 if (lastEnemy == null || enemy.RemainingPathPoints > lastEnemy.RemainingPathPoints)
@@ -335,13 +308,16 @@ namespace Assets.Scripts.Utils
         /// </summary>
         /// <param name="enemies">The enemies to search.</param>
         /// <returns>The enemy with the lowest health, or <see langword="null"/> if the collection is empty.</returns>
-        public static Enemy GetWeakestEnemy(this IEnumerable<Enemy> enemies)
+        public static Enemy GetWeakestEnemy(this IEnumerable<Enemy> enemies, bool includeFlying)
         {
             Enemy weakestEnemy = null;
 
             foreach (Enemy enemy in enemies)
             {
                 if (enemy.stats.GetHealthController().IsDead)
+                    continue;
+
+                if (!includeFlying && enemy.stats.GetIsFlying())
                     continue;
 
                 if (weakestEnemy == null || enemy.stats.GetHealthController().Health < weakestEnemy.stats.GetHealthController().Health)
@@ -375,13 +351,16 @@ namespace Assets.Scripts.Utils
         /// </summary>
         /// <param name="enemies">The enemies to search.</param>
         /// <returns>The enemy with the highest health, or <see langword="null"/> if the collection is empty.</returns>
-        public static Enemy GetStrongestEnemy(this IEnumerable<Enemy> enemies)
+        public static Enemy GetStrongestEnemy(this IEnumerable<Enemy> enemies, bool includeFlying)
         {
             Enemy strongestEnemy = null;
 
             foreach (Enemy enemy in enemies)
             {
                 if (enemy.stats.GetHealthController().IsDead)
+                    continue;
+
+                if (!includeFlying && enemy.stats.GetIsFlying())
                     continue;
 
                 if (strongestEnemy == null || enemy.stats.GetHealthController().Health > strongestEnemy.stats.GetHealthController().Health)
@@ -412,6 +391,17 @@ namespace Assets.Scripts.Utils
         #endregion
         #region HELPERS
 
+        public static bool IsWithinRange(this MonoBehaviour target, Vector2 origin, float range)
+        {
+            Vector2 delta = (Vector2)target.transform.position - origin;
+
+            // Undo the isometric squash so distance is measured in tile units
+            delta.y /= Consts.ISO_Y_SCALE;
+
+            float distanceInTiles = delta.magnitude;
+            return distanceInTiles <= range;
+        }
+
         public static AnimationCurve CopyCurve(this AnimationCurve curve)
         {
             if (curve == null)
@@ -424,6 +414,11 @@ namespace Assets.Scripts.Utils
             };
 
             return copy;
+        }
+
+        public static Gradient GetTowerRangeIndicatorGradient(this Enums.ElementType elementType)
+        {
+            return elementType.GetTowerRangeIndicatorGradient();
         }
 
         #endregion

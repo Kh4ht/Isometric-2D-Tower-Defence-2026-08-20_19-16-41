@@ -10,30 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eed964302a4a748579f0c219f73507da, type: 3}
-  m_Name: Water Tower
+  m_Name: Gale Bowman
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
-  id: Water_Tower__zvCThDH5
-  prefab: {fileID: 8735440232499466857, guid: 1ef7ac6a3c021485eb0740fe290fb54d, type: 3}
-  elementType: 2
+  id: Gale_Bowman__p5at7%XJ
+  prefab: {fileID: 4499602431032490285, guid: 3796967cb150141e8b4fa7804243e799, type: 3}
+  elementType: 4
   icons:
-  - {fileID: 21300000, guid: a46e3386a97414321abf7de14d57bf30, type: 3}
-  - {fileID: 21300000, guid: 7bdb77c24f83b4bd484454aa8e7d52fe, type: 3}
-  - {fileID: 21300000, guid: 97e07865b6177432d845a7d91e8b6455, type: 3}
-  - {fileID: 21300000, guid: 5fc2fd8d4b115430eb163502233f85da, type: 3}
-  - {fileID: 21300000, guid: 5fc2fd8d4b115430eb163502233f85da, type: 3}
-  - {fileID: 21300000, guid: 5fc2fd8d4b115430eb163502233f85da, type: 3}
-  price: 46000000500000005b000000680000007700000088000000i
+  - {fileID: 21300000, guid: 520a00a036d6046869d22351a7d7eaac, type: 3}
+  - {fileID: 21300000, guid: a2a1eb951b1cb474d913729463c4a8df, type: 3}
+  - {fileID: 21300000, guid: 891b1e8d4479b4e87aad45fe3ec33f37, type: 3}
+  - {fileID: 21300000, guid: 1ecaa971b843842328b7813c9d7b1687, type: 3}
+  - {fileID: 21300000, guid: 1ecaa971b843842328b7813c9d7b1687, type: 3}
+  - {fileID: 21300000, guid: 1ecaa971b843842328b7813c9d7b1687, type: 3}
+  price: 5a0000007500000098000000c6000000010100004e010000i
   range:
-  - 2
-  - 2.4
-  - 2.88
-  - 3.46
-  - 4.15
-  - 4.98
-  canTargetFlying: 0
+  - 4
+  - 5.2
+  - 6.76
+  - 8.79
+  - 11.43
+  - 14.86
   haveShootingSubSys: 1
-  bulletSpawnOffset: {x: 0, y: 0.75}
-  projectilePrefab: {fileID: 3740725963369276305, guid: c4352b816185545459f20fb83205021e, type: 3}
+  bulletSpawnOffset: {x: 0, y: 0.5}
+  projectilePrefab: {fileID: 4236233907721150383, guid: 051a082358ad24ac592c849df6036c90, type: 3}
   projectileMoveType: 0
   projectileSpeedMultiplierCurve:
     serializedVersion: 2
@@ -59,27 +58,27 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  projectileTargetPosType: 0
+  projectileTargetPosType: 1
   projectileParabolicArcHeightMultiplier: 0.1
   shootCooldown:
   - 1
-  - 0.9
-  - 0.81
-  - 0.73
-  - 0.66
-  - 0.59
+  - 0.8
+  - 0.64
+  - 0.51
+  - 0.41
+  - 0.33
   projectileDamage:
+  - 2
   - 4
-  - 6
-  - 9
-  - 13.5
-  - 20.25
-  - 30.38
+  - 7
+  - 10
+  - 14
+  - 18
   projectileMoveSpeed:
-  - 11
-  - 11.55
-  - 12.13
-  - 12.74
-  - 13.38
-  - 14.05
-  enableListCountEditingButton: 1
+  - 14
+  - 14.28
+  - 14.57
+  - 14.86
+  - 15.16
+  - 15.46
+  enableListCountEditingButton: 0

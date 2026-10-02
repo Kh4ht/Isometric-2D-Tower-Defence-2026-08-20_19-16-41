@@ -9,12 +9,13 @@ public class EnemyStats
 {
     #region FIELDS
 
-    [SerializeField] private List<Vector2> path = new();
-    [SerializeField] private Vector2 moveDir = Vector2.zero;
     [SerializeField] private bool canMove;
     [SerializeField] private bool reachedVillageArea = false;
-    [SerializeField] private ElementStrength elementStrength;
-    [SerializeField] private ElementType elementType;
+    [SerializeField] private bool isFlying;
+    [SerializeField] private List<Vector2> path = new();
+    [SerializeField] private Vector2 moveDir = Vector2.zero;
+    [SerializeField] private Enums.ElementStrength elementStrength;
+    [SerializeField] private Enums.ElementType elementType;
     [SerializeField] private float moveSpeed;
     [SerializeField] private KHHealthController healthController;
     [SerializeField] private int nextPathPoint = 1; // Start from 1 because enemy spawns on path[pathIndex = 0]
@@ -23,8 +24,8 @@ public class EnemyStats
     public event Action<Vector2> OnMoveDirChanged;
     public event Action<bool> OnCanMoveChanged;
     public event Action<bool> OnReachedVillageAreaChanged;
-    public event Action<ElementStrength> OnElementStrengthChanged;
-    public event Action<ElementType> OnElementTypeChanged;
+    public event Action<Enums.ElementStrength> OnElementStrengthChanged;
+    public event Action<Enums.ElementType> OnElementTypeChanged;
     public event Action<List<Vector2>> OnPathChanged;
     public event Action<float> OnMoveSpeedChanged;
     public event Action<int> OnNextPathPointChanged;
@@ -44,6 +45,15 @@ public class EnemyStats
     #region PUBLIC
 
     // ENCAPSULATION
+
+    public bool GetIsFlying() => isFlying;
+    public void SetIsFlying(bool newValue)
+    {
+        if (healthController.IsDead)
+            return;
+
+        isFlying = newValue;
+    }
 
     public KHHealthController GetHealthController() => healthController;
 
@@ -75,8 +85,8 @@ public class EnemyStats
         OnCanMoveChanged?.Invoke(newValue);
     }
 
-    public ElementStrength GetElementStrength() => elementStrength;
-    public void SetElementStrength(ElementStrength newValue)
+    public Enums.ElementStrength GetElementStrength() => elementStrength;
+    public void SetElementStrength(Enums.ElementStrength newValue)
     {
         if (healthController.IsDead)
             return;
@@ -108,8 +118,8 @@ public class EnemyStats
         OnReachedVillageAreaChanged?.Invoke(newValue);
     }
 
-    public ElementType GetElementType() => elementType;
-    public void SetElementType(ElementType newValue)
+    public Enums.ElementType GetElementType() => elementType;
+    public void SetElementType(Enums.ElementType newValue)
     {
         if (healthController.IsDead)
             return;
@@ -139,20 +149,21 @@ public class EnemyStats
     }
 
     // PUBLIC API
-    public void TakeDamage(float damageAmount, ElementType attackerElementType)
+    public void TakeDamage(float damageAmount, Enums.ElementType attackerElementType)
     {
         healthController.Health -= elementStrength.DamageFilter(attackerElementType, elementType, damageAmount);
     }
 
-    public void Reset(EnemyData enemyData, List<Vector2> newPath)
+    public void Reset(EnemyData ed, List<Vector2> newPath)
     {
         reachedVillageArea = false;
-        moveSpeed = enemyData.defaultMoveSpeed;
+        moveSpeed = ed.defaultMoveSpeed;
         path = new(newPath);
         nextPathPoint = 1;
         canMove = true;
-        elementStrength = enemyData.elementStrength;
+        elementStrength = ed.elementStrength;
         healthController?.Revive();
+        isFlying = ed.isFlying;
     }
 
     #endregion

@@ -33,17 +33,6 @@ public static class DB
     #endregion
     #region PUBLIC
 
-    public static Gradient GetTowerRangeIndicatorGradient(ElementType elementType)
-    {
-        return elementType switch
-        {
-            ElementType.Fire => Db.fireTowerRangeIndicator,
-            ElementType.Water => Db.WaterTowerRangeIndicator,
-            ElementType.Earth => Db.EarthTowerRangeIndicator,
-            _ => new Gradient(),
-        };
-    }
-
     public static TowerData GetTowerDataById(string id)
     {
         return TowersDB.Find(t => id == t.ID);

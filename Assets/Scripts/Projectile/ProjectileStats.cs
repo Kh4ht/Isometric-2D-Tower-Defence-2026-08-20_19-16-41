@@ -12,9 +12,9 @@ public class ProjectileStats
     [SerializeField] private float damage;
     [SerializeField] private Vector2 targetFirstPos;
     [SerializeField] private Vector2 targetLastPosBeforeDeath;
-    [SerializeField] private BulletTargetPosition targetPosType;
-    [SerializeField] private BulletMoveType moveType;
-    [SerializeField] private ElementType elementType;
+    [SerializeField] private Enums.ProjectileTargetPosition targetPosType;
+    [SerializeField] private Enums.ProjectileMoveType moveType;
+    [SerializeField] private Enums.ElementType elementType;
     [SerializeField] private Enemy target;
     [SerializeField] private AnimationCurve speedMultiplierCurve;
 
@@ -73,8 +73,8 @@ public class ProjectileStats
         damage = newValue;
     }
 
-    public ElementType GetElementType() => elementType;
-    public void SetElementType(ElementType newValue)
+    public Enums.ElementType GetElementType() => elementType;
+    public void SetElementType(Enums.ElementType newValue)
     {
         if (newValue == elementType)
             return;
@@ -91,8 +91,8 @@ public class ProjectileStats
         parabolicArcHeightMultiplier = newValue;
     }
 
-    public BulletMoveType GetMoveType() => moveType;
-    public void SetMoveType(BulletMoveType newValue)
+    public Enums.ProjectileMoveType GetMoveType() => moveType;
+    public void SetMoveType(Enums.ProjectileMoveType newValue)
     {
         if (newValue == moveType)
             return;
@@ -104,8 +104,8 @@ public class ProjectileStats
     {
         return targetPosType switch
         {
-            BulletTargetPosition.FirstTargetPos => targetFirstPos,
-            BulletTargetPosition.FollowTargetPos => targetLastPosBeforeDeath,
+            Enums.ProjectileTargetPosition.FirstTargetPos => targetFirstPos,
+            Enums.ProjectileTargetPosition.FollowTargetPos => targetLastPosBeforeDeath,
 
             _ => Vector2.zero,
         };

@@ -1,6 +1,8 @@
 using KH;
+using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Image), typeof(Button))]
 public class TowerSelector : KHManagedBehaviour
 {
     #region FIELDS
@@ -9,17 +11,33 @@ public class TowerSelector : KHManagedBehaviour
     #endregion
     #region UNITY EVENTS
 
-    private void OnValidate()
+    private void Reset()
     {
         if (towerData != null)
         {
             name = towerData.name;
         }
 
-        if (TryGetComponent(out Image img) && towerData.icons != null)
+        if (towerData != null && towerData.icons != null && towerData.icons.Count > 0)
         {
-            img.sprite = towerData.icons[0];
+            GetComponent<Image>().sprite = towerData.icons[0];
         }
+    }
+
+    private void Awake()
+    {
+        Button button = GetComponent<Button>();
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(SaveSelectedTower);
+    }
+
+    private void OnValidate()
+    {
+        if (towerData != null)
+            name = towerData.name;
+
+        if (towerData.icons != null && towerData.icons.Count > 0)
+            GetComponent<Image>().sprite = towerData.icons[0];
     }
 
     #endregion

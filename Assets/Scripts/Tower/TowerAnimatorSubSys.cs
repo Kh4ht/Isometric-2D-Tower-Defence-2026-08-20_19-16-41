@@ -133,7 +133,7 @@ public class TowerAnimatorSubSys : IKHSubsystem
         }
 
         Vector2 origin = owner.transform.position;
-        owner.lineRenderer.positionCount = GameConsts.TOWER_RANGE_SEGMENTS;
+        owner.lineRenderer.positionCount = Consts.TOWER_RANGE_SEGMENTS;
 
         lineRendererPositions.Clear();
 

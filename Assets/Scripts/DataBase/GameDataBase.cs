@@ -27,6 +27,7 @@ public class GameDataBase : ScriptableObject
     public Gradient fireTowerRangeIndicator;
     public Gradient WaterTowerRangeIndicator;
     public Gradient EarthTowerRangeIndicator;
+    public Gradient AirTowerRangeIndicator;
 
     [EndTab, Tab("Datas")]
 

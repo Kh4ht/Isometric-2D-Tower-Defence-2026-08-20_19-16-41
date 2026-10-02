@@ -20,6 +20,7 @@ public class LevelUIManager : KHManagedBehaviour
     [Header("Text")]
     [SerializeField] private TextMeshProUGUI wavesCountTxt;
     [SerializeField] private TextMeshProUGUI aetherTxt;
+    [SerializeField] private TextMeshProUGUI villagerCountTxt;
 
     #endregion
     #region UNITY EVENTS
@@ -38,11 +39,13 @@ public class LevelUIManager : KHManagedBehaviour
 
         wavesCountTxt.SetText($"{0}/{EnemySpawningSys.Ins.WavesCount}");
         aetherTxt.SetText($"{LevelCoinManager.Ins.Aether.Amount:N0}");
+        villagerCountTxt.SetText($"{Consts.VILLAGER_MAX_COUNT}");
 
         EnemySpawningSys.Ins.OnFinishedSpawningCurrentWave += UpdateWavesCountTxt;
         LevelManager.Ins.OnWon += ShowWonMenu;
         LevelManager.Ins.OnLost += ShowLostMenu;
         LevelCoinManager.Ins.Aether.OnChanged += OnCoinsChanged;
+        VillageManager.Ins.OnVillagerKidnapped += UpdateVillagersCountTxt;
     }
 
     private void OnDestroy()
@@ -51,6 +54,7 @@ public class LevelUIManager : KHManagedBehaviour
         LevelManager.Ins.OnWon -= ShowWonMenu;
         LevelManager.Ins.OnLost -= ShowLostMenu;
         LevelCoinManager.Ins.Aether.OnChanged -= OnCoinsChanged;
+        VillageManager.Ins.OnVillagerKidnapped -= UpdateVillagersCountTxt;
     }
 
     #endregion
@@ -75,6 +79,11 @@ public class LevelUIManager : KHManagedBehaviour
     {
         if (!finished)
             wavesCountTxt.SetText($"{EnemySpawningSys.Ins.CurrentWaveIndex + 1}/{EnemySpawningSys.Ins.WavesCount}");
+    }
+
+    private void UpdateVillagersCountTxt(int newCount)
+    {
+        villagerCountTxt.SetText(newCount.ToString());
     }
 
     #endregion

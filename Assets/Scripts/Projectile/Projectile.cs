@@ -36,6 +36,20 @@ public class Projectile : KHManagedBehaviour, IKHManagedUpdate, IKHManagedFixedU
 
     private void Reset()
     {
+        if (visualRoot == null && transform.Find("Visual Root") == null)
+        {
+            visualRoot = new GameObject("Visual Root").transform;
+            visualRoot.SetParent(transform);
+
+            visualRoot.localPosition = Vector3.zero;
+            visualRoot.localRotation = Quaternion.identity;
+            visualRoot.localScale = Vector3.one;
+
+            visualRoot.gameObject.AddComponent<SpriteRenderer>();
+            visualRoot.gameObject.AddComponent<CapsuleCollider2D>();
+            visualRoot.gameObject.AddComponent<ProjectileColliderRelay>();
+        }
+
         // Collider now lives on the visual root
         Coll2d = GetComponentInChildren<CapsuleCollider2D>();
 

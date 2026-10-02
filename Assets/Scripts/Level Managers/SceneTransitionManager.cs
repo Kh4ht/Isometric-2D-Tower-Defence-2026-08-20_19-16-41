@@ -27,7 +27,7 @@ public class SceneTransitionManager : MonoBehaviour
         if (Ins == null)
             Ins = this;
         else
-            Debug.LogError($"More Than One Instance of type {nameof(SceneTransitionManager)}".AddColorTag(KHUtils.XMLColors.Red));
+            Destroy(gameObject);
 
         DontDestroyOnLoad(this);
     }
@@ -86,7 +86,7 @@ public class SceneTransitionManager : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        LoadScene(GameScenes.MAIN_MENU);
+        LoadScene(Consts.SCENE_MAIN_MENU_INDEX);
     }
 
     public void ReloadScene()

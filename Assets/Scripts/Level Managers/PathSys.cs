@@ -251,7 +251,7 @@ public class PathSys : KHManagedBehaviour
             currentPaths.Add(FindPathAlgorithm(startPos, pathTargetCell));
 
         // Each enemy decides for itself
-        foreach (Enemy enemy in Helper.GetAllAliveEnemies())
+        foreach (Enemy enemy in Helper.GetAllAliveEnemies(includeFlying: true))
             RepathEnemy(enemy);
 
         DrawPaths();

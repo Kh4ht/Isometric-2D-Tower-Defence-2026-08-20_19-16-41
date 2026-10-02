@@ -27,7 +27,7 @@ public class Villager : KHManagedBehaviour
         coll2d.isTrigger = true;
 
         // Set tag
-        tag = GameTags.VILLAGER;
+        tag = Consts.TAG_VILLAGER;
     }
 
     private void Awake()

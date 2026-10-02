@@ -22,11 +22,11 @@ MonoBehaviour:
   - {r: 0.36924, g: 0.621048, b: 0.99876004, a: 0.1}
   - {r: 0.6395608, g: 0.47693494, b: 1.2900649, a: 0.1}
   - {r: 0.83508486, g: 0.36924, b: 0.99876004, a: 0.1}
-  - {r: 0.89888406, g: 0.33231598, b: 0.67225707, a: 0.1}
+  - {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 0.1}
   colorsEnabled: 1
   colorSaturation: 1
   colorBrightness: 1
-  colorGradientsEnabled: 1
+  colorGradientsEnabled: 0
   iconRows:
   - builtinIcons:
     - SceneAsset Icon

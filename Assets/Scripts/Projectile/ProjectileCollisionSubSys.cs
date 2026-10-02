@@ -32,11 +32,11 @@ public class ProjectileCollisionSubSys : IKHSubsystem
     {
         switch (owner.stats.GetMoveType())
         {
-            case BulletMoveType.StraightOrParabolic:
+            case Enums.ProjectileMoveType.StraightOrParabolic:
                 CollideWhenReachingTargetPos();
                 break;
 
-            case BulletMoveType.Laser:
+            case Enums.ProjectileMoveType.Laser:
                 LaserBulletColl();
                 break;
         }
@@ -46,11 +46,11 @@ public class ProjectileCollisionSubSys : IKHSubsystem
     {
         switch (owner.stats.GetMoveType())
         {
-            case BulletMoveType.StraightOrParabolic:
+            case Enums.ProjectileMoveType.StraightOrParabolic:
                 StraightBulletColl(collision);
                 break;
 
-            case BulletMoveType.Laser:
+            case Enums.ProjectileMoveType.Laser:
                 LaserBulletColl();
                 break;
         }
@@ -82,17 +82,17 @@ public class ProjectileCollisionSubSys : IKHSubsystem
 
     private void CollideWhenReachingTargetPos()
     {
-        if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.stats.GetTargetPos(), GameConsts.COMPARISON_DIS_1))
+        if (Kh.SqrDistanceIsLessThan(owner.transform.position, owner.stats.GetTargetPos(), Consts.COMPARISON_DIS_1))
         {
-            IEnumerable<Enemy> enemiesInRange = Helper.GetAllAliveEnemiesInRange(owner.stats.GetTargetPos(), GameConsts.COMPARISON_DIS_1 + 1f);
+            IEnumerable<Enemy> enemiesInRange = Helper.GetAllAliveEnemiesInRange(center: owner.stats.GetTargetPos(),
+                                                                                 range: Consts.COMPARISON_DIS_1 + 1f,
+                                                                                 includeFlying: true);
 
             foreach (Enemy enemy in enemiesInRange)
             {
                 if (owner.Coll2d.IsTouching(enemy.Coll2d))
                 {
                     DamageEnemy(enemy);
-
-                    KHPoolManager.Ins.Despawn(owner.ID, owner);
                     return;
                 }
             }

@@ -10,18 +10,21 @@ public class VillageManager : KHManagedBehaviour
 
     [KHResetStatic]
     public static VillageManager Ins { get; private set; }
-    private const int MAX_VILLAGER_COUNT = 20;
 
     private readonly List<Vector3Int> villageCells = new();
     private Vector2 minWorldPosition;
     private Vector2 maxWorldPosition;
 
+    public List<Villager> villagers = new();
+
     // COMPONENTS
     private Tilemap villageAreaTilemap;
 
-    public List<Villager> villagers = new();
-    public event System.Action OnVillagerKidnapped;
+    // EVENTS
+    public event System.Action<int> OnVillagerKidnapped;
 
+    // GETTERS
+    public int VillagerCount => villagers.Count;
 
     // INSPECTOR
     [SerializeField] private Villager villagerPrefab;
@@ -50,7 +53,7 @@ public class VillageManager : KHManagedBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag(GameTags.ENEMY))
+        if (!other.CompareTag(Consts.TAG_ENEMY))
             return;
 
         if (other.TryGetComponent(out Enemy enemy))
@@ -135,7 +138,7 @@ public class VillageManager : KHManagedBehaviour
     {
         // Vector2 spawnPos = GetRandomVillagePosition();
 
-        this.KHRunBatched(count: MAX_VILLAGER_COUNT,
+        this.KHRunBatched(count: Consts.VILLAGER_MAX_COUNT,
                           action: (i) => villagers.Add(Instantiate(villagerPrefab, GetRandomVillagePosition(), Quaternion.identity)),
                           batchSize: 1);
     }
@@ -149,7 +152,7 @@ public class VillageManager : KHManagedBehaviour
 
         LevelManager.Ins.OnVillagerKidnapped();
 
-        OnVillagerKidnapped?.Invoke();
+        OnVillagerKidnapped?.Invoke(VillagerCount);
 
         villager.gameObject.SetActive(false);
     }

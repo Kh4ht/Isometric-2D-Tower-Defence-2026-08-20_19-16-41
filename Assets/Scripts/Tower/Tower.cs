@@ -4,8 +4,8 @@ using KH;
 using Assets.Scripts.Utils;
 using UnityEngine;
 using VInspector;
-[RequireComponent(typeof(AudioSource), typeof(SpriteRenderer))]
 
+[RequireComponent(typeof(AudioSource), typeof(SpriteRenderer), typeof(KH2DSpriteEffects))]
 [RequireComponent(typeof(LineRenderer))]
 public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 {
@@ -22,7 +22,7 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
     public LineRenderer lineRenderer { get; private set; }
 
     // GETTERS
-    public bool IsMaxLevel => stats.GetLvl() >= GameConsts.TOWER_MAX_LEVEL;
+    public bool IsMaxLevel => stats.GetLvl() >= Consts.TOWER_MAX_LEVEL;
 
     // EVENTS
     public event Action<bool> OnTowerSelected;
@@ -54,7 +54,7 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
         audioSource = GetComponent<AudioSource>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.colorGradient = DB.GetTowerRangeIndicatorGradient(data.elementType);
+        lineRenderer.colorGradient = data.elementType.GetTowerRangeIndicatorGradient();
 
         stats = new(data);
 
@@ -131,7 +131,7 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 
             Vector2 prevPoint = Helper.TileCircleToWorld(origin, range, 0);
 
-            for (int i = 1; i <= GameConsts.TOWER_RANGE_SEGMENTS; i++)
+            for (int i = 1; i <= Consts.TOWER_RANGE_SEGMENTS; i++)
             {
                 Vector2 nextPoint = Helper.TileCircleToWorld(origin, range, i);
                 Gizmos.DrawLine(prevPoint, nextPoint);
@@ -189,7 +189,7 @@ public class Tower : KHManagedBehaviour, IKHManagedUpdate, IKHPoolable
 
         spriteRenderer.sprite = data.icons[stats.GetLvl()];
         stats.SetSellPrice(stats.GetSellPrice() + (data.price[stats.GetLvl()] / 2));
-        stats.SetNextUpgradePrice(data.price[Mathf.Clamp(stats.GetLvl() + 1, 1, GameConsts.TOWER_MAX_LEVEL)]);
+        stats.SetNextUpgradePrice(data.price[Mathf.Clamp(stats.GetLvl() + 1, 1, Consts.TOWER_MAX_LEVEL)]);
         stats.SetRange(data.range[stats.GetLvl()]);
         stats.SetShootCooldown(data.shootCooldown[stats.GetLvl()]);
         stats.SetProjectileDamage(data.projectileDamage[stats.GetLvl()]);

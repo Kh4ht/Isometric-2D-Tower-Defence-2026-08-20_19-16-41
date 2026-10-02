@@ -15,15 +15,17 @@ public class EnemyData : ScriptableObject
     public Enemy prefab;
     public Sprite icon;
 
-    public ElementType elementType = ElementType.None;
+    public Enums.ElementType elementType = Enums.ElementType.None;
 
-    [DisableIf(nameof(elementType), ElementType.None)]
-    public ElementStrength elementStrength = ElementStrength.Low;
+    [DisableIf(nameof(elementType), Enums.ElementType.None)]
+    public Enums.ElementStrength elementStrength = Enums.ElementStrength.Low;
     [EndIf]
 
     public int DeathAetherPrize;
 
     [Space(20)]
+
+    public bool isFlying;
 
     [Min(1)] public int defaultMaxHealth = 100;
 
